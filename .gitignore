@@ -1,0 +1,78 @@
+# ========================================================
+# VIETDISCOVERY BY MS. TRANG - GIT IGNORE SPECIFICATION
+# ========================================================
+
+# Dependencies
+node_modules/
+/.pnp
+.pnp.js
+
+# Production Build Artifacts
+dist/
+build/
+
+# Local Environment Variables & Secrets (CRITICAL FOR SECURITY)
+.env
+.env*.local
+.env.development
+.env.production
+.env.staging
+*.env
+# Ensure template is preserved for onboarding
+!.env.example
+
+# Private Keys, Certificates & Tokens
+*.pem
+*.key
+*.cert
+*.crt
+*.pfx
+*.p12
+*.secret
+
+# Student Rosters & Sensitive Personal Data Exports
+*.csv
+*.xlsx
+*.xls
+*roster*
+*students_export*
+*student_data*
+
+# Tooling & Agent Workspace Caches
+.agent/
+.system_generated/
+.gemini/
+.antigravity/
+
+# Editor & IDE Directories
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Logs & Temporary Files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+*.log
+*.tmp
+*.temp
+
+# Operating System Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Root-level Scratch Screenshots (from local test runs)
+# Preserves all actual application images inside public/ and src/
+/*.png
+!public/**
