@@ -31,6 +31,7 @@ import {
 } from '../../data/vietnamGeoData';
 import { playEnglishSpeech, playSpeech } from '../../lib/speech';
 import { projectGeoToSvg } from '../../lib/geoProjection';
+import { soundEffects } from '../../lib/soundEffects';
 
 interface VietnamMapProps {
   destinations: Destination[];
@@ -175,12 +176,31 @@ export const VietnamMap: React.FC<VietnamMapProps> = ({
     return matchesQuery && matchesRegion;
   });
 
+  const [touchDistance, setTouchDistance] = useState<number | null>(null);
+
   // Handle Zoom controls
-  const handleZoomIn = () => setZoomLevel(prev => Math.min(prev + 0.25, 2.5));
-  const handleZoomOut = () => setZoomLevel(prev => Math.max(prev - 0.25, 0.8));
+  const handleZoomIn = () => {
+    soundEffects.playClick();
+    setZoomLevel(prev => Math.min(Number((prev + 0.25).toFixed(2)), 2.8));
+  };
+  const handleZoomOut = () => {
+    soundEffects.playClick();
+    setZoomLevel(prev => Math.max(Number((prev - 0.25).toFixed(2)), 0.8));
+  };
   const handleResetView = () => {
+    soundEffects.playClick();
     setZoomLevel(1);
     setPanOffset({ x: 0, y: 0 });
+  };
+
+  // Mouse wheel zoom
+  const handleWheel = (e: React.WheelEvent) => {
+    e.stopPropagation();
+    if (e.deltaY < 0) {
+      setZoomLevel(prev => Math.min(Number((prev + 0.15).toFixed(2)), 2.8));
+    } else {
+      setZoomLevel(prev => Math.max(Number((prev - 0.15).toFixed(2)), 0.85));
+    }
   };
 
   // Handle Pan / Drag
@@ -200,9 +220,16 @@ export const VietnamMap: React.FC<VietnamMapProps> = ({
 
   const handleMouseUp = () => setIsDragging(false);
 
-  // Touch support for Mobile
+  // Helper for touch distance (Pinch to Zoom)
+  const getTouchDistance = (t1: React.Touch, t2: React.Touch) => {
+    return Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
+  };
+
+  // Touch support for Mobile (Single-finger Pan + Two-finger Pinch to Zoom)
   const handleTouchStart = (e: React.TouchEvent) => {
-    if (e.touches.length === 1 && zoomLevel > 1) {
+    if (e.touches.length === 2) {
+      setTouchDistance(getTouchDistance(e.touches[0], e.touches[1]));
+    } else if (e.touches.length === 1 && zoomLevel > 1) {
       setIsDragging(true);
       setDragStart({
         x: e.touches[0].clientX - panOffset.x,
@@ -212,14 +239,32 @@ export const VietnamMap: React.FC<VietnamMapProps> = ({
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isDragging || e.touches.length !== 1) return;
-    setPanOffset({
-      x: e.touches[0].clientX - dragStart.x,
-      y: e.touches[0].clientY - dragStart.y
-    });
+    if (e.touches.length === 2 && touchDistance !== null) {
+      const curDist = getTouchDistance(e.touches[0], e.touches[1]);
+      const factor = curDist / touchDistance;
+      if (factor > 1.04) {
+        setZoomLevel(prev => Math.min(Number((prev + 0.05).toFixed(2)), 2.8));
+        setTouchDistance(curDist);
+      } else if (factor < 0.96) {
+        setZoomLevel(prev => Math.max(Number((prev - 0.05).toFixed(2)), 0.85));
+        setTouchDistance(curDist);
+      }
+    } else if (isDragging && e.touches.length === 1) {
+      setPanOffset({
+        x: e.touches[0].clientX - dragStart.x,
+        y: e.touches[0].clientY - dragStart.y
+      });
+    }
   };
 
-  const handleTouchEnd = () => setIsDragging(false);
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (e.touches.length < 2) {
+      setTouchDistance(null);
+    }
+    if (e.touches.length === 0) {
+      setIsDragging(false);
+    }
+  };
 
   // Pronounce destination name in pure English for Elementary learners
   const handlePronounce = (dest: Destination, e?: React.MouseEvent) => {
@@ -322,6 +367,7 @@ export const VietnamMap: React.FC<VietnamMapProps> = ({
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
+          onWheel={handleWheel}
           style={{ cursor: zoomLevel > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default' }}
         >
           
@@ -520,9 +566,13 @@ export const VietnamMap: React.FC<VietnamMapProps> = ({
                       strokeWidth={isHovered ? 2 : 0.8}
                       strokeLinejoin="round"
                       className="transition-colors duration-150 cursor-pointer"
-                      onMouseEnter={() => setHoveredGeo(geo)}
+                      onMouseEnter={() => {
+                        setHoveredGeo(geo);
+                        soundEffects.playHover();
+                      }}
                       onMouseLeave={() => setHoveredGeo(null)}
                       onClick={() => {
+                        soundEffects.playClick();
                         const matchedAdmin = OFFICIAL_34_PROVINCES_DATA.find(u => 
                           u.name.toLowerCase().includes(geo.name.toLowerCase()) || 
                           geo.name.toLowerCase().includes(u.name.toLowerCase())

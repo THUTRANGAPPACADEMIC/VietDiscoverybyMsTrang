@@ -15,7 +15,9 @@ import {
   Gamepad2,
   ChevronDown,
   Cloud,
-  Star
+  Star,
+  Volume2,
+  VolumeX
 } from 'lucide-react';
 import { UserProfile, UserRole, GradeBand } from '../types';
 import { isSupabaseConfigured } from '../lib/supabase';
@@ -53,6 +55,12 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenCreatorModal
 }) => {
   const isOnline = isSupabaseConfigured();
+  const [soundOn, setSoundOn] = React.useState(() => soundEffects.isSoundEnabled());
+
+  const handleToggleSound = () => {
+    const next = soundEffects.toggleSound();
+    setSoundOn(next);
+  };
 
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm transition-all">
@@ -127,9 +135,28 @@ export const Header: React.FC<HeaderProps> = ({
               </div>
             </div>
 
-            {/* Right: Stars, Cloud Synced & Student Profile Pill */}
+            {/* Right: Sound, Stars, Cloud Synced & Student Profile Pill */}
             <div className="flex items-center gap-2 sm:gap-2.5 shrink-0 flex-wrap justify-center">
               
+              {/* Sound Effects Toggle Button */}
+              <button
+                onClick={handleToggleSound}
+                title={soundOn ? "Tắt âm thanh hiệu ứng (Mute sound)" : "Bật âm thanh hiệu ứng (Enable sound)"}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/95 border border-sky-300 text-sky-800 hover:bg-sky-50 shadow-xs font-black text-xs cursor-pointer transition-all active:scale-95"
+              >
+                {soundOn ? (
+                  <>
+                    <Volume2 className="w-4 h-4 text-sky-600 animate-pulse" />
+                    <span className="hidden sm:inline text-[11px]">Âm thanh</span>
+                  </>
+                ) : (
+                  <>
+                    <VolumeX className="w-4 h-4 text-slate-400" />
+                    <span className="hidden sm:inline text-[11px] text-slate-500">Đã tắt</span>
+                  </>
+                )}
+              </button>
+
               {/* Stars Counter Badge */}
               <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-100/95 border border-amber-300 text-amber-900 shadow-xs font-black text-xs">
                 <Star className="w-4 h-4 fill-amber-400 text-amber-500 animate-pulse" />

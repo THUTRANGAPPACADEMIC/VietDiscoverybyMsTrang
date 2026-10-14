@@ -7,6 +7,7 @@ import { AdminConsole } from './components/Admin/AdminConsole';
 import { StudentAuthModal } from './components/StudentAuthModal';
 import { StaffAuthModal } from './components/StaffAuthModal';
 import { AboutCreatorModal } from './components/AboutCreatorModal';
+import { MagicalAdventureFooter } from './components/MagicalAdventureFooter';
 import { 
   UserProfile, 
   DestinationProgress, 
@@ -303,46 +304,14 @@ export const App: React.FC = () => {
 
       </main>
 
-      {/* Global Footer */}
-      <footer className="bg-white border-t border-slate-200 mt-12 py-8 text-xs text-slate-500">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex flex-wrap items-center gap-2 text-center md:text-left">
-              <span className="text-base font-extrabold text-slate-800 font-heading">
-                VietDiscovery by Ms. Trang
-              </span>
-              <span className="text-slate-300">|</span>
-              <span className="font-bold text-slate-700">Trường Tiểu học Trang Tấn Khương</span>
-              <span className="text-slate-300 hidden sm:inline">|</span>
-              <span className="text-slate-500">Giáo viên: <strong>Cô Trần Thị Thu Trang</strong> (Xã Hiệp Phước, TP. Hồ Chí Minh)</span>
-            </div>
-
-            <div className="flex items-center gap-3 shrink-0">
-              <button
-                onClick={() => setIsCreatorModalOpen(true)}
-                className="px-3.5 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 font-bold transition-colors flex items-center gap-1.5 cursor-pointer text-xs shadow-xs"
-              >
-                <Sparkles className="w-3.5 h-3.5 text-amber-600" />
-                <span>Về Tác Giả & Dự Án</span>
-              </button>
-
-              {/* Discrete Educator & Admin Entrance (Not in student header) */}
-              <button
-                onClick={() => setIsStaffAuthOpen(true)}
-                className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold transition-colors flex items-center gap-1.5"
-              >
-                <Lock className="w-3.5 h-3.5" />
-                <span>Educator & Admin Portal</span>
-              </button>
-            </div>
-          </div>
-
-          <div className="pt-3 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-slate-400">
-            <div>{MAP_METADATA.territoryStatement}</div>
-            <div>Bản quyền © 2026 Cô Trần Thị Thu Trang. Hệ thống giáo dục Tiếng Anh Tiểu học chuẩn WGS84 GIS.</div>
-          </div>
-        </div>
-      </footer>
+      {/* Global Magical Adventure 3D Footer */}
+      <MagicalAdventureFooter
+        activeStudentTab={activeStudentTab}
+        setActiveStudentTab={setActiveStudentTab}
+        onOpenCreatorModal={() => setIsCreatorModalOpen(true)}
+        onOpenStaffAuth={() => setIsStaffAuthOpen(true)}
+        totalStars={totalStars}
+      />
 
       {/* About Creator & Pedagogy Modal */}
       <AboutCreatorModal

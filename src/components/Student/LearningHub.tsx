@@ -234,6 +234,109 @@ export const LearningHub: React.FC<LearningHubProps> = ({
       {activeTab === 'explore' && (
         <div className="space-y-6">
           
+          {/* 0. OFFICIAL BRANDING & SPECTACULAR HOMEPAGE HERO SECTION */}
+          <div className="relative overflow-hidden rounded-[36px] bg-gradient-to-r from-[#e0f2fe]/90 via-[#f0f9ff]/95 to-[#ffe4e6]/90 border-3 border-sky-300/80 p-5 sm:p-8 shadow-[0_12px_36px_rgba(56,189,248,0.22)] backdrop-blur-md">
+            {/* Playful Floating Cloud, Star & Rainbow Accents */}
+            <div className="absolute top-2 left-6 text-2xl sm:text-3xl opacity-80 animate-bounce duration-1000 pointer-events-none select-none">⭐</div>
+            <div className="absolute top-4 right-10 text-xl sm:text-2xl opacity-70 animate-pulse pointer-events-none select-none">✨</div>
+            <div className="absolute bottom-3 left-1/4 text-xl sm:text-2xl opacity-60 pointer-events-none select-none">☁️</div>
+            <div className="absolute bottom-4 right-8 text-2xl opacity-80 pointer-events-none select-none">🌈</div>
+
+            <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+              
+              {/* Mascot 1: Captain Trang */}
+              <div className="hidden lg:flex flex-col items-center shrink-0">
+                <div 
+                  className="relative group cursor-pointer" 
+                  onClick={() => soundEffects.playHover()}
+                  title="Cô Trần Thị Thu Trang - Captain Trang"
+                >
+                  <img
+                    src="/assets/cute/captain_trang_clean.png"
+                    alt="Captain Trang Explorer"
+                    className="w-28 sm:w-36 h-auto object-contain drop-shadow-[0_12px_20px_rgba(0,0,0,0.25)] group-hover:scale-108 transition-transform duration-300 select-none"
+                  />
+                  <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap px-3 py-0.5 rounded-full bg-rose-500 text-white font-black text-[11px] shadow-md border border-white">
+                    Captain Trang 🧭
+                  </div>
+                </div>
+              </div>
+
+              {/* Center: Main Brand Title + Candy Pink Ribbon + Inspiring Headline */}
+              <div className="flex-1 text-center space-y-3.5">
+                
+                {/* Globe Logo + Brand Title Cluster */}
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
+                  {/* Official Globe Logo: 90-110px desktop, 72-90px mobile */}
+                  <div 
+                    className="w-[76px] h-[76px] sm:w-[94px] sm:h-[94px] md:w-[108px] md:h-[108px] rounded-full bg-white/90 p-2 shadow-[0_8px_24px_rgba(56,189,248,0.35)] border-3 border-sky-300 flex items-center justify-center shrink-0 hover:rotate-6 transition-transform cursor-pointer"
+                    onClick={() => soundEffects.playClick()}
+                    title="VietDiscovery by Ms. Trang"
+                  >
+                    <img
+                      src="/assets/cute/logo_vietdiscovery.png"
+                      alt="VietDiscovery by Ms. Trang Globe Logo"
+                      className="w-full h-full object-contain select-none"
+                    />
+                  </div>
+
+                  {/* Largest Brand Element: "VietDiscovery" (56-64px desktop, 34-42px mobile) */}
+                  <div className="text-center sm:text-left">
+                    <h1 
+                      className="text-[34px] sm:text-[46px] md:text-[58px] lg:text-[62px] font-black font-heading tracking-tight leading-none text-sky-600 drop-shadow-[0_4px_10px_rgba(2,132,199,0.35)]"
+                      style={{
+                        background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 40%, #0ea5e9 100%)',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent'
+                      }}
+                    >
+                      VietDiscovery
+                    </h1>
+
+                    {/* "by Ms. Trang" directly below in candy-pink ribbon */}
+                    <div className="inline-flex items-center gap-1.5 px-4 sm:px-6 py-1 sm:py-1.5 rounded-full bg-gradient-to-r from-[#ff007f] via-[#ec4899] to-[#f43f5e] text-white font-black text-sm sm:text-base md:text-lg shadow-md border-2 border-white/80 drop-shadow-sm mt-1 transform hover:scale-105 transition-transform cursor-default">
+                      <Sparkles className="w-4 h-4 text-amber-200 fill-amber-200" />
+                      <span>by Ms. Trang</span>
+                      <span className="text-xs">❤️</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Slogan Pill / Headline (English First, Vietnamese translation underneath) */}
+                <div className="inline-block bg-white/95 backdrop-blur-md rounded-3xl px-5 sm:px-8 py-3 shadow-[0_6px_20px_rgba(0,0,0,0.08)] border-2 border-sky-200 max-w-2xl mx-auto">
+                  <div className="text-base sm:text-xl md:text-2xl font-black font-heading text-blue-950 flex items-center justify-center gap-2 flex-wrap">
+                    <span>The Magical Adventure Across Vietnam!</span>
+                    <span className="text-xl sm:text-2xl">🌈</span>
+                  </div>
+                  <div className="text-xs sm:text-sm md:text-base font-bold text-sky-800 font-heading mt-0.5 flex items-center justify-center gap-1.5">
+                    <span>Cuộc phiêu lưu kỳ diệu trên đất Việt!</span>
+                    <span className="text-rose-500">✨</span>
+                  </div>
+                </div>
+
+              </div>
+
+              {/* Mascot 2: Boy Explorer Chibi */}
+              <div className="hidden lg:flex flex-col items-center shrink-0">
+                <div 
+                  className="relative group cursor-pointer" 
+                  onClick={() => soundEffects.playHover()}
+                  title="Little Adventurer!"
+                >
+                  <img
+                    src="/assets/cute/boy_explorer_chibi.png"
+                    alt="Little Explorer Chibi"
+                    className="w-26 sm:w-32 h-auto object-contain drop-shadow-[0_12px_20px_rgba(0,0,0,0.25)] group-hover:scale-108 transition-transform duration-300 select-none"
+                  />
+                  <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap px-3 py-0.5 rounded-full bg-amber-500 text-amber-950 font-black text-[11px] shadow-md border border-white">
+                    Little Explorer 🎒
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
           {/* 1. SELECT LEARNING PATHWAY (5 GRADE CARDS) - MATCHING IMAGE 2 */}
           <div className="space-y-2.5">
             <div className="text-xs sm:text-sm font-black uppercase tracking-wider text-blue-900 flex items-center gap-1.5 font-heading px-1">
@@ -530,12 +633,12 @@ export const LearningHub: React.FC<LearningHubProps> = ({
                     </div>
 
                     {/* 2. CENTER COLUMN: ILLUSTRATED MAP CANVAS WITH PINS & CONTROLS */}
-                    <div className="lg:col-span-6 relative rounded-3xl overflow-hidden border-2 border-sky-200/80 shadow-inner bg-gradient-to-b from-[#e0f2fe] via-[#bae6fd] to-[#7dd3fc] min-h-[260px] flex items-center justify-center group">
+                    <div className="lg:col-span-6 relative rounded-3xl overflow-hidden border-2 border-sky-200/80 shadow-inner bg-gradient-to-b from-[#e0f2fe] via-[#bae6fd] to-[#7dd3fc] min-h-[320px] max-h-[480px] flex items-center justify-center group">
                       {/* Illustrated Map Background */}
                       <img
                         src="/assets/cute/center_illustrated_map.png"
                         alt="Illustrated Vietnam Map"
-                        className="w-full h-full object-cover object-center select-none"
+                        className="w-full h-full max-h-[460px] object-contain object-center select-none p-2 drop-shadow-md"
                       />
 
                       {/* Interactive Pin Overlays for Key Destinations */}
