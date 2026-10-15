@@ -22,10 +22,13 @@ import {
   Award,
   ChevronRight,
   ShieldCheck,
-  Star
+  Star,
+  Search
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { VIETNAM_34_PROVINCES_GEO, Province34GeoFeature } from '../../data/vietnam34ProvincesGeoData';
+import { ProvinceDetailModal } from './ProvinceDetailModal';
+import { searchProvinces } from '../../data/provinces';
 import { soundEffects } from '../../lib/soundEffects';
 import { playEnglishSpeech } from '../../lib/speech';
 import { UserProfile, GradeBand } from '../../types';
@@ -40,7 +43,7 @@ interface InteractiveMap34ProvincesGameProps {
 }
 
 type GameMode = 'learn' | 'discover' | 'dragdrop';
-type RegionFilter = 'All' | 'North' | 'Central' | 'South';
+type RegionFilter = 'All' | 'Cities' | 'North' | 'Central' | 'South';
 
 export const InteractiveMap34ProvincesGame: React.FC<InteractiveMap34ProvincesGameProps> = ({
   user,
@@ -81,6 +84,10 @@ export const InteractiveMap34ProvincesGame: React.FC<InteractiveMap34ProvincesGa
   const [hoveredProvince, setHoveredProvince] = useState<Province34GeoFeature | null>(null);
   const [inspectProvince, setInspectProvince] = useState<Province34GeoFeature | null>(null);
 
+  // Search 34 Provinces State
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
+
   // Mode 3: Drag & Drop State
   const [activeDraggableCard, setActiveDraggableCard] = useState<Province34GeoFeature | null>(null);
   const [selectedTapCard, setSelectedTapCard] = useState<Province34GeoFeature | null>(null);
@@ -96,9 +103,15 @@ export const InteractiveMap34ProvincesGame: React.FC<InteractiveMap34ProvincesGa
   const activeGradeProvinces = React.useMemo(() => {
     let filtered = VIETNAM_34_PROVINCES_GEO.filter(p => p.gradeBands.includes(selectedGrade));
     if (activeRegion !== 'All') {
-      const regionFiltered = filtered.filter(p => p.region === activeRegion);
-      if (regionFiltered.length > 0) {
-        filtered = regionFiltered;
+      if (activeRegion === 'Cities') {
+        const cityCodes = ['HN', 'HP', 'HUE', 'DN', 'HCM', 'CT'];
+        const cityFiltered = filtered.filter(p => cityCodes.includes(p.code));
+        if (cityFiltered.length > 0) filtered = cityFiltered;
+      } else {
+        const regionFiltered = filtered.filter(p => p.region === activeRegion);
+        if (regionFiltered.length > 0) {
+          filtered = regionFiltered;
+        }
       }
     }
     return filtered;
@@ -358,28 +371,137 @@ export const InteractiveMap34ProvincesGame: React.FC<InteractiveMap34ProvincesGa
 
       </div>
 
-      {/* 2. SUB-BAR: GRADE SELECTION, REGION FILTER & MODE-SPECIFIC TOGGLES */}
-      <div className="bg-white/80 backdrop-blur-md border-b border-sky-100 px-4 py-2 flex flex-wrap items-center justify-between gap-2.5 text-xs relative z-20">
+      {/* 2. SUB-BAR: REGION FILTER, GRADE SELECTION, SEARCH & MODE-SPECIFIC TOGGLES */}
+      <div className="bg-white/90 backdrop-blur-md border-b border-sky-100 px-4 py-2.5 flex flex-wrap items-center justify-between gap-2.5 text-xs relative z-20">
         
-        {/* Region Filters */}
-        <div className="flex items-center gap-1.5">
+        {/* Region Filters (Including 6 Centrally Governed Cities) */}
+        <div className="flex items-center gap-1.5 flex-wrap">
           <span className="font-bold text-slate-500 hidden sm:inline">Vùng:</span>
-          {(['All', 'North', 'Central', 'South'] as RegionFilter[]).map((r) => (
+          {[
+            { id: 'All' as RegionFilter, label: 'Toàn quốc (34)' },
+            { id: 'Cities' as RegionFilter, label: '🏛️ 6 TP Trực thuộc TW' },
+            { id: 'North' as RegionFilter, label: '⛰️ Miền Bắc (14)' },
+            { id: 'Central' as RegionFilter, label: '🏖️ Miền Trung (8)' },
+            { id: 'South' as RegionFilter, label: '🌴 Miền Nam (6)' }
+          ].map((r) => (
             <button
-              key={r}
+              key={r.id}
               onClick={() => {
                 soundEffects.playClick();
-                setActiveRegion(r);
+                setActiveRegion(r.id);
               }}
               className={`px-2.5 py-1 rounded-full font-black text-[11px] transition-all cursor-pointer ${
-                activeRegion === r
+                activeRegion === r.id
                   ? 'bg-indigo-600 text-white shadow-xs'
                   : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
               }`}
             >
-              {r === 'All' ? 'Toàn quốc (34)' : r === 'North' ? '⛰️ Miền Bắc (14)' : r === 'Central' ? '🏖️ Miền Trung (8)' : '🌴 Miền Nam (6)'}
+              {r.label}
             </button>
           ))}
+        </div>
+
+        {/* Quick Search for any of the 34 Provinces */}
+        <div className="relative">
+          <div className="flex items-center gap-1.5 bg-slate-100 border border-slate-200 rounded-full px-2.5 py-1 focus-within:ring-2 focus-within:ring-sky-400 focus-within:bg-white transition-all">
+            <Search className="w-3.5 h-3.5 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Tìm tỉnh/thành (Search 34)..."
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setIsSearchOpen(true);
+              }}
+              onFocus={() => setIsSearchOpen(true)}
+              className="bg-transparent text-xs text-slate-800 placeholder-slate-400 outline-none w-36 sm:w-48 font-medium"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => {
+                  setSearchQuery('');
+                  setIsSearchOpen(false);
+                }}
+                className="text-slate-400 hover:text-slate-600 cursor-pointer"
+              >
+                <X className="w-3 h-3" />
+              </button>
+            )}
+          </div>
+
+          {/* Search Dropdown */}
+          {isSearchOpen && searchQuery.trim().length > 0 && (
+            <div className="absolute right-0 top-full mt-1.5 w-72 sm:w-80 bg-white rounded-2xl shadow-2xl border border-sky-200 p-2 z-50 max-h-72 overflow-y-auto">
+              {(() => {
+                const results = searchProvinces(searchQuery);
+                if (results.length === 0) {
+                  return (
+                    <div className="text-center py-4 text-xs text-slate-500 font-medium">
+                      Không tìm thấy tỉnh/thành phù hợp
+                    </div>
+                  );
+                }
+                return (
+                  <div className="space-y-1">
+                    <div className="text-[10px] font-black uppercase text-slate-400 px-2 py-1">
+                      Kết quả ({results.length} tỉnh/thành)
+                    </div>
+                    {results.map((p) => {
+                      const geo = VIETNAM_34_PROVINCES_GEO.find(g => g.code === p.code || g.id === p.id);
+                      return (
+                        <button
+                          key={p.id}
+                          onClick={() => {
+                            soundEffects.playClick();
+                            if (geo) {
+                              setInspectProvince(geo);
+                            } else {
+                              setInspectProvince({
+                                code: p.code,
+                                id: p.id,
+                                nameVi: p.nameVi,
+                                nameEn: p.nameEn,
+                                region: p.region,
+                                zone: p.zone,
+                                emoji: p.emoji,
+                                image: p.image,
+                                speechEn: p.notableGeographicalCharacteristics.en,
+                                learningEn: p.distinctiveLocalFeatures.en,
+                                landmarkEn: p.famousLandmarks[0]?.nameEn || p.capitalEn,
+                                gradeBands: ['grade_1', 'grade_2', 'grade_3', 'grade_4', 'grade_5'],
+                                hasLeaderLine: false,
+                                labelAnchor: { x: 0, y: 0 },
+                                centroid: { x: 0, y: 0 },
+                                svgPath: ''
+                              });
+                            }
+                            setIsSearchOpen(false);
+                            setSearchQuery('');
+                          }}
+                          className="w-full text-left px-2.5 py-2 rounded-xl hover:bg-sky-50 flex items-center justify-between gap-2 transition-colors cursor-pointer group"
+                        >
+                          <div className="flex items-center gap-2 min-w-0">
+                            <span className="text-lg shrink-0">{p.emoji}</span>
+                            <div className="min-w-0">
+                              <div className="text-xs font-black text-slate-900 truncate group-hover:text-sky-700">
+                                {p.nameVi} <span className="text-slate-400 font-normal">({p.nameEn})</span>
+                              </div>
+                              <div className="text-[10px] text-slate-500 truncate">
+                                {p.type === 'city' ? '🏛️ TP trực thuộc TW' : `Tỉnh lỵ: ${p.capitalVi}`} • {p.zone}
+                              </div>
+                            </div>
+                          </div>
+                          <span className="shrink-0 px-2 py-0.5 rounded-full bg-sky-100 text-sky-800 text-[10px] font-bold group-hover:bg-sky-600 group-hover:text-white transition-colors">
+                            Khám phá
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                );
+              })()}
+            </div>
+          )}
         </div>
 
         {/* Grade Differentiation Selector */}
@@ -715,7 +837,8 @@ export const InteractiveMap34ProvincesGame: React.FC<InteractiveMap34ProvincesGa
             {/* 34 PROVINCES DISSOLVED VECTOR POLYGONS */}
             <g id="vietnam-34-polygons" filter="url(#landGlow34)">
               {VIETNAM_34_PROVINCES_GEO.map((geo) => {
-                const isMatchRegion = activeRegion === 'All' || geo.region === activeRegion;
+                const isMatchRegion = activeRegion === 'All' || 
+                  (activeRegion === 'Cities' ? ['HN', 'HP', 'HUE', 'DN', 'HCM', 'CT'].includes(geo.code) : geo.region === activeRegion);
                 const isHovered = hoveredProvince?.id === geo.id;
                 const isInspected = inspectProvince?.id === geo.id;
                 const isMastered = masteredProvinceIds.has(geo.id);
@@ -896,96 +1019,16 @@ export const InteractiveMap34ProvincesGame: React.FC<InteractiveMap34ProvincesGa
 
       </div>
 
-      {/* 5. DESTINATION DETAIL MODAL (WHEN A PROVINCE IS CLICKED) */}
+      {/* 5. EDUCATIONAL PROVINCE DETAIL STUDIO (5 TABS: HERITAGE, VOCABULARY & IPA, SENTENCE PATTERNS, 4 SKILLS LISTENING & SPEAKING, CIRCULAR 27 QUIZ) */}
       {inspectProvince && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl border-2 border-sky-300 animate-scale-up">
-            
-            {/* Modal Image Header */}
-            <div className="relative h-48 sm:h-56 bg-slate-100 overflow-hidden">
-              <img
-                src={inspectProvince.image}
-                alt={inspectProvince.nameEn}
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-black/30"></div>
-
-              {/* Close Button */}
-              <button
-                onClick={() => setInspectProvince(null)}
-                className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-black/80 transition-colors cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
-
-              {/* Header Badges */}
-              <div className="absolute bottom-3 left-4 right-4 flex items-end justify-between">
-                <div>
-                  <span className="px-2.5 py-0.5 rounded-full bg-rose-500 text-white font-black text-[10px] uppercase tracking-wider shadow-xs">
-                    {inspectProvince.zone}
-                  </span>
-                  <h3 className="text-xl sm:text-2xl font-black text-white font-heading mt-1 flex items-center gap-2 drop-shadow-md">
-                    <span>{inspectProvince.emoji}</span>
-                    <span>{inspectProvince.nameEn}</span>
-                  </h3>
-                  <div className="text-xs font-bold text-sky-200">
-                    {inspectProvince.nameVi}
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => handleSpeakProvince(inspectProvince)}
-                  className="px-3 py-1.5 rounded-2xl bg-white text-slate-900 font-black text-xs shadow-lg hover:bg-sky-50 transition-transform hover:scale-105 flex items-center gap-1.5 cursor-pointer shrink-0"
-                >
-                  <Volume2 className="w-4 h-4 text-sky-600" />
-                  <span>Listen</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Modal Content */}
-            <div className="p-5 space-y-4">
-              <div>
-                <h4 className="text-xs font-black uppercase tracking-wider text-slate-400 mb-1">
-                  ENGLISH LEARNING HIGHLIGHTS
-                </h4>
-                <p className="text-sm text-slate-700 leading-relaxed font-medium">
-                  {inspectProvince.learningEn}
-                </p>
-              </div>
-
-              <div className="p-3 rounded-2xl bg-sky-50 border border-sky-200 space-y-1">
-                <div className="text-xs font-black text-sky-900 flex items-center gap-1.5">
-                  <MapPin className="w-3.5 h-3.5 text-rose-500" />
-                  <span>Key Landmark / Heritage Site:</span>
-                </div>
-                <div className="text-xs text-sky-950 font-bold">
-                  {inspectProvince.landmarkEn}
-                </div>
-              </div>
-
-              <div className="pt-2 flex items-center justify-between">
-                <button
-                  onClick={() => {
-                    handleSpeakProvince(inspectProvince);
-                  }}
-                  className="px-4 py-2 rounded-2xl bg-sky-100 hover:bg-sky-200 text-sky-900 font-bold text-xs flex items-center gap-1.5 cursor-pointer transition-colors"
-                >
-                  <Volume2 className="w-4 h-4 text-sky-600" />
-                  <span>Pronounce (Phát âm US)</span>
-                </button>
-
-                <button
-                  onClick={() => setInspectProvince(null)}
-                  className="px-5 py-2 rounded-2xl bg-rose-500 hover:bg-rose-600 text-white font-black text-xs shadow-md cursor-pointer transition-colors"
-                >
-                  Close (Đóng)
-                </button>
-              </div>
-            </div>
-
-          </div>
-        </div>
+        <ProvinceDetailModal
+          provinceCode={inspectProvince.code}
+          provinceId={inspectProvince.id}
+          isOpen={!!inspectProvince}
+          onClose={() => setInspectProvince(null)}
+          onEarnStars={onEarnStars}
+          onUpdateProgress={onUpdateProgress}
+        />
       )}
 
       {/* 6. VICTORY CELEBRATION MODAL (MODE 3 MISSION COMPLETE) */}
