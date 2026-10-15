@@ -1430,13 +1430,19 @@ export const PILOT_CURRICULUM_LESSONS: CurriculumLesson[] = [
   }
 ];
 
-// ------------------------------------------------------------------------------
-// 3. PERSISTENT STORAGE & HELPER METHODS FOR TEACHER CONTENT STUDIO
-// ------------------------------------------------------------------------------
-const CURRICULUM_STORAGE_KEY = 'vietdiscovery_independent_curriculum_lessons';
+import { ALL_25_CURRICULUM_LESSONS } from './curriculum/allLessons';
+export * from './curriculum/adventureThemes';
+export * from './curriculum/allLessons';
+
+const CURRICULUM_STORAGE_KEY = 'vietdiscovery_independent_curriculum_lessons_v2';
 
 export const getCurriculumLessons = (): CurriculumLesson[] => {
-  return localStore.get<CurriculumLesson[]>(CURRICULUM_STORAGE_KEY, PILOT_CURRICULUM_LESSONS);
+  const cached = localStore.get<CurriculumLesson[]>(CURRICULUM_STORAGE_KEY, ALL_25_CURRICULUM_LESSONS);
+  if (!cached || cached.length < ALL_25_CURRICULUM_LESSONS.length) {
+    localStore.set(CURRICULUM_STORAGE_KEY, ALL_25_CURRICULUM_LESSONS);
+    return ALL_25_CURRICULUM_LESSONS;
+  }
+  return cached;
 };
 
 export const saveCurriculumLessons = (lessons: CurriculumLesson[]): void => {

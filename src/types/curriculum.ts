@@ -156,7 +156,7 @@ export interface CurriculumLesson {
   topicVi: string;
   gradeLevel: GradeLevel; // 'Grade 1' | 'Grade 2' | 'Grade 3' | 'Grade 4' | 'Grade 5'
   gradeBand: GradeBand;
-  targetCefr: 'Pre-A1 Starter' | 'Pre-A1 Beginner' | 'Pre-A1 Foundation' | 'A1' | 'A1-A2 Extension';
+  targetCefr: 'Pre-A1 Starter' | 'Pre-A1 Beginner' | 'Pre-A1 Foundation' | 'A1' | 'A1 Elementary' | 'A1+ Intermediate' | 'A1+ Explorer' | 'A1-A2 Extension';
   durationMinutes: number;
   learningObjectivesEn: string[];
   learningObjectivesVi: string[];
@@ -173,6 +173,18 @@ export interface CurriculumLesson {
   questions: Circular27CurriculumQuestion[];
   assessment: AssessmentRubric;
   
+  // Optional Teacher-Approved Video Lesson
+  videoLesson?: {
+    videoId?: string;
+    videoUrl: string;
+    embedUrl: string;
+    titleEn: string;
+    titleVi: string;
+    durationMinutes: number;
+    isTeacherCreated: boolean;
+    status: 'draft' | 'approved';
+  };
+
   // Status and Verification
   status: ContentStatus;
   verification: ContentVerificationMetadata;

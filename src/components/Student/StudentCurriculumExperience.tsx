@@ -1,44 +1,39 @@
 // ==============================================================================
 // VIETDISCOVERY BY MS. TRANG — STUDENT CURRICULUM EXPERIENCE
-// Interactive English Adventure Learning for the 5 Independent Thematic Pathways
-// Grades 1–5 | Aligned with Vietnam Circular 27/2020/TT-BGDDT & CEFR Primary
+// 25 Grade-Specific Thematic Adventures (5 Grades x 5 Adventures)
+// Premium Pastel Color System & Pedagogical Lesson Flow: WATCH -> LEARN -> PLAY -> CHALLENGE -> REWARD
+// Aligned with Vietnam Circular 27/2020/TT-BGDDT & CEFR Primary
 // ==============================================================================
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Sparkles, 
-  BookOpen, 
-  Compass, 
   Volume2, 
-  Award, 
   CheckCircle2, 
   X, 
-  ChevronRight, 
   Play, 
   Star, 
   Headphones, 
   Mic, 
-  HelpCircle, 
-  Layers, 
-  RotateCcw,
   GraduationCap,
   ArrowRight,
-  Flame,
-  ShieldCheck,
-  Eye,
-  Info
+  Tv,
+  Gamepad2,
+  RefreshCw,
+  Award,
+  Layers,
+  BookOpen
 } from 'lucide-react';
 import { 
   CurriculumLesson, 
-  CurriculumAdventure, 
-  AdventureThemeId, 
-  Circular27CurriculumQuestion,
-  LeveledVocabulary
+  AdventureThemeId
 } from '../../types/curriculum';
 import { GradeLevel, GradeBand, UserProfile } from '../../types';
 import { 
   CURRICULUM_ADVENTURES, 
-  getCurriculumLessons 
+  getCurriculumLessons,
+  ADVENTURE_COLOR_SYSTEM,
+  GRADE_ADVENTURES_DATA
 } from '../../data/curriculumData';
 import { playEnglishSpeech, stopSpeech } from '../../lib/speech';
 import { soundEffects } from '../../lib/soundEffects';
@@ -52,11 +47,11 @@ interface StudentCurriculumExperienceProps {
 
 type LessonPlayerStage = 
   | 'briefing'
+  | 'watch'
   | 'vocabulary'
   | 'sentence'
   | 'reading'
-  | 'listening'
-  | 'speaking'
+  | 'play'
   | 'quiz'
   | 'complete';
 
@@ -68,12 +63,27 @@ export const StudentCurriculumExperience: React.FC<StudentCurriculumExperiencePr
 }) => {
   const [lessons] = useState<CurriculumLesson[]>(() => getCurriculumLessons());
   const [selectedAdventureId, setSelectedAdventureId] = useState<AdventureThemeId | 'all'>('all');
-  
-  // Grade map from GradeBand to GradeLevel default
-  const defaultGradeLevel: GradeLevel = 
-    activeGradeBand === 'grade_1_2' ? 'Grade 1' :
-    activeGradeBand === 'grade_3' ? 'Grade 3' : 'Grade 4';
-  const [selectedGrade, setSelectedGrade] = useState<GradeLevel | 'all'>(defaultGradeLevel);
+
+  // Map parent activeGradeBand to GradeLevel
+  const mapGradeBandToGradeLevel = (band: GradeBand): GradeLevel => {
+    if (band === 'grade_1') return 'Grade 1';
+    if (band === 'grade_2') return 'Grade 2';
+    if (band === 'grade_3') return 'Grade 3';
+    if (band === 'grade_4') return 'Grade 4';
+    if (band === 'grade_5') return 'Grade 5';
+    if (band === 'grade_1_2') return 'Grade 1';
+    if (band === 'grade_4_5') return 'Grade 4';
+    return 'Grade 1';
+  };
+
+  const [selectedGrade, setSelectedGrade] = useState<GradeLevel | 'all'>(() => mapGradeBandToGradeLevel(activeGradeBand));
+
+  // Reactive synchronization: update selectedGrade whenever parent activeGradeBand changes
+  useEffect(() => {
+    const target = mapGradeBandToGradeLevel(activeGradeBand);
+    setSelectedGrade(target);
+    setActiveLesson(null); // Clear stale open lesson
+  }, [activeGradeBand]);
 
   // Lesson Player State
   const [activeLesson, setActiveLesson] = useState<CurriculumLesson | null>(null);
@@ -81,6 +91,13 @@ export const StudentCurriculumExperience: React.FC<StudentCurriculumExperiencePr
   const [activeVocabIndex, setActiveVocabIndex] = useState(0);
   const [speakingWord, setSpeakingWord] = useState<string | null>(null);
   const [showVietnameseTranslation, setShowVietnameseTranslation] = useState(false);
+
+  // Video Player State inside Lesson Player
+  const [isVideoMounted, setIsVideoMounted] = useState(false);
+
+  // Interactive Game State inside Lesson Player (PLAY stage)
+  const [matchedGameIds, setMatchedGameIds] = useState<string[]>([]);
+  const [selectedGameItem, setSelectedGameItem] = useState<{ id: string; targetMatch: string } | null>(null);
 
   // Quiz State
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -102,6 +119,9 @@ export const StudentCurriculumExperience: React.FC<StudentCurriculumExperiencePr
     setActiveLesson(lesson);
     setCurrentStage('briefing');
     setActiveVocabIndex(0);
+    setIsVideoMounted(false);
+    setMatchedGameIds([]);
+    setSelectedGameItem(null);
     setCurrentQuestionIndex(0);
     setSelectedOptionIndex(null);
     setIsAnswerSubmitted(false);
@@ -118,6 +138,7 @@ export const StudentCurriculumExperience: React.FC<StudentCurriculumExperiencePr
 
   const handleClosePlayer = () => {
     stopSpeech();
+    setIsVideoMounted(false);
     setActiveLesson(null);
     setCurrentStage('briefing');
   };
@@ -167,6 +188,30 @@ export const StudentCurriculumExperience: React.FC<StudentCurriculumExperiencePr
     }
   };
 
+  // Interactive Game Matching Handler
+  const handleGameItemClick = (item: { id: string; targetMatch: string }) => {
+    if (matchedGameIds.includes(item.id)) return;
+    soundEffects.playClick();
+
+    if (!selectedGameItem) {
+      setSelectedGameItem(item);
+    } else {
+      if (selectedGameItem.id !== item.id && selectedGameItem.targetMatch === item.targetMatch) {
+        soundEffects.playCorrect();
+        setMatchedGameIds(prev => [...prev, selectedGameItem.id, item.id]);
+        setSelectedGameItem(null);
+        onEarnStars?.(5);
+        setTotalStarsWonInLesson(prev => prev + 5);
+      } else {
+        soundEffects.playWrong();
+        setSelectedGameItem(null);
+      }
+    }
+  };
+
+  // Adventure meta for the active grade
+  const gradeAdventures = (selectedGrade !== 'all' ? GRADE_ADVENTURES_DATA[selectedGrade] : undefined) || GRADE_ADVENTURES_DATA['Grade 1'];
+
   return (
     <div className="space-y-6">
       
@@ -177,28 +222,28 @@ export const StudentCurriculumExperience: React.FC<StudentCurriculumExperiencePr
           <div className="space-y-3 max-w-2xl text-center md:text-left">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-amber-200 text-xs font-black uppercase tracking-wider">
               <span>🌟</span>
-              <span>Original English Adventure Curriculum</span>
+              <span>25 Thematic Adventures • 5 Grades</span>
               <span>•</span>
-              <span>Giáo trình độc quyền Cô Trang</span>
+              <span>Giáo trình 5 Chặng Thám Hiểm</span>
             </div>
             
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black font-heading tracking-tight leading-tight">
-              5 Magical Adventures Across Vietnam 🇻🇳
+              Explore the 5 Thematic Adventures 🇻🇳
             </h2>
             
             <p className="text-xs sm:text-sm text-indigo-100 font-medium leading-relaxed">
-              Differentiated English journeys for Grades 1–5 through Vietnam’s majestic landscapes, heritage traditions, delicious cuisine, wild nature, and smart green future!
+              Curriculum-aligned English journeys through Vietnam’s majestic landscapes, heritage traditions, delicious cuisine, wild nature, and smart green future!
             </p>
 
             <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 pt-1 text-[11px] font-bold text-white/90">
               <span className="px-2.5 py-1 rounded-xl bg-white/15 border border-white/20">
-                🎯 Circular 27/2020 3 Challenge Levels
+                🎯 {selectedGrade}: {gradeAdventures.adventure_1_places.targetCefr}
               </span>
               <span className="px-2.5 py-1 rounded-xl bg-white/15 border border-white/20">
-                🗣️ Pre-A1 to A2 Extension
+                🗣️ Circular 27/2020 TT-BGDĐT
               </span>
               <span className="px-2.5 py-1 rounded-xl bg-amber-400 text-amber-950 font-black">
-                ✨ 100% Original Content
+                ✨ 25 Grade-Specific Adventures
               </span>
             </div>
           </div>
@@ -206,7 +251,7 @@ export const StudentCurriculumExperience: React.FC<StudentCurriculumExperiencePr
           {/* Captain Trang Mascot & Voice Button */}
           <div className="flex flex-col items-center shrink-0">
             <div 
-              onClick={() => handlePlayAudio("Welcome explorer! Choose an adventure below to learn English with me!", 0.9)}
+              onClick={() => handlePlayAudio(`Welcome to ${selectedGrade}! Choose an adventure below to learn English with me!`, 0.9)}
               className="relative cursor-pointer group hover:scale-105 transition-transform"
               title="Click to hear Captain Trang!"
             >
@@ -224,29 +269,75 @@ export const StudentCurriculumExperience: React.FC<StudentCurriculumExperiencePr
         </div>
       </div>
 
-      {/* 2. ADVENTURE THEME CAROUSEL / SELECTOR (5 OFFICIAL ADVENTURES) */}
+      {/* 2. GRADE BAND SELECTOR (1 to 5) - SYNCHRONIZED */}
+      <div className="bg-white/95 backdrop-blur-md p-3.5 rounded-3xl border-2 border-sky-200 shadow-sm flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <span className="p-1.5 rounded-xl bg-amber-400 text-amber-950 font-bold shadow-xs">
+            <GraduationCap className="w-4 h-4" />
+          </span>
+          <div>
+            <div className="text-xs font-black text-slate-800">
+              Active Grade Pathway (Khối lớp trải nghiệm):
+            </div>
+            <div className="text-[10px] text-sky-700 font-bold">
+              Current: <span className="text-rose-600 font-black">{selectedGrade}</span> ({gradeAdventures.adventure_1_places.targetCefr})
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-1.5">
+          {(['Grade 1', 'Grade 2', 'Grade 3', 'Grade 4', 'Grade 5'] as const).map((grade) => {
+            const isGradeActive = selectedGrade === grade;
+            return (
+              <button
+                key={grade}
+                onClick={() => {
+                  soundEffects.playClick();
+                  setSelectedGrade(grade);
+                  setActiveLesson(null);
+                }}
+                className={`px-3 py-1.5 rounded-2xl text-xs font-black transition-all cursor-pointer ${
+                  isGradeActive
+                    ? 'bg-rose-500 text-white shadow-md shadow-rose-200 scale-104 ring-2 ring-rose-300'
+                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                }`}
+              >
+                {grade}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* 3. PREMIUM PASTEL COLOR SYSTEM: 5 ADVENTURE CARDS */}
       <div className="space-y-3">
         <div className="flex items-center justify-between px-1">
           <div className="text-xs sm:text-sm font-black uppercase tracking-wider text-blue-950 flex items-center gap-1.5 font-heading">
             <span className="text-rose-500 text-base">🧭</span>
-            <span>EXPLORE THE 5 THEMATIC ADVENTURES (5 CHẶNG THÁM HIỂM):</span>
+            <span>EXPLORE THE 5 THEMATIC ADVENTURES ({selectedGrade.toUpperCase()}):</span>
           </div>
           
           <button
-            onClick={() => setSelectedAdventureId('all')}
-            className={`text-xs font-black px-3 py-1 rounded-full transition-colors cursor-pointer ${
+            onClick={() => {
+              soundEffects.playClick();
+              setSelectedAdventureId('all');
+            }}
+            className={`text-xs font-black px-3 py-1 rounded-full transition-colors cursor-pointer border ${
               selectedAdventureId === 'all'
-                ? 'bg-indigo-600 text-white'
-                : 'text-indigo-600 hover:bg-indigo-50'
+                ? 'bg-indigo-600 text-white border-indigo-700 shadow-xs'
+                : 'bg-white text-indigo-600 border-indigo-200 hover:bg-indigo-50'
             }`}
           >
-            Show All (Tất cả)
+            Show All ({selectedGrade})
           </button>
         </div>
 
+        {/* 5 ADVENTURE CARDS WITH EXACT USER-SPECIFIED PASTEL COLORS */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
           {CURRICULUM_ADVENTURES.map((adv) => {
             const isSelected = selectedAdventureId === adv.id;
+            const theme = ADVENTURE_COLOR_SYSTEM[adv.id];
+            const meta = gradeAdventures[adv.id];
 
             return (
               <button
@@ -255,34 +346,61 @@ export const StudentCurriculumExperience: React.FC<StudentCurriculumExperiencePr
                   soundEffects.playClick();
                   setSelectedAdventureId(adv.id);
                 }}
-                className={`relative p-3.5 rounded-3xl text-left transition-all duration-300 flex flex-col justify-between gap-3 group cursor-pointer border-2 shadow-sm hover:scale-102 ${
-                  isSelected
-                    ? `bg-gradient-to-br ${adv.bannerGradient} text-white border-white ring-4 ring-indigo-300 shadow-md`
-                    : 'bg-white hover:bg-slate-50 text-slate-800 border-slate-200'
+                style={{
+                  backgroundColor: isSelected ? theme.selectedBg : theme.pastelBg,
+                  borderColor: isSelected ? theme.borderSelected : theme.borderPastel,
+                  boxShadow: isSelected ? theme.glowShadow : '0 2px 8px rgba(0,0,0,0.04)'
+                }}
+                className={`relative p-3.5 rounded-3xl text-left transition-all duration-300 flex flex-col justify-between gap-3 group cursor-pointer border-2 hover:scale-104 transform-gpu select-none ${
+                  isSelected ? 'ring-4 ring-offset-2 ring-white/60' : ''
                 }`}
               >
+                {/* Top Row: Icon & Adv Number Badge */}
                 <div className="flex items-start justify-between">
-                  <span className="text-2xl p-2 rounded-2xl bg-white/20 backdrop-blur-xs shadow-xs group-hover:scale-110 transition-transform">
-                    {adv.icon}
+                  <span 
+                    style={{
+                      backgroundColor: isSelected ? theme.badgeSelectedBg : theme.badgePastelBg,
+                      color: isSelected ? '#FFFFFF' : theme.textPastel
+                    }}
+                    className="text-2xl p-2 rounded-2xl backdrop-blur-xs shadow-xs group-hover:scale-110 transition-transform"
+                  >
+                    {theme.icon}
                   </span>
-                  <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${
-                    isSelected ? 'bg-white/25 text-white' : 'bg-slate-100 text-slate-600'
-                  }`}>
-                    Adv {adv.orderNumber}
+                  
+                  <span 
+                    style={{
+                      backgroundColor: isSelected ? theme.badgeSelectedBg : theme.badgePastelBg,
+                      color: isSelected ? '#FFFFFF' : theme.textPastel
+                    }}
+                    className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full flex items-center gap-1 shadow-2xs"
+                  >
+                    <span>✨</span>
+                    <span>Adv {meta.orderNumber}</span>
                   </span>
                 </div>
 
+                {/* Body: Grade-Specific Title & Subtitle */}
                 <div>
-                  <h4 className={`text-sm font-black font-heading leading-tight truncate ${
-                    isSelected ? 'text-white' : 'text-slate-900'
-                  }`}>
-                    {adv.titleEn}
+                  <h4 
+                    style={{ color: isSelected ? theme.textSelected : theme.textPastel }}
+                    className="text-sm font-black font-heading leading-tight truncate drop-shadow-2xs"
+                  >
+                    {meta.titleEn}
                   </h4>
-                  <p className={`text-[11px] font-bold leading-tight mt-0.5 truncate ${
-                    isSelected ? 'text-white/80' : 'text-slate-500'
-                  }`}>
-                    {adv.titleVi}
+                  <p 
+                    style={{ color: isSelected ? 'rgba(255, 255, 255, 0.9)' : theme.textPastel }}
+                    className="text-[11px] font-bold leading-tight mt-0.5 truncate opacity-90"
+                  >
+                    {meta.titleVi}
                   </p>
+                  
+                  {/* Subtle Theme Tag */}
+                  <div 
+                    style={{ color: isSelected ? 'rgba(255, 255, 255, 0.75)' : theme.textPastel }}
+                    className="text-[9px] font-medium mt-1 truncate opacity-75"
+                  >
+                    {theme.themeNameEn}
+                  </div>
                 </div>
               </button>
             );
@@ -290,150 +408,162 @@ export const StudentCurriculumExperience: React.FC<StudentCurriculumExperiencePr
         </div>
       </div>
 
-      {/* 3. GRADE BAND SELECTOR (1 to 5) */}
-      <div className="bg-white/90 backdrop-blur-md p-3.5 rounded-3xl border border-sky-200 shadow-xs flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <span className="p-1.5 rounded-xl bg-amber-400 text-amber-950 font-bold">
-            <GraduationCap className="w-4 h-4" />
-          </span>
-          <span className="text-xs font-black text-slate-800">
-            Target Grade Pathway (Khối lớp):
-          </span>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-1.5">
-          {(['all', 'Grade 1', 'Grade 2', 'Grade 3', 'Grade 4', 'Grade 5'] as const).map((grade) => (
-            <button
-              key={grade}
-              onClick={() => {
-                soundEffects.playClick();
-                setSelectedGrade(grade);
-              }}
-              className={`px-3 py-1.5 rounded-2xl text-xs font-black transition-all cursor-pointer ${
-                selectedGrade === grade
-                  ? 'bg-rose-500 text-white shadow-md shadow-rose-200 scale-102 ring-2 ring-rose-300'
-                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-              }`}
-            >
-              {grade === 'all' ? 'All Grades' : grade}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* 4. LESSON DISCOVERY CARDS */}
+      {/* 4. LESSON DISCOVERY CARDS & EMPTY STATE */}
       <div className="space-y-3">
         <div className="flex items-center justify-between px-1">
           <div className="text-xs sm:text-sm font-black text-slate-800 font-heading flex items-center gap-2">
-            <span>📚 Pilot Lessons Ready to Play ({displayLessons.length})</span>
+            <span>📚 Lessons Ready to Play ({displayLessons.length})</span>
+            {selectedAdventureId !== 'all' && (
+              <span className="text-[10px] bg-sky-100 text-sky-800 px-2 py-0.5 rounded-full font-bold">
+                Filtered: {gradeAdventures[selectedAdventureId]?.titleEn}
+              </span>
+            )}
           </div>
           <span className="text-[11px] text-slate-500 font-medium">
             English First • Audio-Equipped • Circular 27 Evaluated
           </span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {displayLessons.map((lesson) => {
-            const adv = CURRICULUM_ADVENTURES.find(a => a.id === lesson.adventureId);
-
-            return (
-              <div
-                key={lesson.id}
-                className="bg-white rounded-3xl border-2 border-slate-200 overflow-hidden shadow-xs hover:shadow-lg transition-all hover:scale-[1.01] flex flex-col justify-between group"
+        {/* Lessons Grid or Friendly Empty State */}
+        {displayLessons.length === 0 ? (
+          <div className="bg-white rounded-3xl border-2 border-dashed border-amber-300 p-8 text-center space-y-3 shadow-xs">
+            <div className="text-4xl animate-bounce-subtle">🧭</div>
+            <h4 className="text-base font-black font-heading text-slate-800">
+              No Published Lessons for this Filter
+            </h4>
+            <p className="text-xs text-slate-500 max-w-md mx-auto">
+              There are currently no published lessons for this specific adventure selection. Choose another adventure or reset filters!
+            </p>
+            <div className="flex justify-center gap-2 pt-2">
+              <button
+                onClick={() => setSelectedAdventureId('all')}
+                className="px-4 py-2 rounded-2xl bg-indigo-600 text-white font-bold text-xs shadow-xs hover:bg-indigo-700 cursor-pointer"
               >
-                <div>
-                  {/* Card Header Scenery */}
-                  <div className="relative h-44 overflow-hidden bg-slate-900">
-                    <img
-                      src={lesson.coverImage || '/destinations/halong_bay.jpg'}
-                      alt={lesson.titleEn}
-                      className="w-full h-full object-cover group-hover:scale-106 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent pointer-events-none" />
+                Show All {selectedGrade} Lessons
+              </button>
+              {onOpenTeacherStudio && (
+                <button
+                  onClick={onOpenTeacherStudio}
+                  className="px-4 py-2 rounded-2xl bg-slate-100 text-slate-700 font-bold text-xs hover:bg-slate-200 cursor-pointer"
+                >
+                  Teacher Studio: Add Lesson
+                </button>
+              )}
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {displayLessons.map((lesson) => {
+              const adv = CURRICULUM_ADVENTURES.find(a => a.id === lesson.adventureId);
+              const theme = ADVENTURE_COLOR_SYSTEM[lesson.adventureId];
 
-                    {/* Top Badges */}
-                    <div className="absolute top-3 left-3 right-3 flex items-center justify-between gap-2">
-                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase text-white shadow-md bg-gradient-to-r ${adv?.bannerGradient || 'from-sky-500 to-indigo-600'}`}>
-                        {adv?.icon} {adv?.titleEn}
-                      </span>
-                      <span className="px-2.5 py-1 rounded-full bg-amber-400 text-amber-950 font-black text-[10px] shadow-md border border-white">
-                        {lesson.gradeLevel}
-                      </span>
-                    </div>
+              return (
+                <div
+                  key={lesson.id}
+                  className="bg-white rounded-3xl border-2 border-slate-200 overflow-hidden shadow-xs hover:shadow-lg transition-all hover:scale-[1.01] flex flex-col justify-between group"
+                >
+                  <div>
+                    {/* Card Header Scenery */}
+                    <div className="relative h-44 overflow-hidden bg-slate-900">
+                      <img
+                        src={lesson.coverImage || '/destinations/halong_bay.jpg'}
+                        alt={lesson.titleEn}
+                        className="w-full h-full object-cover group-hover:scale-106 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent pointer-events-none" />
 
-                    {/* Bottom Title on Image */}
-                    <div className="absolute bottom-3 left-3 right-3 text-white">
-                      <div className="text-[10px] uppercase font-black tracking-widest text-amber-300">
-                        Lesson {lesson.lessonNumber} • {lesson.targetCefr}
+                      {/* Top Badges */}
+                      <div className="absolute top-3 left-3 right-3 flex items-center justify-between gap-2">
+                        <span 
+                          style={{ backgroundColor: theme.selectedBg }}
+                          className="px-2.5 py-1 rounded-full text-[10px] font-black uppercase text-white shadow-md flex items-center gap-1"
+                        >
+                          <span>{theme.icon}</span>
+                          <span>{theme.themeNameEn}</span>
+                        </span>
+                        
+                        <span className="px-2.5 py-1 rounded-full bg-amber-400 text-amber-950 font-black text-[10px] shadow-md border border-white">
+                          {lesson.gradeLevel}
+                        </span>
                       </div>
-                      <h3 className="text-base font-black font-heading leading-tight drop-shadow-md">
-                        {lesson.titleEn}
-                      </h3>
-                      <p className="text-xs text-white/80 font-bold truncate">
-                        {lesson.titleVi}
-                      </p>
-                    </div>
-                  </div>
 
-                  {/* Card Body Info */}
-                  <div className="p-4 space-y-3">
-                    {/* Objectives summary */}
-                    <div className="space-y-1">
-                      <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">
-                        Lesson Objectives (Mục tiêu bài học):
-                      </span>
-                      <p className="text-xs text-slate-700 font-medium leading-relaxed line-clamp-2">
-                        {lesson.learningObjectivesEn[0]}
-                      </p>
+                      {/* Bottom Title on Image */}
+                      <div className="absolute bottom-3 left-3 right-3 text-white">
+                        <div className="text-[10px] uppercase font-black tracking-widest text-amber-300">
+                          Adv {adv?.orderNumber} • {lesson.targetCefr}
+                        </div>
+                        <h3 className="text-base font-black font-heading leading-tight drop-shadow-md">
+                          {lesson.titleEn}
+                        </h3>
+                        <p className="text-xs text-white/80 font-bold truncate">
+                          {lesson.titleVi}
+                        </p>
+                      </div>
                     </div>
 
-                    {/* Quick Vocabulary Preview */}
-                    <div className="space-y-1.5">
-                      <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">
-                        Core Vocabulary ({lesson.vocabulary.length} words):
-                      </span>
-                      <div className="flex flex-wrap gap-1.5">
-                        {lesson.vocabulary.slice(0, 4).map((v) => (
-                          <span
-                            key={v.word}
-                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-sky-50 border border-sky-200 text-sky-900 text-[11px] font-bold"
-                          >
-                            <span>{v.emoji || '📖'}</span>
-                            <span>{v.word}</span>
+                    {/* Card Body Info */}
+                    <div className="p-4 space-y-3">
+                      {/* Objectives summary */}
+                      <div className="space-y-1">
+                        <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">
+                          Lesson Objectives (Mục tiêu bài học):
+                        </span>
+                        <p className="text-xs text-slate-700 font-medium leading-relaxed line-clamp-2">
+                          {lesson.learningObjectivesEn[0]}
+                        </p>
+                      </div>
+
+                      {/* Quick Vocabulary Preview */}
+                      <div className="space-y-1.5">
+                        <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">
+                          Core Vocabulary ({lesson.vocabulary.length} words):
+                        </span>
+                        <div className="flex flex-wrap gap-1.5">
+                          {lesson.vocabulary.slice(0, 4).map((v) => (
+                            <span
+                              key={v.word}
+                              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-sky-50 border border-sky-200 text-sky-900 text-[11px] font-bold"
+                            >
+                              <span>{v.emoji || '📖'}</span>
+                              <span>{v.word}</span>
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Video badge if attached */}
+                      {lesson.videoLesson && (
+                        <div className="text-[11px] font-bold text-pink-700 bg-pink-50/80 px-2.5 py-1 rounded-xl border border-pink-100 flex items-center justify-between">
+                          <span className="flex items-center gap-1">
+                            <Tv className="w-3.5 h-3.5 text-pink-600" />
+                            <span>{lesson.videoLesson.isTeacherCreated ? '⭐ Bài giảng Cô Trang' : '🎬 Video bài giảng'}</span>
                           </span>
-                        ))}
-                      </div>
+                          <span className="text-[10px] text-pink-900 font-mono">{lesson.videoLesson.durationMinutes} mins</span>
+                        </div>
+                      )}
                     </div>
+                  </div>
 
-                    {/* Phonics & Sentence Preview */}
-                    {lesson.speaking?.phoneticFocus && (
-                      <div className="text-[11px] font-bold text-indigo-700 bg-indigo-50/80 px-2.5 py-1 rounded-xl border border-indigo-100 flex items-center gap-1.5">
-                        <span>🗣️ Phonics:</span>
-                        <span className="font-mono">{lesson.speaking.phoneticFocus}</span>
-                      </div>
-                    )}
+                  {/* Card Action Footer */}
+                  <div className="p-4 pt-0">
+                    <button
+                      onClick={() => handleStartLesson(lesson)}
+                      className="w-full py-2.5 rounded-2xl bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-black text-xs shadow-md hover:scale-101 active:scale-99 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      <Play className="w-3.5 h-3.5 fill-white" />
+                      <span>Start Adventure (Bắt đầu học)</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
                   </div>
                 </div>
-
-                {/* Card Action Footer */}
-                <div className="p-4 pt-0">
-                  <button
-                    onClick={() => handleStartLesson(lesson)}
-                    className="w-full py-2.5 rounded-2xl bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-black text-xs shadow-md hover:scale-101 active:scale-99 transition-all flex items-center justify-center gap-2 cursor-pointer"
-                  >
-                    <Play className="w-3.5 h-3.5 fill-white" />
-                    <span>Start Adventure (Bắt đầu học)</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* ==================================================================== */}
-      {/* 5. MULTI-STAGE INTERACTIVE LESSON PLAYER MODAL */}
+      {/* 5. MULTI-STAGE INTERACTIVE LESSON PLAYER MODAL (WATCH -> LEARN -> PLAY -> CHALLENGE -> REWARD) */}
       {/* ==================================================================== */}
       {activeLesson && (
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
@@ -443,12 +573,12 @@ export const StudentCurriculumExperience: React.FC<StudentCurriculumExperiencePr
             <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 p-4 sm:p-5 text-white flex items-center justify-between shrink-0 shadow-md">
               <div className="flex items-center gap-3 min-w-0">
                 <span className="w-10 h-10 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-xl shrink-0">
-                  {CURRICULUM_ADVENTURES.find(a => a.id === activeLesson.adventureId)?.icon || '🧭'}
+                  {ADVENTURE_COLOR_SYSTEM[activeLesson.adventureId]?.icon || '🧭'}
                 </span>
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
                     <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/25">
-                      {activeLesson.gradeLevel} • Lesson {activeLesson.lessonNumber}
+                      {activeLesson.gradeLevel} • Adventure {activeLesson.lessonNumber}
                     </span>
                     <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-400 text-amber-950">
                       {activeLesson.targetCefr}
@@ -481,17 +611,16 @@ export const StudentCurriculumExperience: React.FC<StudentCurriculumExperiencePr
               </div>
             </div>
 
-            {/* Stage Navigation Bar */}
+            {/* Stage Navigation Bar: Flow WATCH -> LEARN -> PLAY -> CHALLENGE -> REWARD */}
             <div className="bg-slate-100 border-b border-slate-200 px-3 py-2 flex items-center justify-between overflow-x-auto shrink-0 gap-1 text-xs font-bold text-slate-600">
               <div className="flex items-center gap-1 min-w-max">
                 {[
                   { key: 'briefing', label: '1. Mission', icon: '🎯' },
-                  { key: 'vocabulary', label: '2. Vocabulary', icon: '🔤' },
-                  { key: 'sentence', label: '3. Sentence', icon: '💬' },
-                  { key: 'reading', label: '4. Reading', icon: '📖' },
-                  { key: 'listening', label: '5. Listening', icon: '🎧' },
-                  { key: 'speaking', label: '6. Speaking', icon: '🎙️' },
-                  { key: 'quiz', label: '7. Skills Quiz', icon: '⭐' }
+                  { key: 'watch', label: '2. Watch Video', icon: '🎬' },
+                  { key: 'vocabulary', label: '3. Learn Vocab', icon: '🔤' },
+                  { key: 'reading', label: '4. Read & Listen', icon: '📖' },
+                  { key: 'play', label: '5. Play Game', icon: '🎮' },
+                  { key: 'quiz', label: '6. Challenge Quiz', icon: '⭐' }
                 ].map((s) => (
                   <button
                     key={s.key}
@@ -526,10 +655,10 @@ export const StudentCurriculumExperience: React.FC<StudentCurriculumExperiencePr
                     />
                     <div className="space-y-1 text-center sm:text-left">
                       <h4 className="text-sm font-black font-heading text-amber-950">
-                        Captain Trang's Explorer Challenge! 🎒
+                        Captain Trang's Adventure Challenge! 🎒
                       </h4>
                       <p className="text-xs text-amber-900 font-medium leading-relaxed">
-                        "Welcome to our magical journey! Today we are exploring {activeLesson.titleEn}. Follow the steps to collect all stars and earn your badge!"
+                        "Welcome to our magical journey! Today we are exploring {activeLesson.titleEn}. Follow the steps: Watch the video, learn vocabulary, play the interactive game, and win stars in the challenge quiz!"
                       </p>
                     </div>
                   </div>
@@ -567,22 +696,132 @@ export const StudentCurriculumExperience: React.FC<StudentCurriculumExperiencePr
                   <button
                     onClick={() => {
                       soundEffects.playClick();
-                      setCurrentStage('vocabulary');
+                      setCurrentStage('watch');
                     }}
                     className="w-full py-3 rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-black text-sm shadow-lg hover:scale-101 active:scale-99 transition-all flex items-center justify-center gap-2 cursor-pointer"
                   >
-                    <span>Begin Step 1: Vocabulary (Học từ vựng)</span>
+                    <span>Begin Adventure: Watch Video Lesson 🎬</span>
                     <ArrowRight className="w-4 h-4" />
                   </button>
                 </div>
               )}
 
-              {/* STAGE 2: VOCABULARY & PHONICS */}
+              {/* STAGE 2: WATCH VIDEO LESSON (LAZY LOADED, NEVER AUTOPLAY) */}
+              {currentStage === 'watch' && (
+                <div className="space-y-5 max-w-2xl mx-auto">
+                  <div className="text-center space-y-1">
+                    <span className="text-[11px] font-black uppercase tracking-wider text-pink-600">
+                      Step 1 of 5 • Video Learning
+                    </span>
+                    <h4 className="text-lg font-black font-heading text-slate-900">
+                      Watch & Listen with Captain Trang 🎬
+                    </h4>
+                  </div>
+
+                  {activeLesson.videoLesson ? (
+                    <div className="bg-white rounded-3xl p-5 border-2 border-slate-200 shadow-md space-y-4">
+                      {/* Video Title Header */}
+                      <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-black text-slate-800">
+                              {activeLesson.videoLesson.titleEn}
+                            </span>
+                            {activeLesson.videoLesson.isTeacherCreated && (
+                              <span className="px-2 py-0.5 rounded-full bg-amber-400 text-amber-950 text-[10px] font-black">
+                                ⭐ Bài giảng Cô Trang
+                              </span>
+                            )}
+                          </div>
+                          <div className="text-[11px] text-slate-500 mt-0.5">
+                            {activeLesson.videoLesson.titleVi}
+                          </div>
+                        </div>
+                        <span className="text-xs text-slate-500 font-mono font-bold">
+                          ⏱️ {activeLesson.videoLesson.durationMinutes} mins
+                        </span>
+                      </div>
+
+                      {/* Video Player or Facade (Never Autoplay) */}
+                      <div className="relative aspect-video rounded-2xl overflow-hidden bg-slate-950 shadow-inner">
+                        {isVideoMounted ? (
+                          <iframe
+                            src={activeLesson.videoLesson.embedUrl}
+                            title={activeLesson.videoLesson.titleEn}
+                            allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                            className="w-full h-full border-0"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center text-white relative">
+                            <img
+                              src={activeLesson.coverImage || '/destinations/halong_bay.jpg'}
+                              alt="Video Preview"
+                              className="absolute inset-0 w-full h-full object-cover opacity-40"
+                            />
+                            <div className="relative z-10 space-y-3">
+                              <button
+                                onClick={() => {
+                                  soundEffects.playClick();
+                                  setIsVideoMounted(true);
+                                }}
+                                className="w-16 h-16 rounded-full bg-rose-600 hover:bg-rose-500 text-white flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all mx-auto cursor-pointer"
+                              >
+                                <Play className="w-8 h-8 fill-white ml-1" />
+                              </button>
+                              <div className="text-xs font-bold text-white/90">
+                                Click to load and watch educational video
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="text-[11px] text-slate-500 italic text-center">
+                        🔒 Child-safe video stream via youtube-nocookie.com (No autoplay & no ads)
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="bg-sky-50 rounded-3xl p-6 border-2 border-sky-200 text-center space-y-2">
+                      <div className="text-3xl">🎥</div>
+                      <h4 className="text-sm font-black text-sky-950">
+                        Ready to Learn Vocabulary!
+                      </h4>
+                      <p className="text-xs text-sky-800">
+                        Continue directly to the interactive vocabulary and phonics stage!
+                      </p>
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-between gap-3 pt-2">
+                    <button
+                      onClick={() => {
+                        soundEffects.playClick();
+                        setCurrentStage('briefing');
+                      }}
+                      className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold hover:bg-slate-200 cursor-pointer"
+                    >
+                      ← Back
+                    </button>
+                    <button
+                      onClick={() => {
+                        soundEffects.playClick();
+                        setCurrentStage('vocabulary');
+                      }}
+                      className="px-5 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs shadow-md flex items-center gap-1.5 cursor-pointer"
+                    >
+                      <span>Continue: Learn Vocabulary ➔</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* STAGE 3: LEARN VOCABULARY & PHONICS */}
               {currentStage === 'vocabulary' && (
                 <div className="space-y-5 max-w-2xl mx-auto">
                   <div className="text-center space-y-1">
                     <span className="text-[11px] font-black uppercase tracking-wider text-indigo-600">
-                      Step 1 of 6 • Core Vocabulary
+                      Step 2 of 5 • Core Vocabulary & Phonics
                     </span>
                     <h4 className="text-lg font-black font-heading text-slate-900">
                       Tap each word to listen and repeat! 🎧
@@ -599,53 +838,65 @@ export const StudentCurriculumExperience: React.FC<StudentCurriculumExperiencePr
                         <div className="text-5xl select-none">{vocab.emoji || '📖'}</div>
                         
                         <div>
-                          <div className="flex items-center justify-center gap-2">
-                            <h3 className="text-3xl font-black font-heading text-indigo-950 tracking-tight">
-                              {vocab.word}
-                            </h3>
-                            <button
-                              onClick={() => handlePlayAudio(vocab.word, 0.85)}
-                              className="p-2 rounded-full bg-indigo-100 hover:bg-indigo-200 text-indigo-700 transition-colors cursor-pointer"
-                              title="Listen to pronunciation"
-                            >
-                              <Volume2 className="w-5 h-5" />
-                            </button>
+                          <div className="text-2xl font-black font-heading text-slate-900 tracking-tight">
+                            {vocab.word}
                           </div>
-                          <div className="text-sm font-mono text-indigo-600 font-bold mt-1">
-                            {vocab.ipa} • <span className="italic font-normal">{vocab.partOfSpeech}</span>
+                          <div className="text-sm font-mono text-indigo-600 font-bold mt-0.5">
+                            {vocab.ipa}
                           </div>
                         </div>
 
-                        <div className="bg-indigo-50/80 p-3.5 rounded-2xl border border-indigo-100 space-y-1">
-                          <p className="text-xs text-indigo-900 font-bold">{vocab.meaningEn}</p>
-                          <p className="text-xs text-slate-600 font-medium italic">"{vocab.exampleSentenceEn}"</p>
-                          {showVietnameseTranslation && (
-                            <p className="text-xs text-rose-600 font-bold pt-1 border-t border-indigo-200/60 mt-1">
-                              Tiếng Việt: {vocab.meaningVi} ({vocab.exampleSentenceVi})
-                            </p>
-                          )}
+                        {/* Pronunciation Audio Button */}
+                        <button
+                          onClick={() => handlePlayAudio(vocab.audioPromptEn || vocab.word)}
+                          className={`px-5 py-2.5 rounded-full font-black text-xs shadow-md transition-all flex items-center justify-center gap-2 mx-auto cursor-pointer ${
+                            speakingWord === (vocab.audioPromptEn || vocab.word)
+                              ? 'bg-amber-400 text-amber-950 scale-105'
+                              : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                          }`}
+                        >
+                          <Volume2 className="w-4 h-4" />
+                          <span>Listen & Repeat (Nghe phát âm)</span>
+                        </button>
+
+                        <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 text-left space-y-2 text-xs">
+                          <div>
+                            <span className="font-bold text-slate-800">English: </span>
+                            <span className="text-slate-600">{vocab.meaningEn}</span>
+                          </div>
+                          <div>
+                            <span className="font-bold text-slate-800">Tiếng Việt: </span>
+                            <span className="text-slate-600">{vocab.meaningVi}</span>
+                          </div>
+                          <div className="pt-1 border-t border-slate-200">
+                            <span className="font-bold text-indigo-700">Example: </span>
+                            <span className="text-slate-800 italic">"{vocab.exampleSentenceEn}"</span>
+                            {showVietnameseTranslation && (
+                              <p className="text-[11px] text-slate-500 mt-0.5">"{vocab.exampleSentenceVi}"</p>
+                            )}
+                          </div>
                         </div>
                       </div>
                     );
                   })()}
 
-                  {/* Vocab Thumbnail Strip */}
-                  <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
-                    {activeLesson.vocabulary.map((v, idx) => (
+                  {/* Vocabulary Carousel Thumbnails */}
+                  <div className="flex items-center justify-center gap-2 overflow-x-auto py-1">
+                    {activeLesson.vocabulary.map((v, i) => (
                       <button
                         key={v.word}
                         onClick={() => {
                           soundEffects.playClick();
-                          setActiveVocabIndex(idx);
+                          setActiveVocabIndex(i);
                         }}
-                        className={`p-2 rounded-2xl border text-center transition-all cursor-pointer ${
-                          activeVocabIndex === idx
-                            ? 'bg-indigo-600 text-white border-indigo-600 ring-2 ring-indigo-300 scale-103'
-                            : 'bg-white hover:bg-slate-50 text-slate-800 border-slate-200'
+                        className={`px-3 py-2 rounded-2xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 border-2 ${
+                          activeVocabIndex === i
+                            ? 'bg-indigo-600 text-white border-indigo-700 shadow-md scale-105'
+                            : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
                         }`}
                       >
-                        <div className="text-xl">{v.emoji || '📖'}</div>
-                        <div className="text-[11px] font-black truncate mt-1">{v.word}</div>
+                        <span>{v.emoji || '📖'}</span>
+                        <span>{v.word}</span>
                       </button>
                     ))}
                   </div>
@@ -654,7 +905,7 @@ export const StudentCurriculumExperience: React.FC<StudentCurriculumExperiencePr
                     <button
                       onClick={() => {
                         soundEffects.playClick();
-                        setCurrentStage('briefing');
+                        setCurrentStage('watch');
                       }}
                       className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold hover:bg-slate-200 cursor-pointer"
                     >
@@ -663,74 +914,72 @@ export const StudentCurriculumExperience: React.FC<StudentCurriculumExperiencePr
                     <button
                       onClick={() => {
                         soundEffects.playClick();
-                        setCurrentStage('sentence');
+                        setCurrentStage('reading');
                       }}
                       className="px-5 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs shadow-md flex items-center gap-1.5 cursor-pointer"
                     >
-                      <span>Next: Sentence Pattern</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
+                      <span>Next: Read & Listen ➔</span>
                     </button>
                   </div>
                 </div>
               )}
 
-              {/* STAGE 3: COMMUNICATIVE SENTENCE PATTERN */}
-              {currentStage === 'sentence' && (
+              {/* STAGE 4: READING & LISTENING */}
+              {currentStage === 'reading' && (
                 <div className="space-y-5 max-w-2xl mx-auto">
                   <div className="text-center space-y-1">
                     <span className="text-[11px] font-black uppercase tracking-wider text-purple-600">
-                      Step 2 of 6 • Sentence in Action
+                      Step 3 of 5 • Reading & Listening
                     </span>
                     <h4 className="text-lg font-black font-heading text-slate-900">
-                      Learn the sentence pattern to speak with confidence! 💬
+                      {activeLesson.reading.titleEn}
                     </h4>
                   </div>
 
-                  {(() => {
-                    const pattern = activeLesson.sentencePatterns[0];
-                    if (!pattern) return null;
-
-                    return (
-                      <div className="bg-white rounded-3xl p-6 border-3 border-purple-200 shadow-md space-y-4">
-                        <div className="space-y-1">
-                          <span className="text-[10px] font-black uppercase text-purple-600 tracking-wider">Pattern Rule:</span>
-                          <div className="p-3 bg-purple-50 rounded-2xl border border-purple-200 text-purple-950 font-mono text-sm font-black">
-                            {pattern.pattern}
-                          </div>
-                          {showVietnameseTranslation && (
-                            <p className="text-xs text-slate-500 font-medium mt-1">
-                              Ý nghĩa: {pattern.patternMeaningVi}
-                            </p>
+                  {/* Reading Passage Card */}
+                  <div className="bg-white rounded-3xl p-6 border-2 border-slate-200 shadow-md space-y-4">
+                    <div className="space-y-3">
+                      {activeLesson.reading.passagesEn.map((para, idx) => (
+                        <div key={idx} className="space-y-1 text-sm text-slate-800 leading-relaxed font-medium">
+                          <p>{para}</p>
+                          {showVietnameseTranslation && activeLesson.reading.passagesVi[idx] && (
+                            <p className="text-xs text-slate-500 italic">{activeLesson.reading.passagesVi[idx]}</p>
                           )}
                         </div>
+                      ))}
+                    </div>
 
-                        <div className="space-y-2 pt-2">
-                          <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Dialogue in Action:</span>
-                          {pattern.dialogueEn.map((d, i) => (
-                            <div key={i} className="flex items-center justify-between p-3 rounded-2xl bg-slate-50 border border-slate-200 group">
-                              <div>
-                                <span className="text-[10px] font-black text-purple-700 uppercase">{d.speaker}:</span>
-                                <p className="text-xs font-black text-slate-900">{d.text}</p>
-                                {showVietnameseTranslation && pattern.dialogueVi[i] && (
-                                  <p className="text-[11px] text-slate-500 mt-0.5">{pattern.dialogueVi[i].text}</p>
-                                )}
-                              </div>
-                              <button
-                                onClick={() => handlePlayAudio(d.text, 0.88)}
-                                className="p-1.5 rounded-xl bg-purple-100 hover:bg-purple-200 text-purple-700 transition-colors cursor-pointer"
-                              >
-                                <Volume2 className="w-4 h-4" />
-                              </button>
-                            </div>
-                          ))}
-                        </div>
+                    {/* Listen to full passage */}
+                    <div className="pt-2 border-t border-slate-100 flex justify-center">
+                      <button
+                        onClick={() => handlePlayAudio(activeLesson.reading.passagesEn.join(" "), 0.85)}
+                        className="px-5 py-2.5 rounded-full bg-purple-600 hover:bg-purple-700 text-white font-black text-xs shadow-md flex items-center gap-2 cursor-pointer"
+                      >
+                        <Headphones className="w-4 h-4" />
+                        <span>Listen to Reading Passage (Nghe đọc bài)</span>
+                      </button>
+                    </div>
+                  </div>
 
-                        <div className="p-3 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-amber-900 font-medium">
-                          💡 Practice Prompt: {pattern.practicePromptEn}
-                        </div>
-                      </div>
-                    );
-                  })()}
+                  {/* Listening Challenge Box */}
+                  <div className="bg-amber-50 rounded-3xl p-5 border-2 border-amber-200 shadow-xs space-y-3">
+                    <div className="flex items-center gap-2 text-xs font-black text-amber-950 uppercase">
+                      <Volume2 className="w-4 h-4 text-amber-600" />
+                      <span>{activeLesson.listening.audioTitleEn}</span>
+                    </div>
+
+                    <button
+                      onClick={() => handlePlayAudio(activeLesson.listening.audioScriptEn, 0.88)}
+                      className="px-4 py-2 rounded-2xl bg-amber-400 hover:bg-amber-300 text-amber-950 font-black text-xs shadow-xs flex items-center gap-1.5 cursor-pointer"
+                    >
+                      <Play className="w-3.5 h-3.5 fill-amber-950" />
+                      <span>Play Listening Dialogue 🎙️</span>
+                    </button>
+
+                    <p className="text-xs text-amber-900 font-medium">
+                      Q: {activeLesson.listening.questionEn}
+                    </p>
+                  </div>
 
                   <div className="flex items-center justify-between gap-3 pt-2">
                     <button
@@ -740,149 +989,73 @@ export const StudentCurriculumExperience: React.FC<StudentCurriculumExperiencePr
                       }}
                       className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold hover:bg-slate-200 cursor-pointer"
                     >
-                      ← Back to Vocab
+                      ← Back
                     </button>
                     <button
                       onClick={() => {
                         soundEffects.playClick();
-                        setCurrentStage('reading');
+                        setCurrentStage('play');
                       }}
-                      className="px-5 py-2.5 rounded-2xl bg-purple-600 hover:bg-purple-700 text-white font-black text-xs shadow-md flex items-center gap-1.5 cursor-pointer"
+                      className="px-5 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs shadow-md flex items-center gap-1.5 cursor-pointer"
                     >
-                      <span>Next: Reading Story</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
+                      <span>Next: Play Interactive Game 🎮</span>
                     </button>
                   </div>
                 </div>
               )}
 
-              {/* STAGE 4: LEVELED READING */}
-              {currentStage === 'reading' && (
+              {/* STAGE 5: PLAY INTERACTIVE GAME */}
+              {currentStage === 'play' && (
                 <div className="space-y-5 max-w-2xl mx-auto">
                   <div className="text-center space-y-1">
                     <span className="text-[11px] font-black uppercase tracking-wider text-emerald-600">
-                      Step 3 of 6 • Leveled Reading
+                      Step 4 of 5 • Interactive Game
                     </span>
                     <h4 className="text-lg font-black font-heading text-slate-900">
-                      {activeLesson.reading.titleEn} 📖
+                      {activeLesson.interactiveGame.gameTitleEn} 🎮
                     </h4>
+                    <p className="text-xs text-slate-500">
+                      {activeLesson.interactiveGame.instructionsEn}
+                    </p>
                   </div>
 
+                  {/* Matching Game Arena */}
                   <div className="bg-white rounded-3xl p-6 border-3 border-emerald-200 shadow-md space-y-4">
                     <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                       <span className="text-xs font-black text-emerald-800">
-                        Passage ({activeLesson.reading.wordCount} words)
+                        Items Matched: {matchedGameIds.length / 2} / {activeLesson.interactiveGame.items.length}
                       </span>
-                      <button
-                        onClick={() => handlePlayAudio(activeLesson.reading.passagesEn.join(' '), 0.85)}
-                        className="px-3 py-1.5 rounded-xl bg-emerald-100 hover:bg-emerald-200 text-emerald-800 text-xs font-black flex items-center gap-1.5 cursor-pointer"
-                      >
-                        <Volume2 className="w-3.5 h-3.5" />
-                        <span>Read Aloud</span>
-                      </button>
-                    </div>
-
-                    <div className="space-y-3">
-                      {activeLesson.reading.passagesEn.map((p, i) => (
-                        <p key={i} className="text-sm text-slate-800 leading-relaxed font-medium">
-                          {p}
-                        </p>
-                      ))}
-                    </div>
-
-                    {showVietnameseTranslation && (
-                      <div className="p-3 bg-emerald-50 rounded-2xl border border-emerald-200 text-xs text-emerald-950 font-medium leading-relaxed space-y-1">
-                        <span className="font-bold">Bản dịch Tiếng Việt:</span>
-                        {activeLesson.reading.passagesVi.map((pv, i) => (
-                          <p key={i}>{pv}</p>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex items-center justify-between gap-3 pt-2">
-                    <button
-                      onClick={() => {
-                        soundEffects.playClick();
-                        setCurrentStage('sentence');
-                      }}
-                      className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold hover:bg-slate-200 cursor-pointer"
-                    >
-                      ← Back
-                    </button>
-                    <button
-                      onClick={() => {
-                        soundEffects.playClick();
-                        setCurrentStage('listening');
-                      }}
-                      className="px-5 py-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs shadow-md flex items-center gap-1.5 cursor-pointer"
-                    >
-                      <span>Next: Listening</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* STAGE 5: LISTENING DIALOGUE */}
-              {currentStage === 'listening' && (
-                <div className="space-y-5 max-w-2xl mx-auto">
-                  <div className="text-center space-y-1">
-                    <span className="text-[11px] font-black uppercase tracking-wider text-sky-600">
-                      Step 4 of 6 • Listening Dialogue
-                    </span>
-                    <h4 className="text-lg font-black font-heading text-slate-900">
-                      {activeLesson.listening.audioTitleEn} 🎧
-                    </h4>
-                  </div>
-
-                  <div className="bg-white rounded-3xl p-6 border-3 border-sky-200 shadow-md space-y-4">
-                    <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                      <span className="text-xs font-black text-sky-800">
-                        Speaker: {activeLesson.listening.speakerRole}
+                      <span className="text-xs font-black text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200">
+                        ⭐ Bonus +10 Stars for Victory
                       </span>
-                      <button
-                        onClick={() => handlePlayAudio(activeLesson.listening.audioScriptEn, 0.85)}
-                        className="px-3 py-1.5 rounded-xl bg-sky-100 hover:bg-sky-200 text-sky-800 text-xs font-black flex items-center gap-1.5 cursor-pointer"
-                      >
-                        <Volume2 className="w-3.5 h-3.5" />
-                        <span>Play Script</span>
-                      </button>
                     </div>
 
-                    <div className="p-4 rounded-2xl bg-sky-50/80 border border-sky-200/80 space-y-2">
-                      <p className="text-xs font-bold text-slate-800 leading-relaxed">
-                        "{activeLesson.listening.audioScriptEn}"
-                      </p>
-                      {showVietnameseTranslation && (
-                        <p className="text-[11px] text-slate-500 italic pt-1 border-t border-sky-200">
-                          {activeLesson.listening.audioScriptVi}
-                        </p>
-                      )}
-                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      {activeLesson.interactiveGame.items.map((item) => {
+                        const isMatched = matchedGameIds.includes(item.id);
+                        const isSelected = selectedGameItem?.id === item.id;
 
-                    {/* Comprehension check question */}
-                    <div className="p-4 rounded-2xl bg-white border border-slate-200 space-y-3">
-                      <span className="text-[10px] font-black uppercase text-sky-700">Comprehension Question:</span>
-                      <p className="text-xs font-black text-slate-900">{activeLesson.listening.questionEn}</p>
-                      <div className="space-y-1.5">
-                        {activeLesson.listening.options.map((opt, i) => (
+                        return (
                           <button
-                            key={i}
-                            onClick={() => {
-                              if (i === activeLesson.listening.correctIndex) {
-                                soundEffects.playCorrect();
-                                alert("Correct listening answer! ⭐");
-                              } else {
-                                soundEffects.playWrong();
-                              }
-                            }}
-                            className="w-full text-left p-2.5 rounded-xl text-xs bg-slate-50 hover:bg-sky-50 hover:border-sky-300 border border-slate-200 transition-colors cursor-pointer"
+                            key={item.id}
+                            disabled={isMatched}
+                            onClick={() => handleGameItemClick(item)}
+                            className={`p-4 rounded-2xl border-2 text-center transition-all cursor-pointer flex flex-col items-center justify-center gap-1.5 ${
+                              isMatched
+                                ? 'bg-emerald-50 border-emerald-400 text-emerald-900 opacity-60'
+                                : isSelected
+                                ? 'bg-amber-100 border-amber-400 text-amber-950 scale-105 shadow-md ring-2 ring-amber-300'
+                                : 'bg-slate-50 border-slate-200 text-slate-800 hover:bg-slate-100 hover:scale-102'
+                            }`}
                           >
-                            {opt}
+                            <span className="text-3xl select-none">{item.emojiOrIcon || '✨'}</span>
+                            <span className="text-xs font-black font-heading">{item.promptEn}</span>
+                            {item.promptVi && showVietnameseTranslation && (
+                              <span className="text-[10px] text-slate-500">{item.promptVi}</span>
+                            )}
                           </button>
-                        ))}
-                      </div>
+                        );
+                      })}
                     </div>
                   </div>
 
@@ -891,90 +1064,6 @@ export const StudentCurriculumExperience: React.FC<StudentCurriculumExperiencePr
                       onClick={() => {
                         soundEffects.playClick();
                         setCurrentStage('reading');
-                      }}
-                      className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold hover:bg-slate-200 cursor-pointer"
-                    >
-                      ← Back
-                    </button>
-                    <button
-                      onClick={() => {
-                        soundEffects.playClick();
-                        setCurrentStage('speaking');
-                      }}
-                      className="px-5 py-2.5 rounded-2xl bg-sky-600 hover:bg-sky-700 text-white font-black text-xs shadow-md flex items-center gap-1.5 cursor-pointer"
-                    >
-                      <span>Next: Speaking</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* STAGE 6: SPEAKING ADVENTURE */}
-              {currentStage === 'speaking' && (
-                <div className="space-y-5 max-w-2xl mx-auto">
-                  <div className="text-center space-y-1">
-                    <span className="text-[11px] font-black uppercase tracking-wider text-pink-600">
-                      Step 5 of 6 • Speaking Challenge
-                    </span>
-                    <h4 className="text-lg font-black font-heading text-slate-900">
-                      Speak clearly and earn stars! 🎙️
-                    </h4>
-                  </div>
-
-                  <div className="bg-white rounded-3xl p-6 border-3 border-pink-200 shadow-md space-y-4 text-center">
-                    <div className="w-16 h-16 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center mx-auto text-2xl">
-                      🎤
-                    </div>
-
-                    <div className="space-y-1">
-                      <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">Your Prompt:</span>
-                      <h3 className="text-base font-black font-heading text-slate-900">
-                        {activeLesson.speaking.promptEn}
-                      </h3>
-                      {showVietnameseTranslation && (
-                        <p className="text-xs text-slate-500">{activeLesson.speaking.promptVi}</p>
-                      )}
-                    </div>
-
-                    <div className="p-4 bg-pink-50 rounded-2xl border border-pink-200 text-left space-y-2">
-                      <span className="text-[10px] font-black uppercase tracking-wider text-pink-800">Target Sentence (Mẫu câu chuẩn):</span>
-                      <div className="flex items-center justify-between">
-                        <p className="text-sm font-black text-pink-950 font-heading">
-                          "{activeLesson.speaking.targetSentenceEn}"
-                        </p>
-                        <button
-                          onClick={() => handlePlayAudio(activeLesson.speaking.targetSentenceEn, 0.85)}
-                          className="p-2 rounded-xl bg-pink-200 text-pink-800 hover:bg-pink-300 transition-colors cursor-pointer"
-                        >
-                          <Volume2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                      <div className="text-xs text-slate-600">
-                        Phonics Focus: <span className="font-mono font-bold text-pink-700">{activeLesson.speaking.phoneticFocus}</span>
-                      </div>
-                    </div>
-
-                    <div className="pt-2">
-                      <button
-                        onClick={() => {
-                          soundEffects.playStarFanfare();
-                          onEarnStars?.(5);
-                          alert("Great pronunciation! You practiced speaking and earned +5 bonus stars! ⭐");
-                        }}
-                        className="px-6 py-3 rounded-2xl bg-gradient-to-r from-pink-500 to-rose-500 text-white font-black text-xs shadow-md hover:scale-102 active:scale-98 transition-all flex items-center justify-center gap-2 mx-auto cursor-pointer"
-                      >
-                        <Mic className="w-4 h-4" />
-                        <span>I Spoke It! (+5 Stars ⭐)</span>
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between gap-3 pt-2">
-                    <button
-                      onClick={() => {
-                        soundEffects.playClick();
-                        setCurrentStage('listening');
                       }}
                       className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold hover:bg-slate-200 cursor-pointer"
                     >
@@ -987,14 +1076,14 @@ export const StudentCurriculumExperience: React.FC<StudentCurriculumExperiencePr
                       }}
                       className="px-5 py-2.5 rounded-2xl bg-rose-500 hover:bg-rose-600 text-white font-black text-xs shadow-md flex items-center gap-1.5 cursor-pointer"
                     >
-                      <span>Final Step: Skills Quiz ⭐</span>
+                      <span>Final Step: Challenge Quiz ⭐</span>
                       <ArrowRight className="w-3.5 h-3.5" />
                     </button>
                   </div>
                 </div>
               )}
 
-              {/* STAGE 7: CIRCULAR 27 SKILLS QUIZ */}
+              {/* STAGE 6: CIRCULAR 27 CHALLENGE QUIZ */}
               {currentStage === 'quiz' && (
                 <div className="space-y-5 max-w-2xl mx-auto">
                   {(() => {
@@ -1097,7 +1186,7 @@ export const StudentCurriculumExperience: React.FC<StudentCurriculumExperiencePr
                 </div>
               )}
 
-              {/* STAGE 8: COMPLETION CELEBRATION */}
+              {/* STAGE 7: COMPLETION CELEBRATION (REWARD) */}
               {currentStage === 'complete' && (
                 <div className="text-center space-y-5 max-w-md mx-auto py-6">
                   <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-amber-400 to-rose-400 flex items-center justify-center text-5xl mx-auto shadow-xl animate-bounce-subtle">
