@@ -13,6 +13,7 @@ import { LandmarkDragDropGame } from './LandmarkDragDropGame';
 import { InteractiveMap34ProvincesGame } from './InteractiveMap34ProvincesGame';
 import { StudentCurriculumExperience } from './StudentCurriculumExperience';
 import { GradePathwaySelection } from './GradePathwaySelection';
+import { VideoAcademyHub } from './VideoAcademy/VideoAcademyHub';
 import { GradeNumber } from '../../data/gradePathwaysData';
 import { 
   Sparkles, 
@@ -44,12 +45,12 @@ interface LearningHubProps {
   user: UserProfile | null;
   destinations: Destination[];
   progressMap: Record<string, DestinationProgress>;
-  activeTab: 'explore' | 'games' | 'passport' | 'progress';
+  activeTab: 'explore' | 'games' | 'videos' | 'passport' | 'progress';
   totalStars: number;
   previewGradeBand?: GradeBand; // for teacher previewing
   onUpdateProgress: (destId: string, score: number, starsEarned: number) => void;
   onEarnStars?: (stars: number) => void;
-  onSelectTab?: (tab: 'explore' | 'games' | 'passport' | 'progress') => void;
+  onSelectTab?: (tab: 'explore' | 'games' | 'videos' | 'passport' | 'progress') => void;
   onNavigateGrade?: (gradeNum: GradeNumber) => void;
 }
 
@@ -947,13 +948,21 @@ export const LearningHub: React.FC<LearningHubProps> = ({
       )}
 
       {/* ============================================================== */}
-      {/* OTHER TABS: ĐẤU TRƯỜNG | HỘ CHIẾU | TIẾN ĐỘ                    */}
+      {/* OTHER TABS: ĐẤU TRƯỜNG | VIDEO ACADEMY | HỘ CHIẾU | TIẾN ĐỘ    */}
       {/* ============================================================== */}
       {activeTab === 'games' && (
         <AdventureGames
           destinations={destinations}
           gradeBand={activeGradeBand}
           onEarnStars={onEarnStars || (() => {})}
+        />
+      )}
+
+      {/* VIDEO LEARNING ACADEMY TAB */}
+      {activeTab === 'videos' && (
+        <VideoAcademyHub
+          user={user}
+          onEarnStars={onEarnStars}
         />
       )}
 

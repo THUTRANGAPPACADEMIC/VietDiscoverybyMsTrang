@@ -51,8 +51,8 @@ export const App: React.FC = () => {
 
   // View sections: 'student' | 'teacher' | 'admin'
   const [activeSection, setActiveSection] = useState<'student' | 'teacher' | 'admin'>('student');
-  const [activeStudentTab, setActiveStudentTab] = useState<'explore' | 'games' | 'passport' | 'progress'>('explore');
-  const [activeTeacherTab, setActiveTeacherTab] = useState<'curriculum' | 'materials' | 'classes' | 'progress' | 'assessment' | 'ai'>('curriculum');
+  const [activeStudentTab, setActiveStudentTab] = useState<'explore' | 'games' | 'videos' | 'passport' | 'progress'>('explore');
+  const [activeTeacherTab, setActiveTeacherTab] = useState<'curriculum' | 'materials' | 'videos' | 'classes' | 'progress' | 'assessment' | 'ai'>('curriculum');
 
   // Teacher / Admin student experience previewer override
   const [previewGradeBand, setPreviewGradeBand] = useState<GradeBand | undefined>(undefined);

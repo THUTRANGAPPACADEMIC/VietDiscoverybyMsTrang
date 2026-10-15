@@ -18,9 +18,10 @@ import { StudentProgressTable } from './StudentProgressTable';
 import { LearningAssessment } from './LearningAssessment';
 import { AIAssistant } from './AIAssistant';
 import { TeacherContentStudio } from './TeacherContentStudio';
+import { TeacherVideoDashboard } from './TeacherVideoDashboard';
 
 interface TeachingStudioProps {
-  activeTab: 'curriculum' | 'materials' | 'classes' | 'progress' | 'assessment' | 'ai';
+  activeTab: 'curriculum' | 'materials' | 'classes' | 'progress' | 'assessment' | 'ai' | 'videos';
   classes: ClassRoom[];
   students: StudentRosterItem[];
   materials: MaterialItem[];
@@ -194,6 +195,11 @@ export const TeachingStudio: React.FC<TeachingStudioProps> = ({
             onAddMaterial(newMat);
           }}
         />
+      )}
+
+      {/* Tab 6: Video Learning Academy Management */}
+      {activeTab === 'videos' && (
+        <TeacherVideoDashboard />
       )}
 
     </div>

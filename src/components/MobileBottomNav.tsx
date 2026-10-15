@@ -1,10 +1,11 @@
 import React from 'react';
+import { Tv } from 'lucide-react';
 import { NavIconExplore, NavIconGames, NavIconPassport, NavIconProgress } from './Student/Game3DAssets';
 import { soundEffects } from '../lib/soundEffects';
 
 interface MobileBottomNavProps {
-  activeStudentTab: 'explore' | 'games' | 'passport' | 'progress';
-  setActiveStudentTab: (tab: 'explore' | 'games' | 'passport' | 'progress') => void;
+  activeStudentTab: 'explore' | 'games' | 'videos' | 'passport' | 'progress';
+  setActiveStudentTab: (tab: 'explore' | 'games' | 'videos' | 'passport' | 'progress') => void;
 }
 
 export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
@@ -14,7 +15,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
   return (
     <nav
       aria-label="Mobile Bottom Navigation"
-      className="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl border-t-2 border-amber-300 py-1.5 px-2 shadow-[0_-6px_25px_rgba(0,0,0,0.18)] flex items-center justify-around gap-1.5"
+      className="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl border-t-2 border-amber-300 py-1.5 px-2 shadow-[0_-6px_25px_rgba(0,0,0,0.18)] flex items-center justify-around gap-1"
     >
       {/* 1. Explore */}
       <button
@@ -52,6 +53,25 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
         </div>
         <span className="text-[11px] font-black leading-tight">Games</span>
         <span className="text-[9px] opacity-80 leading-tight">Đấu trường</span>
+      </button>
+
+      {/* 3. Video Academy */}
+      <button
+        onClick={() => {
+          soundEffects.playClick();
+          setActiveStudentTab('videos');
+        }}
+        className={`flex-1 min-h-[56px] py-1 px-1 rounded-2xl flex flex-col items-center justify-center transition-all cursor-pointer relative overflow-hidden ${
+          activeStudentTab === 'videos'
+            ? 'bg-gradient-to-b from-rose-500 via-pink-500 to-purple-600 text-white font-black shadow-md border-b-3 border-pink-900 scale-102 ring-2 ring-pink-300'
+            : 'text-slate-600 hover:bg-slate-100 font-bold'
+        }`}
+      >
+        <div className={`w-6 h-6 rounded-full flex items-center justify-center mb-0.5 ${activeStudentTab === 'videos' ? 'bg-white text-pink-600 shadow-xs' : ''}`}>
+          <Tv size={16} />
+        </div>
+        <span className="text-[11px] font-black leading-tight">Video</span>
+        <span className="text-[9px] opacity-80 leading-tight">Học viện</span>
       </button>
 
       {/* 3. Passport */}

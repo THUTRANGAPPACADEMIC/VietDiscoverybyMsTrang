@@ -17,7 +17,8 @@ import {
   Cloud,
   Star,
   Volume2,
-  VolumeX
+  VolumeX,
+  Tv
 } from 'lucide-react';
 import { UserProfile, UserRole, GradeBand } from '../types';
 import { isSupabaseConfigured } from '../lib/supabase';
@@ -30,10 +31,10 @@ interface HeaderProps {
   user: UserProfile | null;
   activeSection: 'student' | 'teacher' | 'admin';
   setActiveSection: (section: 'student' | 'teacher' | 'admin') => void;
-  activeStudentTab: 'explore' | 'games' | 'passport' | 'progress';
-  setActiveStudentTab: (tab: 'explore' | 'games' | 'passport' | 'progress') => void;
-  activeTeacherTab: 'curriculum' | 'materials' | 'classes' | 'progress' | 'assessment' | 'ai';
-  setActiveTeacherTab: (tab: 'curriculum' | 'materials' | 'classes' | 'progress' | 'assessment' | 'ai') => void;
+  activeStudentTab: 'explore' | 'games' | 'videos' | 'passport' | 'progress';
+  setActiveStudentTab: (tab: 'explore' | 'games' | 'videos' | 'passport' | 'progress') => void;
+  activeTeacherTab: 'curriculum' | 'materials' | 'videos' | 'classes' | 'progress' | 'assessment' | 'ai';
+  setActiveTeacherTab: (tab: 'curriculum' | 'materials' | 'videos' | 'classes' | 'progress' | 'assessment' | 'ai') => void;
   previewGradeBand?: GradeBand;
   onOpenStudentAuth: () => void;
   onLogout: () => void;
@@ -403,7 +404,29 @@ export const Header: React.FC<HeaderProps> = ({
                 </div>
               </button>
 
-              {/* 3. Hộ chiếu (Passport) - Lavender Purple Pill */}
+              {/* 3. Video Học tập (Video Academy) - Royal Coral / Ruby Pill */}
+              <button
+                onClick={() => {
+                  soundEffects.playClick();
+                  setActiveStudentTab('videos');
+                }}
+                className={`min-w-[165px] md:min-w-[190px] h-[52px] md:h-[56px] px-4 py-2 rounded-full flex items-center gap-3 transition-all transform cursor-pointer border-b-4 relative overflow-hidden shrink-0 ${
+                  activeStudentTab === 'videos'
+                    ? 'bg-gradient-to-r from-[#e63946] via-[#f72585] to-[#7209b7] border-pink-900 text-white shadow-xl shadow-pink-500/40 ring-4 ring-pink-300 scale-102'
+                    : 'bg-gradient-to-r from-[#e63946]/90 via-[#f72585]/90 to-[#7209b7]/90 border-pink-900/60 text-white shadow-md shadow-pink-500/20 hover:brightness-105 hover:-translate-y-0.5 active:translate-y-0.5'
+                }`}
+              >
+                <div className="absolute top-0 left-0 right-0 h-[40%] bg-gradient-to-b from-white/40 to-transparent pointer-events-none rounded-t-full"></div>
+                <div className="w-8 h-8 md:w-9 md:h-9 rounded-full bg-white flex items-center justify-center shadow-inner shrink-0">
+                  <Tv className="w-4 h-4 md:w-5 md:h-5 text-pink-600" />
+                </div>
+                <div className="text-left min-w-0">
+                  <div className="text-xs md:text-sm font-black font-heading text-white leading-tight">Video Học tập</div>
+                  <div className="text-[10px] md:text-xs font-bold text-white/90 leading-tight">(Academy)</div>
+                </div>
+              </button>
+
+              {/* 4. Hộ chiếu (Passport) - Lavender Purple Pill */}
               <button
                 onClick={() => {
                   soundEffects.playClick();
@@ -479,6 +502,21 @@ export const Header: React.FC<HeaderProps> = ({
               >
                 <BookOpen className="w-4 h-4" />
                 <span>Học liệu bài giảng</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  soundEffects.playClick();
+                  setActiveTeacherTab('videos');
+                }}
+                className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 whitespace-nowrap transition-colors cursor-pointer ${
+                  activeTeacherTab === 'videos'
+                    ? 'bg-rose-600 text-white shadow-xs'
+                    : 'text-slate-600 hover:bg-slate-100'
+                }`}
+              >
+                <Tv className="w-4 h-4 text-amber-300" />
+                <span>Quản lý Video Học tập</span>
               </button>
 
               <button

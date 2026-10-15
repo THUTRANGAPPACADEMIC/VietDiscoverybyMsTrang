@@ -16,8 +16,8 @@ import {
 import { soundEffects } from '../lib/soundEffects';
 
 interface MagicalAdventureFooterProps {
-  activeStudentTab: 'explore' | 'games' | 'passport' | 'progress';
-  setActiveStudentTab: (tab: 'explore' | 'games' | 'passport' | 'progress') => void;
+  activeStudentTab: 'explore' | 'games' | 'videos' | 'passport' | 'progress';
+  setActiveStudentTab: (tab: 'explore' | 'games' | 'videos' | 'passport' | 'progress') => void;
   onOpenCreatorModal: () => void;
   onOpenStaffAuth: () => void;
   totalStars?: number;

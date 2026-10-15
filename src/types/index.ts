@@ -274,3 +274,6 @@ export interface AIGeneratedPlan {
   }[];
   approved: boolean;
 }
+
+// Multi-Source Video Learning Academy types
+export * from './video';

@@ -291,7 +291,15 @@ class SoundPlayer {
     this.playWrong();
   }
 
+  playError() {
+    this.playWrong();
+  }
+
   playCelebration() {
+    this.playStarFanfare();
+  }
+
+  playVictory() {
     this.playStarFanfare();
   }
 
