@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FLOATING_ISLANDS, FloatingIslandDef, IslandId } from './floatingIslandData';
 import { IslandCard3D } from './IslandCard3D';
 import { IslandActivityModal } from './IslandActivityModal';
@@ -45,6 +45,12 @@ export const FloatingIslandWorld: React.FC<FloatingIslandWorldProps> = ({
   };
 
   const [selectedGrade, setSelectedGrade] = useState<1 | 2 | 3 | 4 | 5>(initialGradeNum());
+
+  // Synchronize grade whenever parent activeGradeBand changes
+  useEffect(() => {
+    setSelectedGrade(initialGradeNum());
+  }, [activeGradeBand]);
+
   const [selectedIslandId, setSelectedIslandId] = useState<IslandId>('wonder');
   const [isActivityModalOpen, setIsActivityModalOpen] = useState(false);
   const [activeIslandForModal, setActiveIslandForModal] = useState<FloatingIslandDef>(FLOATING_ISLANDS[0]);

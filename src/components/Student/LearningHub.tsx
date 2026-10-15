@@ -15,6 +15,7 @@ import { StudentCurriculumExperience } from './StudentCurriculumExperience';
 import { GradePathwaySelection } from './GradePathwaySelection';
 import { VideoAcademyHub } from './VideoAcademy/VideoAcademyHub';
 import { FloatingIslandWorld } from './FloatingIslandWorld/FloatingIslandWorld';
+import { DiscoveryAdventureHub } from './DiscoveryAdventureHub';
 import { GradeNumber } from '../../data/gradePathwaysData';
 import { 
   Sparkles, 
@@ -425,7 +426,25 @@ export const LearningHub: React.FC<LearningHubProps> = ({
             }}
           />
 
-          {/* 2. DAILY EXPLORER QUESTS ROW - MATCHING IMAGE 2 */}
+          {/* 2. PROMINENT DISCOVERY ADVENTURE HUB - DIRECTLY BELOW GRADE SELECTION (16-24px vertical spacing) */}
+          <div className="mt-4 sm:mt-6">
+            <DiscoveryAdventureHub
+              activeMode={curriculumDisplayMode}
+              onSelectMode={(mode) => {
+                soundEffects.playClick();
+                setCurriculumDisplayMode(mode);
+              }}
+              activeGradeNum={
+                activeGradeBand === 'grade_1' ? 1 :
+                activeGradeBand === 'grade_2' ? 2 :
+                activeGradeBand === 'grade_3' ? 3 :
+                activeGradeBand === 'grade_4' ? 4 : 5
+              }
+              activeGradeBand={activeGradeBand}
+            />
+          </div>
+
+          {/* 3. DAILY EXPLORER QUESTS ROW - MATCHING IMAGE 2 */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-3">
             {DAILY_QUESTS.map((q) => (
               <button
@@ -457,76 +476,8 @@ export const LearningHub: React.FC<LearningHubProps> = ({
             ))}
           </div>
 
-          {/* CURRICULUM MODE SWITCHER: 5 ORIGINAL ADVENTURES VS 34 PROVINCES MAP */}
-          <div className="bg-white/95 backdrop-blur-md rounded-3xl p-3 border-2 border-indigo-200 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3">
-            <div className="flex items-center gap-2.5">
-              <span className="p-2.5 rounded-2xl bg-gradient-to-tr from-amber-400 to-rose-400 text-amber-950 font-black shadow-xs text-lg">
-                ✨
-              </span>
-              <div>
-                <h4 className="text-xs sm:text-sm font-black font-heading text-slate-900">
-                  Select Discovery Mode (Chọn chế độ học tập):
-                </h4>
-                <p className="text-[11px] text-slate-500 font-medium">
-                  {curriculumDisplayMode === 'floating_islands'
-                    ? 'Quần đảo 5 Kỳ quan 3D bay lượn (Wonder, Listening, Speaking, Puzzle, Champion)'
-                    : curriculumDisplayMode === 'curriculum_pathways'
-                    ? '5 Chặng Thám hiểm Giáo trình Độc quyền Cô Trang (Grades 1–5 • Thông tư 27)'
-                    : 'Bản đồ Tương tác 34 Tỉnh/Thành 2025, Game Kéo thả & Khám phá Địa danh'}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 w-full sm:w-auto flex-wrap sm:flex-nowrap">
-              <button
-                onClick={() => {
-                  soundEffects.playClick();
-                  setCurriculumDisplayMode('floating_islands');
-                }}
-                className={`flex-1 sm:flex-initial px-4 py-2.5 rounded-2xl text-xs font-black transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-sm ${
-                  curriculumDisplayMode === 'floating_islands'
-                    ? 'bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 text-white shadow-cyan-300 scale-102 ring-2 ring-cyan-300'
-                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                }`}
-              >
-                <span>🏝️</span>
-                <span>Thế Giới Đảo Nổi 3D</span>
-                <span className="text-[9px] bg-amber-400 text-amber-950 px-1.5 py-0.5 rounded-full uppercase font-black animate-pulse">
-                  3D Mới
-                </span>
-              </button>
-
-              <button
-                onClick={() => {
-                  soundEffects.playClick();
-                  setCurriculumDisplayMode('curriculum_pathways');
-                }}
-                className={`flex-1 sm:flex-initial px-4 py-2.5 rounded-2xl text-xs font-black transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-xs ${
-                  curriculumDisplayMode === 'curriculum_pathways'
-                    ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-indigo-200 scale-102 ring-2 ring-indigo-300'
-                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                }`}
-              >
-                <span>📖</span>
-                <span>5 Chặng Giáo Trình</span>
-              </button>
-
-              <button
-                onClick={() => {
-                  soundEffects.playClick();
-                  setCurriculumDisplayMode('map_and_units');
-                }}
-                className={`flex-1 sm:flex-initial px-4 py-2.5 rounded-2xl text-xs font-black transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-xs ${
-                  curriculumDisplayMode === 'map_and_units'
-                    ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-emerald-200 scale-102 ring-2 ring-emerald-300'
-                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                }`}
-              >
-                <span>🗺️</span>
-                <span>Bản Đồ 2025</span>
-              </button>
-            </div>
-          </div>
+          {/* 4. ACTIVE DISCOVERY EXPERIENCE ARENA */}
+          <div id="discovery-experience-arena" className="space-y-6 scroll-mt-6">
 
           {/* 3A. 3D FLOATING ISLAND ADVENTURE WORLD */}
           {curriculumDisplayMode === 'floating_islands' && (
@@ -972,6 +923,8 @@ export const LearningHub: React.FC<LearningHubProps> = ({
           )}
             </>
           )}
+
+          </div> {/* END discovery-experience-arena */}
 
         </div>
       )}

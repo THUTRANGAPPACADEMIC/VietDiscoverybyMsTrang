@@ -67,6 +67,13 @@ export const InteractiveMap34ProvincesGame: React.FC<InteractiveMap34ProvincesGa
   const [selectedGrade, setSelectedGrade] = useState<'grade_1' | 'grade_2' | 'grade_3' | 'grade_4' | 'grade_5'>(() => {
     return normalizeGrade(gradeBand || 'grade_3');
   });
+
+  // Synchronize grade whenever parent gradeBand changes
+  useEffect(() => {
+    if (gradeBand) {
+      setSelectedGrade(normalizeGrade(gradeBand));
+    }
+  }, [gradeBand]);
   
   // Canvas Zoom & Pan
   const [zoomLevel, setZoomLevel] = useState<number>(1);
