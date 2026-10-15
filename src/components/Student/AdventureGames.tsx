@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import confetti from 'canvas-confetti';
 import { 
   Sparkles, 
@@ -23,9 +23,17 @@ import {
 } from 'lucide-react';
 import { GradeBand, Destination } from '../../types';
 import { playEnglishSpeech, playSpeech, stopSpeech } from '../../lib/speech';
-import { LandmarkDragDropGame } from './LandmarkDragDropGame';
-import { InteractiveMap34ProvincesGame } from './InteractiveMap34ProvincesGame';
-import { ImmersiveListeningQuest } from './ImmersiveListeningQuest';
+import { AdventureLoadingFallback } from './AdventureLoadingFallback';
+
+const LandmarkDragDropGame = React.lazy(() => 
+  import('./LandmarkDragDropGame').then(m => ({ default: m.LandmarkDragDropGame }))
+);
+const InteractiveMap34ProvincesGame = React.lazy(() => 
+  import('./InteractiveMap34ProvincesGame').then(m => ({ default: m.InteractiveMap34ProvincesGame }))
+);
+const ImmersiveListeningQuest = React.lazy(() => 
+  import('./ImmersiveListeningQuest').then(m => ({ default: m.ImmersiveListeningQuest }))
+);
 
 interface AdventureGamesProps {
   gradeBand?: GradeBand;
@@ -884,20 +892,24 @@ export const AdventureGames: React.FC<AdventureGamesProps> = ({
       {/* GAME 1: LANDMARK MAP DROP                                 */}
       {/* ========================================================= */}
       {activeGame === 'map-drop' && (
-        <LandmarkDragDropGame
-          gradeBand={selectedGradeBand}
-          onEarnStars={awardGameStars}
-        />
+        <Suspense fallback={<AdventureLoadingFallback message="Preparing Landmark Map Drop..." subMessage="Đang tải trò chơi thả địa danh..." />}>
+          <LandmarkDragDropGame
+            gradeBand={selectedGradeBand}
+            onEarnStars={awardGameStars}
+          />
+        </Suspense>
       )}
 
       {/* ========================================================= */}
       {/* GAME 2: 34 PROVINCES INTERACTIVE MAP LEARNING GAME        */}
       {/* ========================================================= */}
       {activeGame === '34-provinces-game' && (
-        <InteractiveMap34ProvincesGame
-          gradeBand={selectedGradeBand}
-          onEarnStars={awardGameStars}
-        />
+        <Suspense fallback={<AdventureLoadingFallback message="Loading 34 Provinces Game..." subMessage="Đang tải bản đồ 34 tỉnh thành..." />}>
+          <InteractiveMap34ProvincesGame
+            gradeBand={selectedGradeBand}
+            onEarnStars={awardGameStars}
+          />
+        </Suspense>
       )}
 
       {/* ========================================================= */}
@@ -1207,6 +1219,7 @@ export const AdventureGames: React.FC<AdventureGamesProps> = ({
             </button>
           </div>
 
+          <Suspense fallback={<AdventureLoadingFallback message="Preparing audio explorer..." subMessage="Đang tải thử thách nghe..." />}>
           <ImmersiveListeningQuest
             key={currentAudioQ.id}
             destinationName={
@@ -1284,6 +1297,7 @@ export const AdventureGames: React.FC<AdventureGamesProps> = ({
             onEarnStars={(stars) => awardGameStars(stars)}
             onContinue={handleNextAudio}
           />
+          </Suspense>
         </div>
       )}
 

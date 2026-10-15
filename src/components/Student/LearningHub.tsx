@@ -1,21 +1,44 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { Destination, DestinationProgress, UserProfile, GradeBand, Region } from '../../types';
-import { VietnamMap } from './VietnamMap';
 import { DestinationList } from './DestinationList';
 import { LearningPassport } from './LearningPassport';
 import { StudentProgressView } from './StudentProgressView';
-import { AdventureGames } from './AdventureGames';
-import { LessonModal } from './LessonModal';
-import { Grade12LessonModal } from './Grade12LessonModal';
 import { UnitAdventureHub } from './UnitAdventureHub';
-import { DestinationExplorerModal } from './DestinationExplorerModal';
-import { LandmarkDragDropGame } from './LandmarkDragDropGame';
-import { InteractiveMap34ProvincesGame } from './InteractiveMap34ProvincesGame';
-import { StudentCurriculumExperience } from './StudentCurriculumExperience';
 import { GradePathwaySelection } from './GradePathwaySelection';
-import { VideoAcademyHub } from './VideoAcademy/VideoAcademyHub';
-import { FloatingIslandWorld } from './FloatingIslandWorld/FloatingIslandWorld';
 import { DiscoveryAdventureHub } from './DiscoveryAdventureHub';
+import { AdventureLoadingFallback } from './AdventureLoadingFallback';
+
+// Lazy-loaded heavy modules for optimized bundle performance
+const VietnamMap = React.lazy(() => 
+  import('./VietnamMap').then(m => ({ default: m.VietnamMap }))
+);
+const AdventureGames = React.lazy(() => 
+  import('./AdventureGames').then(m => ({ default: m.AdventureGames }))
+);
+const FloatingIslandWorld = React.lazy(() => 
+  import('./FloatingIslandWorld/FloatingIslandWorld').then(m => ({ default: m.FloatingIslandWorld }))
+);
+const VideoAcademyHub = React.lazy(() => 
+  import('./VideoAcademy/VideoAcademyHub').then(m => ({ default: m.VideoAcademyHub }))
+);
+const StudentCurriculumExperience = React.lazy(() => 
+  import('./StudentCurriculumExperience').then(m => ({ default: m.StudentCurriculumExperience }))
+);
+const InteractiveMap34ProvincesGame = React.lazy(() => 
+  import('./InteractiveMap34ProvincesGame').then(m => ({ default: m.InteractiveMap34ProvincesGame }))
+);
+const LandmarkDragDropGame = React.lazy(() => 
+  import('./LandmarkDragDropGame').then(m => ({ default: m.LandmarkDragDropGame }))
+);
+const DestinationExplorerModal = React.lazy(() => 
+  import('./DestinationExplorerModal').then(m => ({ default: m.DestinationExplorerModal }))
+);
+const LessonModal = React.lazy(() => 
+  import('./LessonModal').then(m => ({ default: m.LessonModal }))
+);
+const Grade12LessonModal = React.lazy(() => 
+  import('./Grade12LessonModal').then(m => ({ default: m.Grade12LessonModal }))
+);
 import { GradeNumber } from '../../data/gradePathwaysData';
 import { 
   Sparkles, 
@@ -485,22 +508,26 @@ export const LearningHub: React.FC<LearningHubProps> = ({
 
           {/* 3A. 3D FLOATING ISLAND ADVENTURE WORLD */}
           {curriculumDisplayMode === 'floating_islands' && (
-            <FloatingIslandWorld
-              user={user}
-              activeGradeBand={activeGradeBand}
-              totalStars={totalStars}
-              onEarnStars={onEarnStars}
-              onBackToOverview={() => setCurriculumDisplayMode('curriculum_pathways')}
-            />
+            <Suspense fallback={<AdventureLoadingFallback message="Loading 3D Floating Island World..." subMessage="Đang tải Thế giới Đảo nổi 3D diệu kỳ..." />}>
+              <FloatingIslandWorld
+                user={user}
+                activeGradeBand={activeGradeBand}
+                totalStars={totalStars}
+                onEarnStars={onEarnStars}
+                onBackToOverview={() => setCurriculumDisplayMode('curriculum_pathways')}
+              />
+            </Suspense>
           )}
 
           {/* 3B. INDEPENDENT CURRICULUM EXPERIENCE */}
           {curriculumDisplayMode === 'curriculum_pathways' && (
-            <StudentCurriculumExperience
-              user={user}
-              activeGradeBand={activeGradeBand}
-              onEarnStars={onEarnStars}
-            />
+            <Suspense fallback={<AdventureLoadingFallback message="Loading curriculum pathway..." subMessage="Đang tải lộ trình học tập..." />}>
+              <StudentCurriculumExperience
+                user={user}
+                activeGradeBand={activeGradeBand}
+                onEarnStars={onEarnStars}
+              />
+            </Suspense>
           )}
 
           {/* 3B. INTERACTIVE VIETNAM MAP CONTAINER - WITH OFFICIAL 34 PROVINCES & ILLUSTRATED MODES */}
@@ -601,25 +628,29 @@ export const LearningHub: React.FC<LearningHubProps> = ({
 
               {/* VIEW: 34 PROVINCES INTERACTIVE LEARNING GAME (GENIALLY STYLE 3 MODES) */}
               {mapDisplayMode === 'game_34_provinces' ? (
-                <InteractiveMap34ProvincesGame
-                  user={user}
-                  gradeBand={activeGradeBand}
-                  onUpdateProgress={onUpdateProgress}
-                  onEarnStars={onEarnStars}
-                />
+                <Suspense fallback={<AdventureLoadingFallback message="Loading 34 Provinces Game..." subMessage="Đang mở trò chơi 34 tỉnh thành Việt Nam..." />}>
+                  <InteractiveMap34ProvincesGame
+                    user={user}
+                    gradeBand={activeGradeBand}
+                    onUpdateProgress={onUpdateProgress}
+                    onEarnStars={onEarnStars}
+                  />
+                </Suspense>
               ) : mapDisplayMode === 'interactive_34_provinces' ? (
                 <div className="rounded-3xl overflow-hidden border-2 border-sky-200/80 shadow-inner">
-                  <VietnamMap
-                    destinations={destinations}
-                    selectedDestination={selectedDestination}
-                    gradeBand={activeGradeBand}
-                    initialLayer="administrative"
-                    onSelectDestination={(dest) => {
-                      setSelectedDestination(dest);
-                      handleOpenDestinationExplorer(dest);
-                    }}
-                    onOpenLesson={handleOpenLesson}
-                  />
+                  <Suspense fallback={<AdventureLoadingFallback message="Rendering Vietnam 2025 Map..." subMessage="Đang vẽ bản đồ 34 tỉnh thành..." />}>
+                    <VietnamMap
+                      destinations={destinations}
+                      selectedDestination={selectedDestination}
+                      gradeBand={activeGradeBand}
+                      initialLayer="administrative"
+                      onSelectDestination={(dest) => {
+                        setSelectedDestination(dest);
+                        handleOpenDestinationExplorer(dest);
+                      }}
+                      onOpenLesson={handleOpenLesson}
+                    />
+                  </Suspense>
                 </div>
               ) : (
 
@@ -937,19 +968,23 @@ export const LearningHub: React.FC<LearningHubProps> = ({
       {/* OTHER TABS: ĐẤU TRƯỜNG | VIDEO ACADEMY | HỘ CHIẾU | TIẾN ĐỘ    */}
       {/* ============================================================== */}
       {activeTab === 'games' && (
-        <AdventureGames
-          destinations={destinations}
-          gradeBand={activeGradeBand}
-          onEarnStars={onEarnStars || (() => {})}
-        />
+        <Suspense fallback={<AdventureLoadingFallback message="Loading adventure games arena..." subMessage="Đang tải đấu trường trò chơi..." />}>
+          <AdventureGames
+            destinations={destinations}
+            gradeBand={activeGradeBand}
+            onEarnStars={onEarnStars || (() => {})}
+          />
+        </Suspense>
       )}
 
       {/* VIDEO LEARNING ACADEMY TAB */}
       {activeTab === 'videos' && (
-        <VideoAcademyHub
-          user={user}
-          onEarnStars={onEarnStars}
-        />
+        <Suspense fallback={<AdventureLoadingFallback message="Opening Video Academy..." subMessage="Đang mở học viện video thám hiểm..." />}>
+          <VideoAcademyHub
+            user={user}
+            onEarnStars={onEarnStars}
+          />
+        </Suspense>
       )}
 
       {activeTab === 'passport' && (
@@ -974,16 +1009,20 @@ export const LearningHub: React.FC<LearningHubProps> = ({
       {/* ============================================================== */}
       {/* DESTINATION EXPLORER DETAIL MODAL (MATCHING IMAGE 3)           */}
       {/* ============================================================== */}
-      <DestinationExplorerModal
-        destination={explorerDestination}
-        isOpen={isDestinationExplorerOpen}
-        onClose={() => setIsDestinationExplorerOpen(false)}
-        onStartAdventure={(dest, initialTab) => {
-          setIsDestinationExplorerOpen(false);
-          handleOpenLesson(dest, initialTab || 'vocabulary');
-        }}
-        gradeBand={activeGradeBand}
-      />
+      {isDestinationExplorerOpen && (
+        <Suspense fallback={null}>
+          <DestinationExplorerModal
+            destination={explorerDestination}
+            isOpen={isDestinationExplorerOpen}
+            onClose={() => setIsDestinationExplorerOpen(false)}
+            onStartAdventure={(dest, initialTab) => {
+              setIsDestinationExplorerOpen(false);
+              handleOpenLesson(dest, initialTab || 'vocabulary');
+            }}
+            gradeBand={activeGradeBand}
+          />
+        </Suspense>
+      )}
 
       {/* ============================================================== */}
       {/* HIGH-PRECISION WGS84 GIS MAP MODAL                             */}
@@ -1006,16 +1045,18 @@ export const LearningHub: React.FC<LearningHubProps> = ({
               </button>
             </div>
 
-            <VietnamMap
-              destinations={destinations}
-              selectedDestination={selectedDestination}
-              gradeBand={activeGradeBand}
-              onSelectDestination={(dest) => {
-                setSelectedDestination(dest);
-                handleOpenDestinationExplorer(dest);
-              }}
-              onOpenLesson={handleOpenLesson}
-            />
+            <Suspense fallback={<AdventureLoadingFallback message="Loading Vietnam GIS map..." subMessage="Đang tải bản đồ..." />}>
+              <VietnamMap
+                destinations={destinations}
+                selectedDestination={selectedDestination}
+                gradeBand={activeGradeBand}
+                onSelectDestination={(dest) => {
+                  setSelectedDestination(dest);
+                  handleOpenDestinationExplorer(dest);
+                }}
+                onOpenLesson={handleOpenLesson}
+              />
+            </Suspense>
           </div>
         </div>
       )}
@@ -1026,34 +1067,38 @@ export const LearningHub: React.FC<LearningHubProps> = ({
       {isLandmarkGameModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-5 bg-slate-900/75 backdrop-blur-md animate-fade-in">
           <div className="relative w-full max-w-5xl max-h-[94vh] bg-transparent rounded-3xl overflow-y-auto">
-            <LandmarkDragDropGame
-              gradeBand={activeGradeBand}
-              onEarnStars={onEarnStars}
-              onClose={() => setIsLandmarkGameModalOpen(false)}
-            />
+            <Suspense fallback={<AdventureLoadingFallback message="Preparing landmark game..." subMessage="Đang mở trò chơi địa danh..." />}>
+              <LandmarkDragDropGame
+                gradeBand={activeGradeBand}
+                onEarnStars={onEarnStars}
+                onClose={() => setIsLandmarkGameModalOpen(false)}
+              />
+            </Suspense>
           </div>
         </div>
       )}
 
       {/* Standard Interactive Lesson Modals */}
       {isLessonModalOpen && activeLessonDestination && (
-        activeGradeBand === 'grade_1' || activeGradeBand === 'grade_2' ? (
-          <Grade12LessonModal
-            destination={activeLessonDestination}
-            isOpen={isLessonModalOpen}
-            onClose={() => setIsLessonModalOpen(false)}
-            onCompleteLesson={(destId: string, score: number, stars: number) => handleCompleteLesson(destId, score, stars)}
-            initialStep={initialLessonTab === 'reading' ? 'learn' : initialLessonTab === 'listening' ? 'listen' : initialLessonTab === 'speaking' ? 'speak' : initialLessonTab === 'quiz' ? 'play' : 'listen'}
-          />
-        ) : (
-          <LessonModal
-            destination={activeLessonDestination}
-            isOpen={isLessonModalOpen}
-            onClose={() => setIsLessonModalOpen(false)}
-            onCompleteLesson={(destId: string, score: number, stars: number) => handleCompleteLesson(destId, score, stars)}
-            initialTab={initialLessonTab}
-          />
-        )
+        <Suspense fallback={<AdventureLoadingFallback message="Opening learning mission..." subMessage="Đang tải bài học..." />}>
+          {activeGradeBand === 'grade_1' || activeGradeBand === 'grade_2' ? (
+            <Grade12LessonModal
+              destination={activeLessonDestination}
+              isOpen={isLessonModalOpen}
+              onClose={() => setIsLessonModalOpen(false)}
+              onCompleteLesson={(destId: string, score: number, stars: number) => handleCompleteLesson(destId, score, stars)}
+              initialStep={initialLessonTab === 'reading' ? 'learn' : initialLessonTab === 'listening' ? 'listen' : initialLessonTab === 'speaking' ? 'speak' : initialLessonTab === 'quiz' ? 'play' : 'listen'}
+            />
+          ) : (
+            <LessonModal
+              destination={activeLessonDestination}
+              isOpen={isLessonModalOpen}
+              onClose={() => setIsLessonModalOpen(false)}
+              onCompleteLesson={(destId: string, score: number, stars: number) => handleCompleteLesson(destId, score, stars)}
+              initialTab={initialLessonTab}
+            />
+          )}
+        </Suspense>
       )}
 
       {/* ============================================================== */}

@@ -27,7 +27,9 @@ import {
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { VIETNAM_34_PROVINCES_GEO, Province34GeoFeature } from '../../data/vietnam34ProvincesGeoData';
-import { ProvinceDetailModal } from './ProvinceDetailModal';
+const ProvinceDetailModal = React.lazy(() => 
+  import('./ProvinceDetailModal').then(m => ({ default: m.ProvinceDetailModal }))
+);
 import { searchProvinces } from '../../data/provinces';
 import { soundEffects } from '../../lib/soundEffects';
 import { playEnglishSpeech } from '../../lib/speech';
@@ -1028,14 +1030,16 @@ export const InteractiveMap34ProvincesGame: React.FC<InteractiveMap34ProvincesGa
 
       {/* 5. EDUCATIONAL PROVINCE DETAIL STUDIO (5 TABS: HERITAGE, VOCABULARY & IPA, SENTENCE PATTERNS, 4 SKILLS LISTENING & SPEAKING, CIRCULAR 27 QUIZ) */}
       {inspectProvince && (
-        <ProvinceDetailModal
-          provinceCode={inspectProvince.code}
-          provinceId={inspectProvince.id}
-          isOpen={!!inspectProvince}
-          onClose={() => setInspectProvince(null)}
-          onEarnStars={onEarnStars}
-          onUpdateProgress={onUpdateProgress}
-        />
+        <React.Suspense fallback={null}>
+          <ProvinceDetailModal
+            provinceCode={inspectProvince.code}
+            provinceId={inspectProvince.id}
+            isOpen={!!inspectProvince}
+            onClose={() => setInspectProvince(null)}
+            onEarnStars={onEarnStars}
+            onUpdateProgress={onUpdateProgress}
+          />
+        </React.Suspense>
       )}
 
       {/* 6. VICTORY CELEBRATION MODAL (MODE 3 MISSION COMPLETE) */}

@@ -1,16 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { Header } from './components/Header';
 import { MobileBottomNav } from './components/MobileBottomNav';
-import { LearningHub } from './components/Student/LearningHub';
-import { GradeDashboard } from './components/Student/GradeDashboard';
 import { GradeNumber } from './data/gradePathwaysData';
-import { TeachingStudio } from './components/Teacher/TeachingStudio';
-import { AdminConsole } from './components/Admin/AdminConsole';
 import { StaffAuthModal } from './components/StaffAuthModal';
 import { AboutCreatorModal } from './components/AboutCreatorModal';
 import { MagicalAdventureFooter } from './components/MagicalAdventureFooter';
 import { FloatingMusicPlayer } from './components/FloatingMusicPlayer';
 import { StudentLandingLoginPage } from './components/Student/StudentLandingLoginPage';
+import { AdventureLoadingFallback } from './components/Student/AdventureLoadingFallback';
+
+// Lazy-loaded routes & views for optimized initial bundle
+const LearningHub = React.lazy(() => 
+  import('./components/Student/LearningHub').then(m => ({ default: m.LearningHub }))
+);
+const GradeDashboard = React.lazy(() => 
+  import('./components/Student/GradeDashboard').then(m => ({ default: m.GradeDashboard }))
+);
+const TeachingStudio = React.lazy(() => 
+  import('./components/Teacher/TeachingStudio').then(m => ({ default: m.TeachingStudio }))
+);
+const AdminConsole = React.lazy(() => 
+  import('./components/Admin/AdminConsole').then(m => ({ default: m.AdminConsole }))
+);
+
 import { 
   UserProfile, 
   DestinationProgress, 
@@ -343,80 +355,80 @@ export const App: React.FC = () => {
 
       {/* Main Container */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        
-        {/* STUDENT LEARNING HUB & GRADE DASHBOARD ROUTES (/grade/1 to /grade/5) */}
-        {activeSection === 'student' && (
-          activeGradeNum !== null ? (
-            <GradeDashboard
-              gradeNum={activeGradeNum}
-              user={user}
-              onNavigateHome={() => navigateTo('/')}
-              onNavigateGrade={(g) => navigateTo(`/grade/${g}`)}
-              onEarnStars={(stars) => {
-                if (user) {
-                  setUser({
-                    ...user,
-                    stars: (user.stars || 0) + stars
-                  });
-                }
-              }}
-            />
-          ) : (
-            <LearningHub
-              user={user}
+        <React.Suspense fallback={<AdventureLoadingFallback message="Opening your magical learning adventure..." subMessage="Đang tải hành trình khám phá..." />}>
+          {/* STUDENT LEARNING HUB & GRADE DASHBOARD ROUTES (/grade/1 to /grade/5) */}
+          {activeSection === 'student' && (
+            activeGradeNum !== null ? (
+              <GradeDashboard
+                gradeNum={activeGradeNum}
+                user={user}
+                onNavigateHome={() => navigateTo('/')}
+                onNavigateGrade={(g) => navigateTo(`/grade/${g}`)}
+                onEarnStars={(stars) => {
+                  if (user) {
+                    setUser({
+                      ...user,
+                      stars: (user.stars || 0) + stars
+                    });
+                  }
+                }}
+              />
+            ) : (
+              <LearningHub
+                user={user}
+                destinations={DESTINATIONS}
+                progressMap={progressMap}
+                activeTab={activeStudentTab}
+                totalStars={totalStars}
+                previewGradeBand={previewGradeBand}
+                onUpdateProgress={handleUpdateProgress}
+                onSelectTab={setActiveStudentTab}
+                onNavigateGrade={(g) => navigateTo(`/grade/${g}`)}
+                onEarnStars={(stars) => {
+                  if (user) {
+                    setUser({
+                      ...user,
+                      stars: (user.stars || 0) + stars
+                    });
+                  }
+                }}
+              />
+            )
+          )}
+
+          {/* TEACHER TEACHING STUDIO (Strictly Protected) */}
+          {activeSection === 'teacher' && user && user.role !== 'student' && (
+            <TeachingStudio
+              activeTab={activeTeacherTab}
+              classes={accessibleClasses}
+              students={accessibleStudents}
+              materials={materials}
               destinations={DESTINATIONS}
-              progressMap={progressMap}
-              activeTab={activeStudentTab}
-              totalStars={totalStars}
-              previewGradeBand={previewGradeBand}
-              onUpdateProgress={handleUpdateProgress}
-              onSelectTab={setActiveStudentTab}
-              onNavigateGrade={(g) => navigateTo(`/grade/${g}`)}
-              onEarnStars={(stars) => {
-                if (user) {
-                  setUser({
-                    ...user,
-                    stars: (user.stars || 0) + stars
-                  });
-                }
+              onAddClass={handleAddClass}
+              onAssignTask={handleAssignTask}
+              onAddMaterial={handleAddMaterial}
+              onDeleteMaterial={handleDeleteMaterial}
+              onTogglePublish={handleTogglePublish}
+              onAwardBonusStars={handleAwardBonusStars}
+              onPreviewGradeBand={(band) => {
+                setPreviewGradeBand(band);
+                setActiveSection('student');
               }}
+              onUploadRoster={handleUploadRoster}
             />
-          )
-        )}
+          )}
 
-        {/* TEACHER TEACHING STUDIO (Strictly Protected) */}
-        {activeSection === 'teacher' && user && user.role !== 'student' && (
-          <TeachingStudio
-            activeTab={activeTeacherTab}
-            classes={accessibleClasses}
-            students={accessibleStudents}
-            materials={materials}
-            destinations={DESTINATIONS}
-            onAddClass={handleAddClass}
-            onAssignTask={handleAssignTask}
-            onAddMaterial={handleAddMaterial}
-            onDeleteMaterial={handleDeleteMaterial}
-            onTogglePublish={handleTogglePublish}
-            onAwardBonusStars={handleAwardBonusStars}
-            onPreviewGradeBand={(band) => {
-              setPreviewGradeBand(band);
-              setActiveSection('student');
-            }}
-            onUploadRoster={handleUploadRoster}
-          />
-        )}
-
-        {/* ADMIN CONSOLE (Strictly Protected for Admins) */}
-        {activeSection === 'admin' && user && user.role === 'admin' && (
-          <AdminConsole
-            classes={classes}
-            students={students}
-            materials={materials}
-            onUpdateStudents={setStudents}
-            onUpdateClasses={setClasses}
-          />
-        )}
-
+          {/* ADMIN CONSOLE (Strictly Protected for Admins) */}
+          {activeSection === 'admin' && user && user.role === 'admin' && (
+            <AdminConsole
+              classes={classes}
+              students={students}
+              materials={materials}
+              onUpdateStudents={setStudents}
+              onUpdateClasses={setClasses}
+            />
+          )}
+        </React.Suspense>
       </main>
 
       {/* Global Magical Adventure 3D Footer */}

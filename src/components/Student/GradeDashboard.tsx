@@ -36,8 +36,15 @@ import {
   unlockGradeBadge, 
   StudentGradeProgressRecord 
 } from '../../lib/gradeProgressService';
-import { GameEngineHub, GameEngineType } from './Games/GameEngineHub';
-import { GradeLessonModal } from './GradeLessonModal';
+import type { GameEngineType } from './Games/GameEngineHub';
+import { AdventureLoadingFallback } from './AdventureLoadingFallback';
+
+const GameEngineHub = React.lazy(() => 
+  import('./Games/GameEngineHub').then(m => ({ default: m.GameEngineHub }))
+);
+const GradeLessonModal = React.lazy(() => 
+  import('./GradeLessonModal').then(m => ({ default: m.GradeLessonModal }))
+);
 import { soundEffects } from '../../lib/soundEffects';
 import { playEnglishSpeech } from '../../lib/speech';
 import { UserProfile } from '../../types';
@@ -564,12 +571,14 @@ export const GradeDashboard: React.FC<GradeDashboardProps> = ({
 
         {/* SECTION 3: INTERACTIVE GAMES (GRADE-DIFFERENTIATED 5 GAMES) */}
         {activeSection === 'games' && (
-          <GameEngineHub
-            gradeNum={gradeNum}
-            studentId={studentId}
-            onRecordGame={handleRecordGame}
-            onEarnStars={onEarnStars}
-          />
+          <React.Suspense fallback={<AdventureLoadingFallback message={`Loading Grade ${gradeNum} interactive games...`} subMessage="Đang chuẩn bị đấu trường trò chơi thám hiểm..." />}>
+            <GameEngineHub
+              gradeNum={gradeNum}
+              studentId={studentId}
+              onRecordGame={handleRecordGame}
+              onEarnStars={onEarnStars}
+            />
+          </React.Suspense>
         )}
 
         {/* SECTION 4: LEARNING CHALLENGES */}
@@ -687,13 +696,15 @@ export const GradeDashboard: React.FC<GradeDashboardProps> = ({
 
       {/* 5. ACTIVE LESSON MODAL */}
       {activeLesson && (
-        <GradeLessonModal
-          lesson={activeLesson}
-          gradeNum={gradeNum}
-          isOpen={Boolean(activeLesson)}
-          onClose={() => setActiveLesson(null)}
-          onCompleteLesson={handleCompleteLesson}
-        />
+        <React.Suspense fallback={<AdventureLoadingFallback message="Opening learning mission..." subMessage="Đang mở bài học thám hiểm..." />}>
+          <GradeLessonModal
+            lesson={activeLesson}
+            gradeNum={gradeNum}
+            isOpen={Boolean(activeLesson)}
+            onClose={() => setActiveLesson(null)}
+            onCompleteLesson={handleCompleteLesson}
+          />
+        </React.Suspense>
       )}
 
       {/* 6. BADGE DETAIL MODAL */}
