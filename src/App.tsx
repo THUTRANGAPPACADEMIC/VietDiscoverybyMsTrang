@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Header } from './components/Header';
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { LearningHub } from './components/Student/LearningHub';
+import { GradeDashboard } from './components/Student/GradeDashboard';
+import { GradeNumber } from './data/gradePathwaysData';
 import { TeachingStudio } from './components/Teacher/TeachingStudio';
 import { AdminConsole } from './components/Admin/AdminConsole';
 import { StudentAuthModal } from './components/StudentAuthModal';
@@ -55,6 +57,36 @@ export const App: React.FC = () => {
   // Teacher / Admin student experience previewer override
   const [previewGradeBand, setPreviewGradeBand] = useState<GradeBand | undefined>(undefined);
 
+  // Client-Side Browser Routing (/grade/1 to /grade/5, /)
+  const [currentPath, setCurrentPath] = useState<string>(() => {
+    return typeof window !== 'undefined' ? window.location.pathname || '/' : '/';
+  });
+
+  // Listen for browser forward/back button navigation
+  useEffect(() => {
+    const handlePopState = () => {
+      setCurrentPath(window.location.pathname || '/');
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  const navigateTo = (path: string) => {
+    try {
+      window.history.pushState({}, '', path);
+    } catch {
+      // Fallback
+    }
+    setCurrentPath(path);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Check if currently on a grade dashboard route: /grade/1 to /grade/5
+  const gradeRouteMatch = currentPath.match(/^\/grade\/([1-5])\/?$/);
+  const activeGradeNum: GradeNumber | null = gradeRouteMatch 
+    ? (parseInt(gradeRouteMatch[1], 10) as GradeNumber) 
+    : null;
+
   // Persistence States
   const [progressMap, setProgressMap] = useState<Record<string, DestinationProgress>>(() => {
     return localStore.get<Record<string, DestinationProgress>>('progress_map', {
@@ -71,11 +103,39 @@ export const App: React.FC = () => {
   });
 
   const [classes, setClasses] = useState<ClassRoom[]>(() => {
-    return localStore.get<ClassRoom[]>('classes', INITIAL_CLASSES);
+    const cached = localStore.get<ClassRoom[]>('classes', INITIAL_CLASSES);
+    if (!cached || cached.length === 0) return INITIAL_CLASSES;
+    // Ensure all 5 standard classes exist
+    const cachedIds = new Set(cached.map(c => c.id));
+    const missing = INITIAL_CLASSES.filter(c => !cachedIds.has(c.id));
+    return [...cached, ...missing];
   });
 
   const [students, setStudents] = useState<StudentRosterItem[]>(() => {
-    return localStore.get<StudentRosterItem[]>('students', INITIAL_STUDENTS);
+    const cached = localStore.get<StudentRosterItem[]>('students', INITIAL_STUDENTS);
+    if (!cached || cached.length === 0) return INITIAL_STUDENTS;
+    const cachedMap = new Map(cached.map(s => [s.id, s]));
+    const merged = INITIAL_STUDENTS.map(stu => {
+      const existing = cachedMap.get(stu.id);
+      if (existing) {
+        return {
+          ...stu,
+          avatar: existing.avatar || stu.avatar,
+          totalStars: existing.totalStars ?? stu.totalStars,
+          accessCode: stu.accessCode || existing.accessCode,
+          accessCodeHash: stu.accessCodeHash || existing.accessCodeHash,
+        };
+      }
+      return stu;
+    });
+    // Retain any custom students teacher might have manually uploaded
+    const baselineIds = new Set(INITIAL_STUDENTS.map(s => s.id));
+    cached.forEach(s => {
+      if (!baselineIds.has(s.id)) {
+        merged.push(s);
+      }
+    });
+    return merged;
   });
 
   const [materials, setMaterials] = useState<MaterialItem[]>(() => {
@@ -234,7 +294,12 @@ export const App: React.FC = () => {
         activeSection={activeSection}
         setActiveSection={setActiveSection}
         activeStudentTab={activeStudentTab}
-        setActiveStudentTab={setActiveStudentTab}
+        setActiveStudentTab={(tab) => {
+          setActiveStudentTab(tab);
+          if (activeGradeNum !== null) {
+            navigateTo('/');
+          }
+        }}
         activeTeacherTab={activeTeacherTab}
         setActiveTeacherTab={setActiveTeacherTab}
         previewGradeBand={previewGradeBand}
@@ -247,26 +312,44 @@ export const App: React.FC = () => {
       {/* Main Container */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
         
-        {/* STUDENT LEARNING HUB */}
+        {/* STUDENT LEARNING HUB & GRADE DASHBOARD ROUTES (/grade/1 to /grade/5) */}
         {activeSection === 'student' && (
-          <LearningHub
-            user={user}
-            destinations={DESTINATIONS}
-            progressMap={progressMap}
-            activeTab={activeStudentTab}
-            totalStars={totalStars}
-            previewGradeBand={previewGradeBand}
-            onUpdateProgress={handleUpdateProgress}
-            onSelectTab={setActiveStudentTab}
-            onEarnStars={(stars) => {
-              if (user) {
-                setUser({
-                  ...user,
-                  stars: (user.stars || 0) + stars
-                });
-              }
-            }}
-          />
+          activeGradeNum !== null ? (
+            <GradeDashboard
+              gradeNum={activeGradeNum}
+              user={user}
+              onNavigateHome={() => navigateTo('/')}
+              onNavigateGrade={(g) => navigateTo(`/grade/${g}`)}
+              onEarnStars={(stars) => {
+                if (user) {
+                  setUser({
+                    ...user,
+                    stars: (user.stars || 0) + stars
+                  });
+                }
+              }}
+            />
+          ) : (
+            <LearningHub
+              user={user}
+              destinations={DESTINATIONS}
+              progressMap={progressMap}
+              activeTab={activeStudentTab}
+              totalStars={totalStars}
+              previewGradeBand={previewGradeBand}
+              onUpdateProgress={handleUpdateProgress}
+              onSelectTab={setActiveStudentTab}
+              onNavigateGrade={(g) => navigateTo(`/grade/${g}`)}
+              onEarnStars={(stars) => {
+                if (user) {
+                  setUser({
+                    ...user,
+                    stars: (user.stars || 0) + stars
+                  });
+                }
+              }}
+            />
+          )
         )}
 
         {/* TEACHER TEACHING STUDIO (Strictly Protected) */}
@@ -307,7 +390,12 @@ export const App: React.FC = () => {
       {/* Global Magical Adventure 3D Footer */}
       <MagicalAdventureFooter
         activeStudentTab={activeStudentTab}
-        setActiveStudentTab={setActiveStudentTab}
+        setActiveStudentTab={(tab) => {
+          setActiveStudentTab(tab);
+          if (activeGradeNum !== null) {
+            navigateTo('/');
+          }
+        }}
         onOpenCreatorModal={() => setIsCreatorModalOpen(true)}
         onOpenStaffAuth={() => setIsStaffAuthOpen(true)}
         totalStars={totalStars}
@@ -353,7 +441,12 @@ export const App: React.FC = () => {
       {activeSection === 'student' && (
         <MobileBottomNav
           activeStudentTab={activeStudentTab}
-          setActiveStudentTab={setActiveStudentTab}
+          setActiveStudentTab={(tab) => {
+            setActiveStudentTab(tab);
+            if (activeGradeNum !== null) {
+              navigateTo('/');
+            }
+          }}
         />
       )}
 

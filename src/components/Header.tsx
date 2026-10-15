@@ -23,6 +23,7 @@ import { UserProfile, UserRole, GradeBand } from '../types';
 import { isSupabaseConfigured } from '../lib/supabase';
 import { soundEffects } from '../lib/soundEffects';
 import { playEnglishSpeech } from '../lib/speech';
+import { AvatarImage } from './Student/AvatarImage';
 
 interface HeaderProps {
   currentRole: UserRole;
@@ -38,6 +39,7 @@ interface HeaderProps {
   onLogout: () => void;
   totalStars: number;
   onOpenCreatorModal?: () => void;
+  onOpenAvatarModal?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -53,10 +55,18 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenStudentAuth,
   onLogout,
   totalStars,
-  onOpenCreatorModal
+  onOpenCreatorModal,
+  onOpenAvatarModal
 }) => {
   const isOnline = isSupabaseConfigured();
   const [soundOn, setSoundOn] = React.useState(() => soundEffects.isSoundEnabled());
+
+  React.useEffect(() => {
+    const unsubscribe = soundEffects.subscribe((enabled) => {
+      setSoundOn(enabled);
+    });
+    return unsubscribe;
+  }, []);
 
   const handleToggleSound = () => {
     const next = soundEffects.toggleSound();
@@ -209,21 +219,53 @@ export const Header: React.FC<HeaderProps> = ({
                 <span className="hidden sm:inline">Cloud Synced</span>
               </div>
 
-              {/* Student Profile Pill */}
+              {/* Student Profile Pill with 3D Avatar */}
               {user ? (
                 <div className="flex items-center gap-2 pl-1.5 pr-2.5 py-1 rounded-full bg-white shadow-md border border-slate-200 text-slate-800">
-                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-rose-500 text-white font-black text-xs sm:text-sm flex items-center justify-center shadow-xs shrink-0">
-                    {user.fullName?.charAt(0) || 'N'}
-                  </div>
-                  <div className="text-left min-w-0">
-                    <div className="text-xs font-black text-slate-800 leading-tight truncate max-w-[85px] sm:max-w-none">
+                  <button
+                    onClick={() => {
+                      soundEffects.playClick();
+                      if (onOpenAvatarModal) onOpenAvatarModal();
+                    }}
+                    title="Đổi nhân vật 3D (Change 3D Avatar)"
+                    className="relative group cursor-pointer shrink-0 transition-transform hover:scale-110 active:scale-95"
+                  >
+                    <AvatarImage
+                      avatar={user.avatar}
+                      name={user.fullName}
+                      className="w-8 h-8 sm:w-9 sm:h-9"
+                    />
+                    <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-amber-400 text-[9px] text-amber-950 font-black flex items-center justify-center border border-white shadow-xs">
+                      ✨
+                    </span>
+                  </button>
+                  <div 
+                    className="text-left min-w-0 cursor-pointer"
+                    onClick={() => {
+                      if (onOpenAvatarModal) {
+                        soundEffects.playClick();
+                        onOpenAvatarModal();
+                      }
+                    }}
+                    title="Bấm để đổi avatar 3D"
+                  >
+                    <div className="text-xs font-black text-slate-800 leading-tight truncate max-w-[85px] sm:max-w-none hover:text-sky-600 transition-colors">
                       {user.fullName || 'Nguyễn Minh Anh'}
                     </div>
-                    <div className="text-[10px] text-slate-400 font-bold leading-none">
-                      {user.className ? user.className.split('-')[0].trim() : 'Class (Grade 3)'}
+                    <div className="text-[10px] text-slate-400 font-bold leading-none flex items-center gap-1">
+                      <span>{user.className ? user.className.split('-')[0].trim() : 'Class (Grade 3)'}</span>
+                      <span className="text-[9px] text-amber-600 font-extrabold hover:underline hidden sm:inline">• Đổi avatar</span>
                     </div>
                   </div>
-                  <ChevronDown className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                  <ChevronDown 
+                    onClick={() => {
+                      if (onOpenAvatarModal) {
+                        soundEffects.playClick();
+                        onOpenAvatarModal();
+                      }
+                    }}
+                    className="w-3.5 h-3.5 text-slate-400 hover:text-amber-500 cursor-pointer shrink-0" 
+                  />
                   <span className="text-sm shrink-0">🇻🇳</span>
                   <button
                     onClick={() => {

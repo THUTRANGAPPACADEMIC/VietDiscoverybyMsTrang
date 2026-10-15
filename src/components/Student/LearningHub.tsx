@@ -12,6 +12,8 @@ import { DestinationExplorerModal } from './DestinationExplorerModal';
 import { LandmarkDragDropGame } from './LandmarkDragDropGame';
 import { InteractiveMap34ProvincesGame } from './InteractiveMap34ProvincesGame';
 import { StudentCurriculumExperience } from './StudentCurriculumExperience';
+import { GradePathwaySelection } from './GradePathwaySelection';
+import { GradeNumber } from '../../data/gradePathwaysData';
 import { 
   Sparkles, 
   Compass, 
@@ -48,6 +50,7 @@ interface LearningHubProps {
   onUpdateProgress: (destId: string, score: number, starsEarned: number) => void;
   onEarnStars?: (stars: number) => void;
   onSelectTab?: (tab: 'explore' | 'games' | 'passport' | 'progress') => void;
+  onNavigateGrade?: (gradeNum: GradeNumber) => void;
 }
 
 type LessonTabType = 'vocabulary' | 'reading' | 'listening' | 'speaking' | 'quiz';
@@ -61,7 +64,8 @@ export const LearningHub: React.FC<LearningHubProps> = ({
   previewGradeBand,
   onUpdateProgress,
   onEarnStars,
-  onSelectTab
+  onSelectTab,
+  onNavigateGrade
 }) => {
   // Find default destinations
   const halongDest = destinations.find(d => d.id === 'halong') || destinations[0];
@@ -403,71 +407,21 @@ export const LearningHub: React.FC<LearningHubProps> = ({
             </div>
           </div>
 
-          {/* 1. SELECT LEARNING PATHWAY (5 GRADE CARDS) - MATCHING IMAGE 2 */}
-          <div className="space-y-2.5">
-            <div className="text-xs sm:text-sm font-black uppercase tracking-wider text-blue-900 flex items-center gap-1.5 font-heading px-1">
-              <span className="text-rose-500 text-base">🎯</span>
-              <span>SELECT LEARNING PATHWAY (CHỌN KHỐI LỚP TRẢI NGHIỆM):</span>
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3">
-              {GRADE_PATHWAYS.map((p) => {
-                const isSelected = activeGradeBand === p.key;
-
-                return (
-                  <button
-                    key={p.key}
-                    onClick={() => {
-                      soundEffects.playClick();
-                      setActiveGradeBand(p.key);
-                    }}
-                    className={`relative p-2.5 sm:p-3 rounded-[24px] bg-gradient-to-r ${p.pillBg} border-2 ${p.borderStyle} transition-all duration-300 text-left flex items-center justify-between gap-2 cursor-pointer group shadow-sm hover:scale-102 active:scale-98 ${
-                      isSelected ? `${p.activeRing} ring-3 scale-102` : 'opacity-90 hover:opacity-100'
-                    }`}
-                  >
-                    {/* Golden Crown perched on Grade 3 */}
-                    {p.hasCrown && (
-                      <div className="absolute -top-3 left-2 z-20 pointer-events-none drop-shadow-md animate-bounce-subtle">
-                        <img
-                          src="/assets/cute/golden_crown_clean.png"
-                          alt="Golden Crown"
-                          className="w-6 h-auto object-contain"
-                        />
-                      </div>
-                    )}
-
-                    <div className="flex items-center gap-2 min-w-0">
-                      {/* Left Circular Badge with Icon */}
-                      <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/90 shadow-xs flex items-center justify-center text-xl shrink-0 group-hover:scale-110 transition-transform">
-                        <span>{p.icon}</span>
-                      </div>
-
-                      {/* Grade Info */}
-                      <div className="min-w-0">
-                        {/* Upper Badge */}
-                        <div className="inline-block px-1.5 py-0.5 rounded-full bg-white/85 text-[9px] font-black uppercase tracking-tight text-slate-800 shadow-xs leading-none mb-1">
-                          {p.badge}
-                        </div>
-                        {/* Title */}
-                        <div className={`text-sm sm:text-base font-black font-heading leading-tight truncate ${p.textColor}`}>
-                          {p.title}
-                        </div>
-                        {/* Sub */}
-                        <div className="text-[10px] sm:text-[11px] font-bold text-slate-700/80 leading-none truncate">
-                          {p.sub}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Right Arrow Circle */}
-                    <div className={`w-6 h-6 rounded-full ${p.arrowBg} shadow-xs flex items-center justify-center text-xs font-black shrink-0 group-hover:translate-x-0.5 transition-transform`}>
-                      ›
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
+          {/* 1. SELECT LEARNING PATHWAY (5 GRADE CARDS) - INTERACTIVE & NAVIGABLE */}
+          <GradePathwaySelection
+            activeGradeNum={
+              activeGradeBand === 'grade_1' ? 1 :
+              activeGradeBand === 'grade_2' ? 2 :
+              activeGradeBand === 'grade_3' ? 3 :
+              activeGradeBand === 'grade_4' ? 4 : 5
+            }
+            onSelectGrade={(g) => {
+              setActiveGradeBand(`grade_${g}` as GradeBand);
+              if (onNavigateGrade) {
+                onNavigateGrade(g);
+              }
+            }}
+          />
 
           {/* 2. DAILY EXPLORER QUESTS ROW - MATCHING IMAGE 2 */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-3">

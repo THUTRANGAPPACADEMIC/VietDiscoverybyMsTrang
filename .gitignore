@@ -76,3 +76,7 @@ Thumbs.db
 # Preserves all actual application images inside public/ and src/
 /*.png
 !public/**
+
+# Python cache
+__pycache__/
+*.pyc

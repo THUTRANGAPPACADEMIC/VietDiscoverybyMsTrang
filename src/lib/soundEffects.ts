@@ -16,6 +16,26 @@ class SoundPlayer {
     }
   }
 
+  private listeners: ((enabled: boolean) => void)[] = [];
+
+  subscribe(listener: (enabled: boolean) => void): () => void {
+    this.listeners.push(listener);
+    listener(this.soundEnabled);
+    return () => {
+      this.listeners = this.listeners.filter(l => l !== listener);
+    };
+  }
+
+  private notify() {
+    this.listeners.forEach(fn => {
+      try {
+        fn(this.soundEnabled);
+      } catch (e) {
+        console.warn('Sound listener error:', e);
+      }
+    });
+  }
+
   isSoundEnabled(): boolean {
     return this.soundEnabled;
   }
@@ -27,6 +47,7 @@ class SoundPlayer {
     } catch {
       // storage unavailable
     }
+    this.notify();
   }
 
   toggleSound(): boolean {
@@ -215,8 +236,63 @@ class SoundPlayer {
     }
   }
 
+  playSparkle() {
+    try {
+      const ctx = this.getContext();
+      if (!ctx) return;
+      const now = ctx.currentTime;
+      [880, 1174.66, 1318.51, 1760].forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now + idx * 0.05);
+        gain.gain.setValueAtTime(0.08, now + idx * 0.05);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.05 + 0.15);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now + idx * 0.05);
+        osc.stop(now + idx * 0.05 + 0.15);
+      });
+    } catch {
+      // Audio fallback
+    }
+  }
+
+  playAvatarSelect() {
+    try {
+      const ctx = this.getContext();
+      if (!ctx) return;
+      const now = ctx.currentTime;
+      
+      // Cheerful ascending arpeggio C5 -> E5 -> G5 -> C6 with warm sine waves
+      const notes = [523.25, 659.25, 783.99, 1046.50];
+      notes.forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now + idx * 0.06);
+        gain.gain.setValueAtTime(0.12, now + idx * 0.06);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.06 + 0.22);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now + idx * 0.06);
+        osc.stop(now + idx * 0.06 + 0.22);
+      });
+    } catch {
+      // Audio fallback
+    }
+  }
+
   playSuccess() {
     this.playCorrect();
+  }
+
+  playIncorrect() {
+    this.playWrong();
+  }
+
+  playCelebration() {
+    this.playStarFanfare();
   }
 
   playComplete() {

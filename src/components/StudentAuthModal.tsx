@@ -25,6 +25,20 @@ interface StudentAuthModalProps {
   onStudentLoginSuccess: (studentUser: UserProfile, progress?: Record<string, DestinationProgress>) => void;
 }
 
+export interface StudentClassOption {
+  code: string;
+  label: string;
+  classId: number;
+}
+
+export const STUDENT_CLASSROOM_OPTIONS: readonly StudentClassOption[] = [
+  { code: '2.2', label: 'Class 2.2', classId: 1 },
+  { code: '4.1', label: 'Class 4.1', classId: 2 },
+  { code: '4.6', label: 'Class 4.6', classId: 3 },
+  { code: '5.2', label: 'Class 5.2', classId: 4 },
+  { code: '5.6', label: 'Class 5.6', classId: 5 },
+] as const;
+
 export const StudentAuthModal: React.FC<StudentAuthModalProps> = ({
   isOpen,
   classes,
@@ -32,11 +46,7 @@ export const StudentAuthModal: React.FC<StudentAuthModalProps> = ({
   onClose,
   onStudentLoginSuccess
 }) => {
-  // Ensure the 5 designated classes are available
-  const availableClasses = classes.filter(c => ['2.2', '4.1', '4.6', '5.2', '5.6'].includes(c.code));
-  const activeClassList = availableClasses.length > 0 ? availableClasses : classes;
-
-  const [selectedClassCode, setSelectedClassCode] = useState<string>(activeClassList[1]?.code || '4.1');
+  const [selectedClassCode, setSelectedClassCode] = useState<string>('4.1');
   const [fullName, setFullName] = useState<string>('');
   const [accessCode, setAccessCode] = useState<string>('');
   const [showAccessCode, setShowAccessCode] = useState<boolean>(false);
@@ -168,21 +178,22 @@ export const StudentAuthModal: React.FC<StudentAuthModalProps> = ({
             </p>
           </div>
 
-          {/* 2. Class Selector Dropdown */}
+          {/* 2. Classroom Selector Dropdown */}
           <div>
             <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
               <School className="w-3.5 h-3.5 text-indigo-500" />
-              <span>Lớp Học Của Bé (Classroom)</span>
+              <span>Lớp Học (Classroom)</span>
             </label>
             <div className="relative">
               <select
+                id="student-classroom-select"
                 value={selectedClassCode}
                 onChange={(e) => setSelectedClassCode(e.target.value)}
                 className="w-full px-4 py-3 rounded-2xl border border-slate-200 text-sm font-bold text-slate-800 bg-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all cursor-pointer shadow-xs"
               >
-                {activeClassList.map(c => (
-                  <option key={c.id} value={c.code}>
-                    Lớp {c.code} — {c.name} ({c.gradeLevel})
+                {STUDENT_CLASSROOM_OPTIONS.map(c => (
+                  <option key={c.code} value={c.code}>
+                    {c.label}
                   </option>
                 ))}
               </select>
@@ -252,7 +263,7 @@ export const StudentAuthModal: React.FC<StudentAuthModalProps> = ({
               className="p-2 rounded-xl bg-slate-50 hover:bg-rose-50 border border-slate-200 hover:border-rose-300 text-[10.5px] text-slate-700 transition-all text-left"
             >
               <div className="font-bold text-slate-900">Bùi Gia Huy</div>
-              <div className="text-[9.5px] text-rose-600">Lớp 2.2 • VD2201</div>
+              <div className="text-[9.5px] text-rose-600">Class 2.2 • VD2201</div>
             </button>
 
             <button
@@ -261,7 +272,7 @@ export const StudentAuthModal: React.FC<StudentAuthModalProps> = ({
               className="p-2 rounded-xl bg-slate-50 hover:bg-rose-50 border border-slate-200 hover:border-rose-300 text-[10.5px] text-slate-700 transition-all text-left"
             >
               <div className="font-bold text-slate-900">Nguyễn Minh Khôi</div>
-              <div className="text-[9.5px] text-indigo-600">Lớp 4.1 • VD4101</div>
+              <div className="text-[9.5px] text-indigo-600">Class 4.1 • VD4101</div>
             </button>
 
             <button
@@ -270,7 +281,7 @@ export const StudentAuthModal: React.FC<StudentAuthModalProps> = ({
               className="p-2 rounded-xl bg-slate-50 hover:bg-rose-50 border border-slate-200 hover:border-rose-300 text-[10.5px] text-slate-700 transition-all text-left"
             >
               <div className="font-bold text-slate-900">Hoàng Tuấn Kiệt</div>
-              <div className="text-[9.5px] text-indigo-600">Lớp 4.6 • VD4601</div>
+              <div className="text-[9.5px] text-indigo-600">Class 4.6 • VD4601</div>
             </button>
 
             <button
@@ -279,16 +290,25 @@ export const StudentAuthModal: React.FC<StudentAuthModalProps> = ({
               className="p-2 rounded-xl bg-slate-50 hover:bg-rose-50 border border-slate-200 hover:border-rose-300 text-[10.5px] text-slate-700 transition-all text-left"
             >
               <div className="font-bold text-slate-900">Võ Minh Quân</div>
-              <div className="text-[9.5px] text-emerald-600">Lớp 5.2 • VD5201</div>
+              <div className="text-[9.5px] text-emerald-600">Class 5.2 • VD5201</div>
             </button>
 
             <button
               type="button"
               onClick={() => handleQuickDemoFill('Phạm Đức Anh', '5.6', 'VD5601')}
-              className="p-2 rounded-xl bg-slate-50 hover:bg-rose-50 border border-slate-200 hover:border-rose-300 text-[10.5px] text-slate-700 transition-all text-left col-span-2 sm:col-span-1"
+              className="p-2 rounded-xl bg-slate-50 hover:bg-rose-50 border border-slate-200 hover:border-rose-300 text-[10.5px] text-slate-700 transition-all text-left"
             >
               <div className="font-bold text-slate-900">Phạm Đức Anh</div>
-              <div className="text-[9.5px] text-emerald-600">Lớp 5.6 • VD5601</div>
+              <div className="text-[9.5px] text-emerald-600">Class 5.6 • VD5601</div>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleQuickDemoFill('Lê Hoàng Khôi', '5.6', 'VD56017')}
+              className="p-2 rounded-xl bg-rose-50/70 hover:bg-rose-100/70 border border-rose-200 hover:border-rose-400 text-[10.5px] text-slate-700 transition-all text-left"
+            >
+              <div className="font-bold text-rose-900">Lê Hoàng Khôi ⭐</div>
+              <div className="text-[9.5px] text-rose-600 font-bold">Class 5.6 • VD56017</div>
             </button>
           </div>
         </div>

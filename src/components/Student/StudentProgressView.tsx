@@ -15,20 +15,27 @@ import {
   TrendingUp,
   ShieldCheck
 } from 'lucide-react';
-import { Destination, DestinationProgress, getChallengeLevel } from '../../types';
+import { Destination, DestinationProgress, UserProfile, getChallengeLevel } from '../../types';
+import { AvatarImage } from './AvatarImage';
+import { getAvatarById } from '../../data/avatarsData';
+import { soundEffects } from '../../lib/soundEffects';
 
 interface StudentProgressViewProps {
   destinations: Destination[];
   progressMap: Record<string, DestinationProgress>;
   totalStars: number;
   onOpenLesson: (dest: Destination) => void;
+  user?: UserProfile | null;
+  onOpenAvatarModal?: () => void;
 }
 
 export const StudentProgressView: React.FC<StudentProgressViewProps> = ({
   destinations,
   progressMap,
   totalStars,
-  onOpenLesson
+  onOpenLesson,
+  user,
+  onOpenAvatarModal
 }) => {
   const completedEntries = Object.entries(progressMap);
   const totalCompleted = completedEntries.filter(([_, p]) => p.completedSteps?.quiz || p.quizScore > 0).length;
@@ -127,9 +134,109 @@ export const StudentProgressView: React.FC<StudentProgressViewProps> = ({
   const l2Stars = getStarRating(l2Percent, l2Total);
   const l3Stars = getStarRating(l3Percent, l3Total);
 
+  const currentAvatarMeta = user?.avatar ? getAvatarById(user.avatar) : undefined;
+
   return (
     <div className="space-y-8 max-w-5xl mx-auto pb-6">
       
+      {/* 0. STUDENT 3D AVATAR & EXPLORER PASSPORT HERO BANNER */}
+      {user && (
+        <div className="relative overflow-hidden rounded-[32px] bg-gradient-to-r from-sky-400 via-blue-500 to-indigo-600 p-6 sm:p-7 text-white shadow-xl border-4 border-white">
+          {/* Subtle background glow */}
+          <div className="absolute top-0 right-0 w-80 h-80 bg-white/10 rounded-full blur-3xl pointer-events-none -mr-16 -mt-16"></div>
+          <div className="absolute bottom-0 left-1/3 w-60 h-60 bg-amber-400/20 rounded-full blur-2xl pointer-events-none"></div>
+
+          <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-5 text-center sm:text-left">
+            
+            {/* Left: 3D Avatar Frame + Change Avatar Button */}
+            <div className="flex flex-col items-center shrink-0">
+              <div 
+                onClick={() => {
+                  soundEffects.playClick();
+                  if (onOpenAvatarModal) onOpenAvatarModal();
+                }}
+                className="relative group cursor-pointer"
+                title="Bấm để chọn lại nhân vật 3D"
+              >
+                <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl p-1 bg-gradient-to-tr from-amber-300 via-white to-sky-200 shadow-xl border-3 border-white/90 group-hover:scale-105 group-hover:rotate-1 transition-all">
+                  <AvatarImage
+                    avatar={user.avatar}
+                    name={user.fullName}
+                    className="w-full h-full rounded-2xl"
+                  />
+                </div>
+                
+                {/* Floating 3D Sparkle Pill */}
+                <div className="absolute -bottom-2 -right-2 px-2.5 py-0.5 rounded-full bg-amber-400 text-slate-950 font-black text-[10px] shadow-md border-2 border-white flex items-center gap-1 group-hover:scale-110 transition-transform">
+                  <span>3D HERO</span>
+                  <span>✨</span>
+                </div>
+              </div>
+
+              {/* Change Avatar Button */}
+              {onOpenAvatarModal && (
+                <button
+                  onClick={() => {
+                    soundEffects.playClick();
+                    onOpenAvatarModal();
+                  }}
+                  className="mt-3 px-3.5 py-1.5 rounded-full bg-white/20 hover:bg-white/30 text-white font-extrabold text-xs backdrop-blur-md border border-white/40 shadow-xs transition-all active:scale-95 cursor-pointer flex items-center gap-1.5"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                  <span>Đổi Avatar 3D</span>
+                </button>
+              )}
+            </div>
+
+            {/* Center: Student Identity & Avatar Role */}
+            <div className="flex-1 space-y-2">
+              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                <span className="px-3 py-0.5 rounded-full bg-white/20 backdrop-blur-md text-[11px] font-black uppercase tracking-wider border border-white/20">
+                  {user.gradeLevel || 'Grade 4'} • {user.className || 'Class 4.1'}
+                </span>
+                {currentAvatarMeta && (
+                  <span className="px-3 py-0.5 rounded-full bg-amber-400 text-slate-950 text-[11px] font-black shadow-xs">
+                    {currentAvatarMeta.role}
+                  </span>
+                )}
+              </div>
+
+              <h2 className="text-2xl sm:text-3xl font-black font-heading tracking-tight leading-tight">
+                {user.fullName}
+              </h2>
+
+              {currentAvatarMeta ? (
+                <div className="bg-white/15 backdrop-blur-md rounded-2xl p-3 border border-white/20 max-w-xl space-y-1">
+                  <div className="text-xs sm:text-sm font-bold text-amber-200 flex items-center gap-1.5 justify-center sm:justify-start">
+                    <span>🌟</span>
+                    <span>{currentAvatarMeta.name} – {currentAvatarMeta.vietnameseName}</span>
+                  </div>
+                  <p className="text-xs text-sky-100 italic">
+                    "{currentAvatarMeta.motto}"
+                  </p>
+                </div>
+              ) : (
+                <p className="text-xs sm:text-sm text-sky-100">
+                  Chào mừng con đến với bảng thành tích cá nhân! Hãy khám phá và sưu tập đủ các huy hiệu nhé!
+                </p>
+              )}
+            </div>
+
+            {/* Right: Quick Stars Box */}
+            <div className="bg-white/15 backdrop-blur-md rounded-2xl p-4 border border-white/20 text-center shrink-0 min-w-[130px]">
+              <div className="text-amber-300 flex items-center justify-center gap-1 text-2xl font-black font-heading">
+                <Star className="w-6 h-6 fill-amber-300 animate-pulse" />
+                <span>{totalStars}</span>
+              </div>
+              <div className="text-[11px] font-bold text-sky-100 mt-0.5">
+                Total Stars Earned
+              </div>
+            </div>
+
+          </div>
+        </div>
+      )}
+
       {/* 1. OVERVIEW STAT CARDS */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         

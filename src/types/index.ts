@@ -222,6 +222,7 @@ export interface StudentRosterItem {
   averageScore: number;
   lastActive: string;
   status: 'online' | 'offline';
+  avatar?: string;
 }
 
 export interface StudentLoginResult {
