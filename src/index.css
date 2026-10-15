@@ -68,3 +68,106 @@
   }
 }
 
+/* ============================================================================ */
+/* 3D FLOATING ISLAND ADVENTURE WORLD ANIMATIONS & 3D STYLES                    */
+/* ============================================================================ */
+
+@keyframes float-island-1 {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-14px) rotate(0.8deg); }
+}
+
+@keyframes float-island-2 {
+  0%, 100% { transform: translateY(-6px) rotate(-0.5deg); }
+  50% { transform: translateY(8px) rotate(0.6deg); }
+}
+
+@keyframes float-island-3 {
+  0%, 100% { transform: translateY(0px) rotate(0.5deg); }
+  50% { transform: translateY(-12px) rotate(-0.7deg); }
+}
+
+@keyframes float-island-4 {
+  0%, 100% { transform: translateY(-8px) rotate(-0.6deg); }
+  50% { transform: translateY(6px) rotate(0.5deg); }
+}
+
+@keyframes float-island-5 {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-16px) rotate(1deg); }
+}
+
+.animate-island-1 { animation: float-island-1 5.2s ease-in-out infinite; }
+.animate-island-2 { animation: float-island-2 6.1s ease-in-out infinite; }
+.animate-island-3 { animation: float-island-3 4.8s ease-in-out infinite; }
+.animate-island-4 { animation: float-island-4 5.7s ease-in-out infinite; }
+.animate-island-5 { animation: float-island-5 6.4s ease-in-out infinite; }
+
+@keyframes ocean-wave-shift {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-ocean-waves {
+  animation: ocean-wave-shift 20s linear infinite;
+}
+
+@keyframes crystal-pulse {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 8px currentColor); }
+  50% { transform: scale(1.15); filter: drop-shadow(0 0 22px currentColor); }
+}
+
+.animate-crystal-pulse {
+  animation: crystal-pulse 2.8s ease-in-out infinite;
+}
+
+@keyframes star-shimmer {
+  0%, 100% { opacity: 0.25; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.25); }
+}
+
+.animate-star-shimmer {
+  animation: star-shimmer 2.2s ease-in-out infinite;
+}
+
+/* 3D Cartoon Dimensional Typography */
+.text-3d-fantasy {
+  text-shadow: 
+    0 1px 0 #fff,
+    0 2px 0 rgba(0,0,0,0.2),
+    0 4px 0 rgba(0,0,0,0.25),
+    0 6px 1px rgba(0,0,0,0.1),
+    0 0 5px rgba(0,0,0,0.1),
+    0 1px 3px rgba(0,0,0,0.3),
+    0 3px 5px rgba(0,0,0,0.2),
+    0 5px 10px rgba(0,0,0,0.25),
+    0 10px 10px rgba(0,0,0,0.2),
+    0 20px 20px rgba(0,0,0,0.15);
+}
+
+.text-3d-gold {
+  color: #fffbeb;
+  text-shadow:
+    0 2px 0 #b45309,
+    0 4px 0 #92400e,
+    0 6px 0 #78350f,
+    0 8px 12px rgba(0,0,0,0.45);
+}
+
+.text-3d-cyan {
+  color: #ecfeff;
+  text-shadow:
+    0 2px 0 #0e7490,
+    0 4px 0 #155e75,
+    0 6px 0 #164e63,
+    0 8px 12px rgba(0,0,0,0.45);
+}
+
+.text-3d-purple {
+  color: #faf5ff;
+  text-shadow:
+    0 2px 0 #7e22ce,
+    0 4px 0 #6b21a8,
+    0 6px 0 #581c87,
+    0 8px 12px rgba(0,0,0,0.45);
+}
