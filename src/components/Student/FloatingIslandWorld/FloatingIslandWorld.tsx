@@ -8,16 +8,12 @@ import { soundEffects } from '../../../lib/soundEffects';
 import { 
   Sparkles, 
   Star, 
-  Compass, 
-  Trophy, 
   Volume2, 
   VolumeX, 
-  HelpCircle, 
   ChevronRight, 
-  Flame, 
-  MapPin, 
   ArrowLeft,
-  GraduationCap
+  GraduationCap,
+  Compass
 } from 'lucide-react';
 
 interface FloatingIslandWorldProps {
@@ -80,187 +76,258 @@ export const FloatingIslandWorld: React.FC<FloatingIslandWorldProps> = ({
     soundEffects.setSoundEnabled(next);
   };
 
-  const GRADE_OPTIONS: { grade: 1 | 2 | 3 | 4 | 5; label: string; sub: string; badge: string; color: string }[] = [
-    { grade: 1, label: 'Lớp 1', sub: 'Little Explorer', badge: 'Pre-A1 Starter', color: 'from-sky-400 to-blue-500' },
-    { grade: 2, label: 'Lớp 2', sub: 'Magical Backpack', badge: 'Pre-A1 Beginner', color: 'from-purple-400 to-indigo-500' },
-    { grade: 3, label: 'Lớp 3', sub: 'Golden Adventure', badge: 'Pre-A1 Foundation', color: 'from-amber-400 to-orange-500' },
-    { grade: 4, label: 'Lớp 4', sub: 'Discovery Rocket', badge: 'Pre-A1 to A1', color: 'from-teal-400 to-emerald-500' },
-    { grade: 5, label: 'Lớp 5', sub: 'English Champion', badge: 'A1/A2 Extension', color: 'from-rose-400 to-pink-500' }
+  // Grade cards matching reference image
+  const GRADE_CARDS: {
+    grade: 1 | 2 | 3 | 4 | 5;
+    label: string;
+    sub: string;
+    badgeIcon: string;
+    textColor: string;
+    subColor: string;
+    borderColor: string;
+    activeRing: string;
+    activeShadow: string;
+    bgGradient: string;
+  }[] = [
+    { 
+      grade: 1, 
+      label: 'Lớp 1', 
+      sub: 'Little Explorer', 
+      badgeIcon: '🪽',
+      textColor: 'text-pink-600',
+      subColor: 'text-purple-600',
+      borderColor: 'border-[#ffb6e9]',
+      activeRing: 'ring-pink-300',
+      activeShadow: 'shadow-[0_8px_25px_rgba(244,114,182,0.45)]',
+      bgGradient: 'from-white/95 via-[#fff5fb]/95 to-[#ffe4f2]/95'
+    },
+    { 
+      grade: 2, 
+      label: 'Lớp 2', 
+      sub: 'Magical Backpack', 
+      badgeIcon: '🎒',
+      textColor: 'text-amber-600',
+      subColor: 'text-amber-800',
+      borderColor: 'border-[#fed7aa]',
+      activeRing: 'ring-amber-300',
+      activeShadow: 'shadow-[0_8px_25px_rgba(251,146,60,0.45)]',
+      bgGradient: 'from-white/95 via-[#fff7ed]/95 to-[#ffedd5]/95'
+    },
+    { 
+      grade: 3, 
+      label: 'Lớp 3', 
+      sub: 'Golden Adventure', 
+      badgeIcon: '⭐',
+      textColor: 'text-yellow-600',
+      subColor: 'text-yellow-800',
+      borderColor: 'border-[#fef08a]',
+      activeRing: 'ring-yellow-300',
+      activeShadow: 'shadow-[0_8px_25px_rgba(250,204,21,0.5)]',
+      bgGradient: 'from-white/95 via-[#fefce8]/95 to-[#fef08a]/80'
+    },
+    { 
+      grade: 4, 
+      label: 'Lớp 4', 
+      sub: 'Discovery Rocket', 
+      badgeIcon: '🚀',
+      textColor: 'text-cyan-600',
+      subColor: 'text-sky-800',
+      borderColor: 'border-[#a5f3fc]',
+      activeRing: 'ring-cyan-300',
+      activeShadow: 'shadow-[0_8px_25px_rgba(34,211,238,0.45)]',
+      bgGradient: 'from-white/95 via-[#ecfeff]/95 to-[#cffafe]/95'
+    },
+    { 
+      grade: 5, 
+      label: 'Lớp 5', 
+      sub: 'English Champion', 
+      badgeIcon: '🏆',
+      textColor: 'text-blue-600',
+      subColor: 'text-indigo-800',
+      borderColor: 'border-[#bfdbfe]',
+      activeRing: 'ring-blue-300',
+      activeShadow: 'shadow-[0_8px_25px_rgba(96,165,250,0.45)]',
+      bgGradient: 'from-white/95 via-[#eff6ff]/95 to-[#dbeafe]/95'
+    }
   ];
 
   return (
-    <div className="relative w-full rounded-[40px] overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.45)] border-3 border-cyan-400/50">
+    <div className="relative w-full rounded-[40px] overflow-hidden shadow-[0_20px_60px_rgba(101,200,255,0.35)] border-4 border-sky-200/90 select-none">
       
       {/* ============================================================== */}
-      {/* LAYER 1: MAGICAL SKY & VIBRANT TURQUOISE OCEAN BACKGROUND       */}
+      {/* LAYER 1: BRIGHT MAGICAL SKY BACKGROUND (EXACT PALETTE & ART)    */}
       {/* ============================================================== */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden select-none">
-        {/* Magical Purple-Blue Twilight Sky with Nebulae */}
+      <div 
+        className="absolute inset-0 pointer-events-none overflow-hidden"
+        style={{
+          background: `
+            linear-gradient(180deg, 
+              #65C8FF 0%, 
+              #C6EDFF 32%, 
+              #E5D5FF 60%, 
+              #FFD9EE 80%, 
+              #FFE5D1 92%, 
+              #FFF2B5 100%
+            )
+          `
+        }}
+      >
+        {/* Soft Rainbow Arch across top-left */}
         <div 
-          className="absolute inset-x-0 top-0 h-[65%] z-0"
+          className="absolute -top-12 -left-12 w-96 h-96 rounded-full opacity-60 blur-2xl pointer-events-none"
           style={{
-            background: 'linear-gradient(180deg, #12032e 0%, #1c0b47 30%, #1e1b64 60%, #164e63 100%)'
+            background: 'radial-gradient(circle, rgba(254,205,211,0.7) 0%, rgba(253,230,138,0.6) 30%, rgba(167,243,208,0.5) 55%, rgba(186,230,253,0.4) 75%, transparent 100%)'
           }}
-        >
-          {/* Glowing Purple/Cyan Nebulae */}
-          <div className="absolute top-10 left-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl" />
-          <div className="absolute top-20 right-1/4 w-80 h-80 bg-cyan-500/20 rounded-full blur-3xl" />
-          <div className="absolute top-5 left-1/2 -translate-x-1/2 w-[700px] h-64 bg-indigo-500/20 rounded-full blur-3xl" />
+        />
 
-          {/* Twinkling Fantasy Stars */}
-          <div className="absolute top-8 left-12 w-2 h-2 rounded-full bg-yellow-200 animate-star-shimmer shadow-[0_0_8px_#fef08a]" />
-          <div className="absolute top-24 left-1/3 w-3 h-3 rounded-full bg-white animate-star-shimmer shadow-[0_0_12px_#ffffff]" />
-          <div className="absolute top-16 right-20 w-2.5 h-2.5 rounded-full bg-cyan-200 animate-star-shimmer shadow-[0_0_10px_#67e8f9]" />
-          <div className="absolute top-36 right-1/3 w-2 h-2 rounded-full bg-purple-200 animate-star-shimmer shadow-[0_0_8px_#d8b4fe]" />
-          <div className="absolute top-12 left-2/3 w-3 h-3 rounded-full bg-amber-200 animate-star-shimmer shadow-[0_0_10px_#fde047]" />
-        </div>
+        {/* Floating Pastel Clouds, Stars & Sparkles */}
+        <div className="absolute top-6 left-1/4 text-2xl opacity-80 animate-bounce pointer-events-none">⭐</div>
+        <div className="absolute top-10 right-1/4 text-xl opacity-75 animate-pulse pointer-events-none">✨</div>
+        <div className="absolute top-16 left-10 text-2xl opacity-70 pointer-events-none">☁️</div>
+        <div className="absolute top-20 right-16 text-3xl opacity-80 pointer-events-none">🎈</div>
+        <div className="absolute top-24 left-1/3 text-lg opacity-70 pointer-events-none">✨</div>
+        <div className="absolute top-32 right-1/3 text-2xl opacity-80 pointer-events-none">⭐</div>
 
-        {/* Vibrant Turquoise Tropical Ocean (Bottom 40%) */}
+        {/* Lower Fluffy Cloud Sea (Soft White / Lavender / Baby Pink) */}
         <div 
-          className="absolute inset-x-0 bottom-0 h-[42%] z-0 overflow-hidden"
+          className="absolute inset-x-0 bottom-0 h-48 opacity-75 pointer-events-none"
           style={{
-            background: 'linear-gradient(180deg, #0891b2 0%, #06b6d4 35%, #0284c7 70%, #0369a1 100%)'
+            background: 'radial-gradient(ellipse at 50% 100%, rgba(255,255,255,0.95) 0%, rgba(255,217,238,0.7) 45%, rgba(229,213,255,0.4) 75%, transparent 100%)'
           }}
-        >
-          {/* Animated Wave Strips */}
-          <div className="absolute top-0 inset-x-0 h-8 opacity-40 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-white via-cyan-200 to-transparent" />
-          
-          <svg className="absolute -top-4 inset-x-0 w-[200%] h-12 text-white/20 animate-ocean-waves" viewBox="0 0 1200 40" fill="currentColor" preserveAspectRatio="none">
-            <path d="M0,20 C150,35 350,5 500,20 C650,35 850,5 1000,20 C1150,35 1350,5 1500,20 L1500,40 L0,40 Z" />
-          </svg>
-
-          <svg className="absolute top-3 inset-x-0 w-[200%] h-12 text-cyan-200/25 animate-ocean-waves" style={{ animationDuration: '14s' }} viewBox="0 0 1200 40" fill="currentColor" preserveAspectRatio="none">
-            <path d="M0,15 C200,5 400,30 600,15 C800,5 1000,30 1200,15 L1200,40 L0,40 Z" />
-          </svg>
-
-          {/* Tropical Island Water Reflections */}
-          <div className="absolute top-8 inset-x-0 h-16 bg-gradient-to-b from-cyan-400/30 to-transparent blur-md" />
-        </div>
+        />
       </div>
 
       {/* ============================================================== */}
       {/* LAYER 2: INTERACTIVE CONTENT LAYER                             */}
       {/* ============================================================== */}
-      <div className="relative z-10 p-5 sm:p-8 space-y-8">
+      <div className="relative z-10 p-4 sm:p-7 space-y-6 sm:space-y-8">
         
-        {/* TOP BAR: BRANDING, TITLE & CONTROLS */}
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-5 pb-4 border-b border-white/15 backdrop-blur-md bg-slate-950/40 p-4 sm:p-6 rounded-[32px]">
+        {/* 1. TOP HEADER: 3D GOLDEN TITLE & FLOATING CORNER BADGES */}
+        <div className="relative flex flex-col items-center justify-center text-center pt-2">
           
-          {/* Left: 3D Grand Title */}
-          <div className="text-center lg:text-left space-y-1">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/20 border border-cyan-400/40 text-cyan-300 text-xs font-black uppercase tracking-wider mb-1">
-              <Sparkles className="w-4 h-4 text-cyan-400" />
-              <span>PREMIUM 3D ADVENTURE ARCHIPELAGO</span>
-            </div>
-            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white font-heading text-3d-fantasy">
-              THẾ GIỚI ĐẢO NỔI 3D
-            </h1>
-            <p className="text-xs sm:text-sm font-semibold text-cyan-200/90 max-w-xl">
-              Năm hòn đảo kỳ thú bay lượn giữa bầu trời sao và đại dương xanh biếc • Khám phá danh lam thắng cảnh Việt Nam & nâng cao tiếng Anh chuẩn Thông tư 27!
-            </p>
+          {/* Top Left Compass Badge */}
+          <div className="absolute top-0 left-0 hidden sm:flex items-center gap-1.5 p-2 rounded-2xl bg-white/80 backdrop-blur-md border-2 border-amber-300 shadow-md transform hover:rotate-12 transition-transform cursor-pointer" title="Compass 🧭">
+            <span className="text-2xl">🧭</span>
           </div>
 
-          {/* Right: Controls (Stars Counter, Sound & Overview Back) */}
-          <div className="flex items-center gap-3 flex-wrap justify-center">
+          {/* Top Right Backpack Badge */}
+          <div className="absolute top-0 right-0 hidden sm:flex items-center gap-1.5 p-2 rounded-2xl bg-white/80 backdrop-blur-md border-2 border-amber-300 shadow-md transform hover:-rotate-12 transition-transform cursor-pointer" title="Explorer Backpack 🎒">
+            <span className="text-2xl">🎒</span>
+          </div>
+
+          {/* Controls Bar on Top Right (Stars & Sound & Back) */}
+          <div className="w-full flex items-center justify-between sm:justify-end gap-2.5 mb-2">
+            
             {/* Star Counter */}
-            <div className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-amber-500/20 border border-amber-400/50 text-amber-300 backdrop-blur-md shadow-lg shadow-amber-500/10">
-              <Star className="w-5 h-5 fill-amber-400 text-amber-400 animate-spin-slow" />
-              <div className="text-left">
-                <span className="text-[10px] uppercase font-bold text-amber-200/80 block leading-none">Kho Sao Thám Hiểm</span>
-                <span className="text-base sm:text-lg font-black text-amber-300 font-heading leading-tight">{totalStars} Sao</span>
-              </div>
+            <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/95 border-2 border-amber-300 text-amber-900 shadow-md">
+              <Star className="w-4 h-4 fill-amber-400 text-amber-500 animate-spin" />
+              <span className="text-xs font-black font-heading">{totalStars} Sao</span>
             </div>
 
             {/* Sound Toggle */}
             <button
               onClick={handleToggleSound}
-              className={`p-3 rounded-2xl border transition-all cursor-pointer ${
+              className={`p-2 rounded-full border-2 transition-all cursor-pointer shadow-md ${
                 soundEnabled 
-                  ? 'bg-cyan-500/20 border-cyan-400/50 text-cyan-300 hover:bg-cyan-500/30' 
-                  : 'bg-slate-800/80 border-slate-700 text-slate-400 hover:bg-slate-800'
+                  ? 'bg-white/95 border-sky-300 text-sky-700 hover:bg-sky-50' 
+                  : 'bg-slate-100 border-slate-300 text-slate-400'
               }`}
               title={soundEnabled ? 'Tắt âm thanh' : 'Bật âm thanh'}
             >
-              {soundEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
+              {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
             </button>
 
-            {/* Back Button if callback provided */}
+            {/* Back Button */}
             {onBackToOverview && (
               <button
                 onClick={() => {
                   soundEffects.playClick();
                   onBackToOverview();
                 }}
-                className="px-4 py-2.5 rounded-2xl bg-slate-800/80 hover:bg-slate-700 border border-slate-600 text-white font-bold text-xs sm:text-sm flex items-center gap-1.5 transition-colors cursor-pointer"
+                className="px-3.5 py-1.5 rounded-full bg-white/95 hover:bg-white border-2 border-pink-200 text-pink-700 font-bold text-xs flex items-center gap-1 shadow-md transition-all cursor-pointer"
               >
-                <ArrowLeft className="w-4 h-4" />
-                <span>Quay Lại</span>
+                <ArrowLeft className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Quay Lại</span>
               </button>
             )}
           </div>
-        </div>
 
-        {/* GRADE DIFFERENTIATION SELECTION BAR */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between text-xs font-bold text-slate-300 px-2">
-            <span className="flex items-center gap-1.5 text-cyan-300">
-              <GraduationCap className="w-4 h-4 text-cyan-400" />
-              CHỌN KHỐI LỚP THÁM HIỂM (GRADE-DIFFERENTIATED CURRICULUM):
-            </span>
-            <span className="text-amber-400 hidden sm:inline">Phân hóa sư phạm Chuẩn Thông tư 27</span>
+          {/* 3D Golden Title: THẾ GIỚI ĐẢO NỔI 3D (From Sliced Asset & 3D Typography) */}
+          <div className="relative group cursor-pointer" onClick={() => soundEffects.playHover()}>
+            <img
+              src="/assets/islands/the_gioi_dao_noi_3d_title.webp"
+              alt="THẾ GIỚI ĐẢO NỔI 3D"
+              className="h-16 sm:h-22 md:h-26 w-auto object-contain drop-shadow-[0_8px_20px_rgba(234,88,12,0.35)] select-none block mx-auto group-hover:scale-105 transition-transform duration-300"
+            />
+            {/* Accessible fallback heading */}
+            <h1 className="sr-only">THẾ GIỚI ĐẢO NỔI 3D</h1>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 sm:gap-3">
-            {GRADE_OPTIONS.map(opt => {
-              const isGradeActive = selectedGrade === opt.grade;
+          {/* Bilingual Subtitle Badge */}
+          <div className="mt-1 inline-flex items-center gap-1.5 px-4 py-1 rounded-full bg-white/90 backdrop-blur-md border border-sky-200 text-sky-900 text-xs sm:text-sm font-bold shadow-xs">
+            <span>✨</span>
+            <span>Khám phá 5 hòn đảo kỳ thú trên bầu trời diệu kỳ Việt Nam</span>
+            <span>🌈</span>
+          </div>
+        </div>
+
+        {/* 2. FIVE GRADE SELECTION CARDS (EXACT MATCH TO REFERENCE IMAGE) */}
+        <div className="space-y-2">
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 sm:gap-3.5">
+            {GRADE_CARDS.map(card => {
+              const isActive = selectedGrade === card.grade;
               return (
                 <button
-                  key={opt.grade}
-                  onClick={() => handleSelectGrade(opt.grade)}
-                  className={`p-3 rounded-2xl border transition-all duration-300 text-left flex flex-col justify-between cursor-pointer active:scale-95 ${
-                    isGradeActive
-                      ? 'bg-slate-900/90 border-cyan-300 ring-2 ring-cyan-400/60 shadow-[0_8px_20px_rgba(34,211,238,0.35)] scale-102'
-                      : 'bg-slate-900/50 border-white/10 hover:bg-slate-900/70 text-slate-400'
+                  key={card.grade}
+                  onClick={() => handleSelectGrade(card.grade)}
+                  className={`relative p-3 sm:p-4 rounded-3xl border-2 transition-all duration-300 text-center flex flex-col items-center justify-between cursor-pointer active:scale-95 shadow-md ${
+                    card.borderColor
+                  } ${
+                    isActive
+                      ? `bg-gradient-to-b ${card.bgGradient} ring-4 ${card.activeRing} ${card.activeShadow} scale-103 sm:scale-105 z-10`
+                      : 'bg-white/85 hover:bg-white/95 hover:scale-102 opacity-90'
                   }`}
                 >
-                  <div className="flex items-center justify-between mb-1">
-                    <span className={`text-xs sm:text-sm font-black font-heading ${isGradeActive ? 'text-white' : 'text-slate-300'}`}>
-                      {opt.label}
-                    </span>
-                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${isGradeActive ? 'bg-cyan-500/30 text-cyan-200' : 'bg-slate-800 text-slate-400'}`}>
-                      {opt.grade === 3 ? '★ Core' : `G${opt.grade}`}
-                    </span>
+                  {/* Top-Right Winged / Star Badge */}
+                  <span className="absolute -top-2.5 -right-2 text-xl drop-shadow-sm animate-bounce-subtle">
+                    {card.badgeIcon}
+                  </span>
+
+                  {/* Grade Title */}
+                  <div className={`text-base sm:text-xl font-black font-heading tracking-tight ${card.textColor}`}>
+                    {card.label}
                   </div>
-                  <div>
-                    <p className={`text-[11px] font-bold truncate ${isGradeActive ? 'text-cyan-300' : 'text-slate-400'}`}>
-                      {opt.sub}
-                    </p>
-                    <p className="text-[10px] text-slate-400 truncate opacity-80">
-                      {opt.badge}
-                    </p>
+
+                  {/* Subtitle */}
+                  <div className={`text-[11px] sm:text-xs font-bold leading-tight mt-0.5 ${card.subColor}`}>
+                    {card.sub}
                   </div>
+
+                  {/* Active Indicator Dot */}
+                  {isActive && (
+                    <div className="mt-1.5 flex items-center justify-center gap-1">
+                      <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
+                      <span className="text-[10px] font-black text-amber-700">Đang chọn</span>
+                    </div>
+                  )}
                 </button>
               );
             })}
           </div>
         </div>
 
-        {/* ============================================================== */}
-        {/* THE 5 FLOATING ISLANDS ARCHIPELAGO (3D GRID / MAP)            */}
-        {/* ============================================================== */}
+        {/* 3. FIVE 3D FLOATING ISLANDS ROW (EXACT MATCH TO REFERENCE IMAGE) */}
         <div className="space-y-4">
-          <div className="text-center sm:text-left">
-            <h2 className="text-xl sm:text-2xl font-black text-white font-heading text-3d-fantasy flex items-center justify-center sm:justify-start gap-2">
+          <div className="flex items-center justify-between text-xs font-extrabold text-sky-950 px-1">
+            <span className="flex items-center gap-1.5">
               <span>🏝️</span>
-              <span>QUẦN ĐẢO NỔI 5 KỲ QUAN (5 FLOATING ISLANDS)</span>
-            </h2>
-            <p className="text-xs sm:text-sm text-cyan-200/80">
-              Nhấn vào từng hòn đảo để xem chi tiết hoặc bấm "Vào Thám Hiểm" để mở phòng học tương tác!
-            </p>
+              <span>5 HÒN ĐẢO NỔI 3D (CHẠM VÀO ĐỂ KHÁM PHÁ):</span>
+            </span>
+            <span className="text-pink-600 font-bold hidden sm:inline">Phát âm • Từ vựng • Phòng Lab • Đấu trường</span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 sm:gap-6 pt-2">
-            {FLOATING_ISLANDS.map(island => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-5">
+            {FLOATING_ISLANDS.map((island) => (
               <IslandCard3D
                 key={island.id}
                 island={island}
@@ -273,62 +340,52 @@ export const FloatingIslandWorld: React.FC<FloatingIslandWorldProps> = ({
           </div>
         </div>
 
-        {/* ============================================================== */}
-        {/* SELECTED ISLAND DETAILS BANNER                                 */}
-        {/* ============================================================== */}
+        {/* 4. SELECTED ISLAND DETAILS BANNER (BRIGHT PASTEL GLASS) */}
         <div 
-          className="relative overflow-hidden rounded-[32px] p-6 sm:p-8 backdrop-blur-xl border-2 shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col md:flex-row items-center justify-between gap-6"
-          style={{
-            borderColor: selectedIsland.crystalHex,
-            background: `linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.9) 60%, ${selectedIsland.crystalHex}25 100%)`
-          }}
+          className="relative overflow-hidden rounded-[32px] p-5 sm:p-7 backdrop-blur-xl border-3 border-sky-300/80 shadow-[0_16px_40px_rgba(101,200,255,0.25)] flex flex-col md:flex-row items-center justify-between gap-5 bg-white/92"
         >
-          {/* Left: Island Mascot & Name */}
-          <div className="flex flex-col sm:flex-row items-center gap-5 text-center sm:text-left">
-            <div className="shrink-0 p-3 rounded-2xl bg-slate-900/80 border border-white/10 shadow-inner">
+          {/* Left: Island Visual & Info */}
+          <div className="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
+            <div className="shrink-0 p-2 rounded-2xl bg-sky-50 border border-sky-200 shadow-sm">
               <Island3DVisual
                 islandId={selectedIsland.id}
-                size={140}
+                size={130}
                 isSelected={true}
               />
             </div>
             
-            <div className="space-y-1.5">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900/80 border border-white/10 text-xs font-bold text-slate-300">
+            <div className="space-y-1">
+              <div className="inline-flex items-center gap-2 px-3 py-0.5 rounded-full bg-sky-100 text-xs font-bold text-sky-800">
                 <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: selectedIsland.crystalHex }} />
-                <span>{selectedIsland.crystalName}</span>
+                <span>{selectedIsland.nameVi}</span>
                 <span>•</span>
-                <span className="text-amber-400">{selectedIsland.landmarkFeature}</span>
+                <span className="text-amber-600">{selectedIsland.landmarkFeature}</span>
               </div>
 
-              <h3 className="text-2xl sm:text-3xl font-black text-white font-heading text-3d-fantasy">
-                {selectedIsland.nameEn} ({selectedIsland.nameVi})
+              <h3 className="text-xl sm:text-2xl font-black text-slate-900 font-heading">
+                {selectedIsland.nameVi} • {selectedIsland.nameEn}
               </h3>
               
-              <p className="text-xs sm:text-sm text-cyan-200/90 max-w-xl">
+              <p className="text-xs sm:text-sm text-slate-600 max-w-xl font-medium">
                 {selectedIsland.taglineVi}
               </p>
 
-              <div className="pt-1 flex items-center gap-3 text-xs text-slate-300 font-medium">
-                <span className="text-amber-300 font-bold">🎯 Nhiệm vụ {currentGradeContent.gradeBadge}:</span>
+              <div className="pt-1 flex items-center gap-2 text-xs text-slate-700 font-bold">
+                <span className="text-amber-600">🎯 Nhiệm vụ {currentGradeContent.gradeBadge}:</span>
                 <span>{currentGradeContent.missionTitleVi}</span>
               </div>
             </div>
           </div>
 
-          {/* Right: Action Button */}
-          <div className="shrink-0 w-full sm:w-auto flex flex-col sm:flex-row items-center gap-3">
+          {/* Right: Big 3D Start Quest Button */}
+          <div className="shrink-0 w-full sm:w-auto">
             <button
               onClick={() => handleOpenIslandActivity(selectedIsland)}
-              className="w-full sm:w-auto px-8 py-4 rounded-2xl font-black text-sm sm:text-base uppercase tracking-wider text-white shadow-2xl transition-all duration-300 flex items-center justify-center gap-2 hover:scale-105 active:scale-95 cursor-pointer"
-              style={{
-                background: `linear-gradient(135deg, ${selectedIsland.crystalHex} 0%, #0284c7 100%)`,
-                boxShadow: `0 10px 25px ${selectedIsland.glowRgba}`
-              }}
+              className="w-full sm:w-auto px-7 py-3.5 rounded-2xl font-black text-sm uppercase tracking-wider text-white shadow-lg transition-all duration-300 flex items-center justify-center gap-2 hover:scale-105 active:scale-95 cursor-pointer bg-gradient-to-b from-[#4ade80] via-[#22c55e] to-[#16a34a] hover:from-[#22c55e] hover:to-[#15803d] border-b-4 border-[#15803d]"
             >
-              <Sparkles className="w-5 h-5 text-white" />
+              <Sparkles className="w-4 h-4 text-yellow-200 animate-pulse" />
               <span>BẮT ĐẦU THÁM HIỂM (+{currentGradeContent.starsReward} SAO)</span>
-              <ChevronRight className="w-5 h-5" />
+              <ChevronRight className="w-4 h-4" />
             </button>
           </div>
         </div>
@@ -336,7 +393,7 @@ export const FloatingIslandWorld: React.FC<FloatingIslandWorldProps> = ({
       </div>
 
       {/* ============================================================== */}
-      {/* REAL ACTIVITY RUNNER MODAL                                     */}
+      {/* 5. ACTIVITY RUNNER MODAL                                        */}
       {/* ============================================================== */}
       <IslandActivityModal
         island={activeIslandForModal}

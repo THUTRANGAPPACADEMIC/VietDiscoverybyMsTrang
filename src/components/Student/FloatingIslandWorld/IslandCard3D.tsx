@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FloatingIslandDef } from './floatingIslandData';
 import { Island3DVisual } from './Island3DVisual';
 import { soundEffects } from '../../../lib/soundEffects';
-import { Sparkles, Star, ChevronRight, Compass } from 'lucide-react';
+import { Sparkles, Star, ChevronRight } from 'lucide-react';
 
 interface IslandCard3DProps {
   island: FloatingIslandDef;
@@ -47,107 +47,89 @@ export const IslandCard3D: React.FC<IslandCard3DProps> = ({
       onClick={handleClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className={`relative group cursor-pointer transition-all duration-500 transform ${island.floatDelay} ${
-        isHovered ? '-translate-y-4 scale-[1.04]' : ''
+      className={`relative group cursor-pointer transition-all duration-300 transform ${island.floatDelay} ${
+        isHovered ? '-translate-y-3 scale-[1.03]' : ''
       }`}
-      style={{
-        perspective: '1000px'
-      }}
     >
-      {/* 3D Island Glowing Aura */}
+      {/* 3D Island Glowing Pastel Aura */}
       <div
-        className={`absolute -inset-3 rounded-[38px] opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl pointer-events-none ${
-          isSelected ? 'opacity-100' : ''
+        className={`absolute -inset-2.5 rounded-[36px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl pointer-events-none ${
+          isSelected ? 'opacity-90' : ''
         }`}
         style={{
-          background: `radial-gradient(circle, ${island.crystalHex}66 0%, transparent 75%)`
+          background: `radial-gradient(circle, ${island.crystalHex}55 0%, transparent 75%)`
         }}
       />
 
-      {/* Main Island 3D Floating Plinth Card */}
+      {/* Main Island Bright Frosted Glass Plinth Card */}
       <div
-        className={`relative overflow-hidden rounded-[32px] p-5 sm:p-6 backdrop-blur-xl border-2 transition-all duration-500 flex flex-col items-center text-center shadow-[0_16px_40px_rgba(0,0,0,0.4)] ${
-          island.cardBorder
-        } ${
+        className={`relative overflow-hidden rounded-[32px] p-4 sm:p-5 backdrop-blur-xl border-3 transition-all duration-300 flex flex-col items-center text-center bg-white/92 shadow-[0_12px_32px_rgba(101,200,255,0.22)] ${
           isSelected
-            ? 'ring-4 ring-offset-2 ring-offset-slate-950 scale-[1.02]'
-            : 'hover:shadow-[0_20px_50px_rgba(0,0,0,0.6)]'
+            ? 'border-cyan-400 ring-4 ring-cyan-300/60 shadow-[0_16px_40px_rgba(6,182,212,0.35)] scale-[1.02]'
+            : 'border-sky-200/80 hover:border-sky-300 hover:shadow-[0_16px_36px_rgba(101,200,255,0.3)]'
         }`}
-        style={{
-          background: `linear-gradient(175deg, rgba(15, 23, 42, 0.85) 0%, rgba(30, 41, 59, 0.9) 60%, ${island.crystalHex}22 100%)`,
-          boxShadow: isSelected
-            ? `0 0 35px ${island.glowRgba}, 0 20px 40px rgba(0,0,0,0.5)`
-            : undefined
-        }}
       >
-        {/* Crystal Shimmer Banner at Top */}
-        <div className="w-full flex items-center justify-between gap-2 mb-3">
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900/80 border border-white/10 backdrop-blur-md">
+        {/* Top Header Pill & Star Reward */}
+        <div className="w-full flex items-center justify-between gap-2 mb-2">
+          <div className="flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-sky-100/90 border border-sky-200 shadow-xs">
             <span
-              className="w-2.5 h-2.5 rounded-full animate-crystal-pulse"
-              style={{ backgroundColor: island.crystalHex, color: island.crystalHex }}
+              className="w-2.5 h-2.5 rounded-full animate-pulse"
+              style={{ backgroundColor: island.crystalHex }}
             />
-            <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-slate-200">
-              {island.badgeText}
+            <span className="text-[10px] font-black uppercase tracking-wider text-sky-900">
+              {island.nameVi}
             </span>
           </div>
 
           {/* Reward Stars Pill */}
-          <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 text-xs font-black shadow-inner">
-            <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+          <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-100/95 border border-amber-300 text-amber-900 text-xs font-black shadow-xs">
+            <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-500" />
             <span>+{currentGradeData.starsReward}</span>
           </div>
         </div>
 
-        {/* 3D Vector Island Illustration */}
-        <div className="my-2 relative flex items-center justify-center">
+        {/* 3D Floating Island Artwork */}
+        <div className="my-1 relative flex items-center justify-center w-full">
           <Island3DVisual
             islandId={island.id}
-            size={200}
+            size={185}
             isHovered={isHovered}
             isSelected={isSelected}
           />
         </div>
 
-        {/* Island Typography (English & Vietnamese 3D Titles) */}
-        <div className="space-y-1 w-full mt-2">
-          <h3 className="text-xl sm:text-2xl font-black tracking-tight text-white font-heading text-3d-fantasy">
-            {island.nameEn}
-          </h3>
-          <p className="text-xs sm:text-sm font-bold text-sky-200/90 tracking-wide">
+        {/* Island Titles */}
+        <div className="space-y-0.5 w-full mt-1">
+          <h3 className="text-lg sm:text-xl font-black tracking-tight text-slate-900 font-heading">
             {island.nameVi}
-          </p>
-          <p className="text-[11px] sm:text-xs text-slate-300/80 font-medium line-clamp-1 italic pt-0.5">
-            "{island.subtitleEn}"
+          </h3>
+          <p className="text-xs font-bold text-sky-700">
+            {island.nameEn}
           </p>
         </div>
 
         {/* Mission Objectives for Selected Grade */}
-        <div className="mt-3.5 w-full p-2.5 rounded-2xl bg-slate-900/60 border border-white/10 text-left">
-          <div className="flex items-center justify-between text-[10px] text-slate-400 font-bold mb-1">
-            <span className="text-amber-400">★ {currentGradeData.gradeBadge}</span>
-            <span>{currentGradeData.steps.length} Steps</span>
+        <div className="mt-2.5 w-full p-2.5 rounded-2xl bg-sky-50/90 border border-sky-200/70 text-left">
+          <div className="flex items-center justify-between text-[10px] text-slate-500 font-bold mb-0.5">
+            <span className="text-amber-700 font-black">★ {currentGradeData.gradeBadge}</span>
+            <span>{currentGradeData.steps.length} Câu hỏi</span>
           </div>
-          <p className="text-xs font-semibold text-slate-200 line-clamp-1">
-            {currentGradeData.missionTitleEn}
-          </p>
-          <p className="text-[11px] text-slate-400 line-clamp-1">
+          <p className="text-xs font-bold text-slate-800 line-clamp-1">
             {currentGradeData.missionTitleVi}
+          </p>
+          <p className="text-[11px] text-slate-500 line-clamp-1">
+            {currentGradeData.missionTitleEn}
           </p>
         </div>
 
         {/* Enter Island Quest Action Button */}
         <button
           onClick={handleEnterClick}
-          className="mt-4 w-full py-2.5 px-4 rounded-2xl font-black text-xs sm:text-sm uppercase tracking-wider text-white shadow-lg transition-all duration-300 flex items-center justify-center gap-2 group-hover:scale-102 cursor-pointer active:scale-95"
-          style={{
-            background: `linear-gradient(135deg, ${island.crystalHex} 0%, #0284c7 100%)`,
-            boxShadow: `0 8px 20px ${island.glowRgba}`
-          }}
+          className="mt-3 w-full py-2.5 px-4 rounded-xl font-black text-xs uppercase tracking-wider text-white shadow-md transition-all duration-300 flex items-center justify-center gap-1.5 hover:scale-102 active:scale-98 cursor-pointer bg-gradient-to-b from-[#4ade80] via-[#22c55e] to-[#16a34a] hover:from-[#22c55e] hover:to-[#15803d] border-b-2 border-[#15803d]"
         >
-          <Sparkles className="w-4 h-4 text-white" />
-          <span>Vào Thám Hiểm</span>
-          <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+          <Sparkles className="w-3.5 h-3.5 text-yellow-200 animate-pulse" />
+          <span>VÀO THÁM HIỂM</span>
+          <ChevronRight className="w-3.5 h-3.5" />
         </button>
       </div>
     </div>

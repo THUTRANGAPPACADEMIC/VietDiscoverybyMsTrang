@@ -6,11 +6,11 @@ import { GradeDashboard } from './components/Student/GradeDashboard';
 import { GradeNumber } from './data/gradePathwaysData';
 import { TeachingStudio } from './components/Teacher/TeachingStudio';
 import { AdminConsole } from './components/Admin/AdminConsole';
-import { StudentAuthModal } from './components/StudentAuthModal';
 import { StaffAuthModal } from './components/StaffAuthModal';
 import { AboutCreatorModal } from './components/AboutCreatorModal';
 import { MagicalAdventureFooter } from './components/MagicalAdventureFooter';
 import { FloatingMusicPlayer } from './components/FloatingMusicPlayer';
+import { StudentLandingLoginPage } from './components/Student/StudentLandingLoginPage';
 import { 
   UserProfile, 
   DestinationProgress, 
@@ -28,25 +28,12 @@ import { MAP_METADATA } from './data/administrativeData';
 import { Lock, ShieldCheck, Sparkles, School } from 'lucide-react';
 
 export const App: React.FC = () => {
-  // Current logged in user (defaults to Class 4.1 student for immediate exploration)
+  // Current logged in user (null by default if no authenticated session exists in storage)
   const [user, setUser] = useState<UserProfile | null>(() => {
-    return localStore.get<UserProfile | null>('current_user', {
-      id: 'STU-4101',
-      studentCode: 'STU-4101',
-      fullName: 'Nguyễn Minh Khôi',
-      role: 'student',
-      classId: 'cls-41',
-      className: 'Class 4.1 - Heritage Navigators',
-      classCode: '4.1',
-      gradeLevel: 'Grade 4',
-      gradeBand: 'grade_4_5',
-      stars: 310,
-      avatar: 'fa-user-graduate'
-    });
+    return localStore.get<UserProfile | null>('current_user', null);
   });
 
   // Modals
-  const [isStudentAuthOpen, setIsStudentAuthOpen] = useState(false);
   const [isStaffAuthOpen, setIsStaffAuthOpen] = useState(false);
   const [isCreatorModalOpen, setIsCreatorModalOpen] = useState(false);
 
@@ -256,6 +243,7 @@ export const App: React.FC = () => {
     if (isSupabaseConfigured() && supabase) {
       await supabase.auth.signOut();
     }
+    localStore.remove('current_user');
     setUser(null);
     setPreviewGradeBand(undefined);
     setActiveSection('student');
@@ -273,6 +261,49 @@ export const App: React.FC = () => {
     : user?.role === 'teacher'
     ? students.filter(s => accessibleClasses.some(c => c.id === s.classId))
     : [];
+
+  // When no authenticated session exists, display full-screen 3D adventure login landing page
+  if (!user) {
+    return (
+      <div className="min-h-screen w-full relative">
+        <StudentLandingLoginPage
+          onLoginSuccess={(studentUser, progress) => {
+            setUser(studentUser);
+            if (progress && Object.keys(progress).length > 0) {
+              setProgressMap(prev => ({ ...prev, ...progress }));
+            }
+            setPreviewGradeBand(undefined);
+            setActiveSection('student');
+          }}
+          onOpenStaffAuth={() => setIsStaffAuthOpen(true)}
+          onOpenCreatorModal={() => setIsCreatorModalOpen(true)}
+        />
+
+        {/* Discrete Staff / Admin Authentication Modal */}
+        <StaffAuthModal
+          isOpen={isStaffAuthOpen}
+          onClose={() => setIsStaffAuthOpen(false)}
+          onStaffLoginSuccess={(staffUser) => {
+            setUser(staffUser);
+            if (staffUser.role === 'admin') {
+              setActiveSection('admin');
+            } else {
+              setActiveSection('teacher');
+            }
+          }}
+        />
+
+        {/* About Creator & Pedagogy Modal */}
+        <AboutCreatorModal
+          isOpen={isCreatorModalOpen}
+          onClose={() => setIsCreatorModalOpen(false)}
+        />
+
+        {/* Persistent Floating Piano Background Music Player */}
+        <FloatingMusicPlayer />
+      </div>
+    );
+  }
 
   return (
     <div 
@@ -304,7 +335,7 @@ export const App: React.FC = () => {
         activeTeacherTab={activeTeacherTab}
         setActiveTeacherTab={setActiveTeacherTab}
         previewGradeBand={previewGradeBand}
-        onOpenStudentAuth={() => setIsStudentAuthOpen(true)}
+        onOpenStudentAuth={handleLogout}
         onLogout={handleLogout}
         totalStars={totalStars}
         onOpenCreatorModal={() => setIsCreatorModalOpen(true)}
@@ -408,21 +439,7 @@ export const App: React.FC = () => {
         onClose={() => setIsCreatorModalOpen(false)}
       />
 
-      {/* Student Authentication Modal */}
-      <StudentAuthModal
-        isOpen={isStudentAuthOpen}
-        classes={classes}
-        students={students}
-        onClose={() => setIsStudentAuthOpen(false)}
-        onStudentLoginSuccess={(studentUser, progress) => {
-          setUser(studentUser);
-          if (progress && Object.keys(progress).length > 0) {
-            setProgressMap(prev => ({ ...prev, ...progress }));
-          }
-          setPreviewGradeBand(undefined);
-          setActiveSection('student');
-        }}
-      />
+
 
       {/* Discrete Staff / Admin Authentication Modal */}
       <StaffAuthModal

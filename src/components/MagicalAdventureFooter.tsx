@@ -131,11 +131,12 @@ export const MagicalAdventureFooter: React.FC<MagicalAdventureFooterProps> = ({
                 }}
                 title="Cô Trần Thị Thu Trang - Tác giả & Super Admin VietDiscovery"
               >
-                <div className="w-18 sm:w-24 rounded-2xl overflow-hidden border-2 border-white/60 shadow-[0_8px_20px_rgba(0,0,0,0.35)] group-hover:scale-108 group-hover:border-pink-300 transition-all duration-300 bg-white/20">
+                <div className="w-28 sm:w-36 rounded-2xl overflow-hidden border-2 border-white/60 shadow-[0_8px_20px_rgba(0,0,0,0.35)] group-hover:scale-108 group-hover:border-pink-300 transition-all duration-300 bg-white/20 p-1">
                   <img 
-                    src="/assets/cute/captain_trang_official.png" 
-                    alt="Captain Trang Mascot" 
+                    src="/assets/cute/captain_trang_banner_official.png" 
+                    alt="Captain Trần Thị Thu Trang Mascot" 
                     className="w-full h-auto object-contain select-none"
+                    style={{ aspectRatio: '1024 / 341' }}
                   />
                 </div>
               </div>
@@ -158,13 +159,13 @@ export const MagicalAdventureFooter: React.FC<MagicalAdventureFooterProps> = ({
                 </span>
               </div>
 
-              {/* Boy Explorer Chibi Mascot */}
+              {/* Little Explorers Mascot */}
               <img 
-                src="/assets/cute/boy_explorer_chibi.png" 
-                alt="Little Explorer Mascot" 
-                className="w-14 h-14 sm:w-20 sm:h-20 object-contain drop-shadow-[0_8px_16px_rgba(0,0,0,0.3)] hover:scale-110 transition-transform duration-300 cursor-pointer"
+                src="/assets/cute/little_explorers_duo.webp" 
+                alt="Little Explorers Mascot" 
+                className="w-16 h-16 sm:w-24 sm:h-24 object-contain drop-shadow-[0_8px_16px_rgba(0,0,0,0.3)] hover:scale-110 transition-transform duration-300 cursor-pointer rounded-xl"
                 onClick={() => soundEffects.playHover()}
-                title="Little Explorer 🎒"
+                title="Little Explorers 🎒🧭"
               />
             </div>
 

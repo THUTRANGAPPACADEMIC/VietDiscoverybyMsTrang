@@ -300,49 +300,55 @@ export const LearningHub: React.FC<LearningHubProps> = ({
             <div className="absolute bottom-3 left-1/4 text-xl sm:text-2xl opacity-60 pointer-events-none select-none">☁️</div>
             <div className="absolute bottom-4 right-8 text-2xl opacity-80 pointer-events-none select-none">🌈</div>
 
-            <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-4 lg:gap-5">
               
-              {/* Mascot 1: Captain Trang - Official Character & Interactive Adventure Guide */}
-              <div className="flex flex-col items-center shrink-0">
+              {/* Mascot 1: Captain Trần Thị Thu Trang - Official Character & Interactive Adventure Guide */}
+              <div className="flex flex-col items-center shrink-0 w-full lg:w-auto">
                 <div 
-                  className="relative group cursor-pointer" 
+                  className="relative group cursor-pointer w-full max-w-[420px] sm:max-w-[440px] lg:max-w-[460px] xl:max-w-[480px]" 
                   onClick={() => handleCaptainTrangClick(false)}
-                  title="Captain Trang 🧭 - Chạm để trò chuyện và nghe giọng nói!"
+                  title="Captain Trần Thị Thu Trang 🧭 - Chạm để trò chuyện và nghe giọng nói!"
                 >
-                  {/* Subtle glowing halo and rounded container with official aspect ratio */}
-                  <div className="relative rounded-2xl sm:rounded-3xl p-1 bg-gradient-to-br from-pink-300 via-purple-300 to-sky-300 shadow-[0_10px_25px_rgba(244,63,94,0.3)] group-hover:shadow-[0_16px_36px_rgba(244,63,94,0.45)] group-hover:scale-105 transition-all duration-300">
+                  {/* Soft pastel blue surrounding background with gentle shadow and subtle glow */}
+                  <div className="relative rounded-3xl p-2 sm:p-2.5 bg-gradient-to-br from-sky-100/95 via-sky-50/90 to-cyan-50/95 border-2 border-sky-300/80 shadow-[0_12px_28px_rgba(56,189,248,0.22)] ring-4 ring-sky-200/50 group-hover:ring-sky-300/80 group-hover:shadow-[0_16px_36px_rgba(56,189,248,0.35)] group-hover:scale-[1.02] transition-all duration-300">
                     <img
-                      src="/assets/cute/captain_trang_official.png"
-                      alt="Captain Trang - Official Explorer Guide"
-                      className="w-32 sm:w-36 md:w-44 lg:w-48 h-auto rounded-xl sm:rounded-2xl object-contain select-none"
+                      src="/assets/cute/captain_trang_banner_official.png"
+                      alt="Captain Trần Thị Thu Trang - Official Explorer Guide"
+                      className="w-full h-auto object-contain select-none rounded-2xl block"
+                      style={{
+                        aspectRatio: '1024 / 341',
+                        maxWidth: '100%'
+                      }}
                     />
                     
                     {/* Speaking Sound Wave Indicator Badge */}
                     {isCaptainTrangSpeaking && (
-                      <div className="absolute -top-3 -right-2 px-2.5 py-1 rounded-full bg-rose-600 text-white text-[11px] font-black shadow-lg flex items-center gap-1.5 animate-pulse border-2 border-white">
-                        <Volume2 className="w-3.5 h-3.5 animate-bounce" />
+                      <div className="absolute -top-3 right-4 px-3 py-1 rounded-full bg-rose-600 text-white text-xs font-black shadow-lg flex items-center gap-1.5 animate-pulse border-2 border-white">
+                        <Volume2 className="w-4 h-4 animate-bounce" />
                         <span>Speaking...</span>
                       </div>
                     )}
                   </div>
 
                   {/* Tap to Talk Badge directly underneath */}
-                  <div className="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/95 text-rose-600 font-black text-xs shadow-md border border-rose-200 group-hover:bg-rose-500 group-hover:text-white transition-all transform group-hover:scale-105">
-                    <span>💬</span>
-                    <span>{isCaptainTrangSpeaking ? "I'm Talking! 🔊" : "Tap to Talk!"}</span>
-                    <Sparkles className="w-3 h-3 text-amber-400" />
+                  <div className="mt-2 flex items-center justify-center">
+                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/95 text-rose-600 font-black text-xs sm:text-sm shadow-md border-2 border-rose-200 group-hover:bg-rose-500 group-hover:text-white group-hover:border-rose-400 transition-all transform group-hover:scale-105">
+                      <span>💬</span>
+                      <span>{isCaptainTrangSpeaking ? "I'm Talking! 🔊 (Cô đang nói chuyện...)" : "Tap to Talk! (Chạm để trò chuyện cùng Cô Trang 🔊)"}</span>
+                      <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                    </div>
                   </div>
                 </div>
               </div>
 
               {/* Center: Main Brand Title + Candy Pink Ribbon + Inspiring Headline */}
-              <div className="flex-1 text-center space-y-3.5">
+              <div className="flex-1 min-w-0 max-w-lg text-center space-y-3">
                 
                 {/* Globe Logo + Brand Title Cluster */}
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-2.5 sm:gap-3.5">
                   {/* Official Globe Logo: 90-110px desktop, 72-90px mobile */}
                   <div 
-                    className="w-[76px] h-[76px] sm:w-[94px] sm:h-[94px] md:w-[108px] md:h-[108px] rounded-full bg-white/90 p-2 shadow-[0_8px_24px_rgba(56,189,248,0.35)] border-3 border-sky-300 flex items-center justify-center shrink-0 hover:rotate-6 transition-transform cursor-pointer"
+                    className="w-[70px] h-[70px] sm:w-[86px] sm:h-[86px] md:w-[96px] md:h-[96px] rounded-full bg-white/90 p-2 shadow-[0_8px_24px_rgba(56,189,248,0.35)] border-3 border-sky-300 flex items-center justify-center shrink-0 hover:rotate-6 transition-transform cursor-pointer"
                     onClick={() => soundEffects.playClick()}
                     title="VietDiscovery by Ms. Trang"
                   >
@@ -353,10 +359,10 @@ export const LearningHub: React.FC<LearningHubProps> = ({
                     />
                   </div>
 
-                  {/* Largest Brand Element: "VietDiscovery" (56-64px desktop, 34-42px mobile) */}
+                  {/* Largest Brand Element: "VietDiscovery" */}
                   <div className="text-center sm:text-left">
                     <h1 
-                      className="text-[34px] sm:text-[46px] md:text-[58px] lg:text-[62px] font-black font-heading tracking-tight leading-none text-sky-600 drop-shadow-[0_4px_10px_rgba(2,132,199,0.35)]"
+                      className="text-[32px] sm:text-[42px] md:text-[50px] lg:text-[54px] font-black font-heading tracking-tight leading-none text-sky-600 drop-shadow-[0_4px_10px_rgba(2,132,199,0.35)]"
                       style={{
                         background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 40%, #0ea5e9 100%)',
                         WebkitBackgroundClip: 'text',
@@ -367,8 +373,8 @@ export const LearningHub: React.FC<LearningHubProps> = ({
                     </h1>
 
                     {/* "by Ms. Trang" directly below in candy-pink ribbon */}
-                    <div className="inline-flex items-center gap-1.5 px-4 sm:px-6 py-1 sm:py-1.5 rounded-full bg-gradient-to-r from-[#ff007f] via-[#ec4899] to-[#f43f5e] text-white font-black text-sm sm:text-base md:text-lg shadow-md border-2 border-white/80 drop-shadow-sm mt-1 transform hover:scale-105 transition-transform cursor-default">
-                      <Sparkles className="w-4 h-4 text-amber-200 fill-amber-200" />
+                    <div className="inline-flex items-center gap-1.5 px-4 sm:px-5 py-1 rounded-full bg-gradient-to-r from-[#ff007f] via-[#ec4899] to-[#f43f5e] text-white font-black text-xs sm:text-sm md:text-base shadow-md border-2 border-white/80 drop-shadow-sm mt-1 transform hover:scale-105 transition-transform cursor-default">
+                      <Sparkles className="w-3.5 h-3.5 text-amber-200 fill-amber-200" />
                       <span>by Ms. Trang</span>
                       <span className="text-xs">❤️</span>
                     </div>
@@ -376,12 +382,12 @@ export const LearningHub: React.FC<LearningHubProps> = ({
                 </div>
 
                 {/* Slogan Pill / Headline (English First, Vietnamese translation underneath) */}
-                <div className="inline-block bg-white/95 backdrop-blur-md rounded-3xl px-5 sm:px-8 py-3 shadow-[0_6px_20px_rgba(0,0,0,0.08)] border-2 border-sky-200 max-w-2xl mx-auto">
-                  <div className="text-base sm:text-xl md:text-2xl font-black font-heading text-blue-950 flex items-center justify-center gap-2 flex-wrap">
+                <div className="inline-block bg-white/95 backdrop-blur-md rounded-3xl px-4 sm:px-6 py-2.5 shadow-[0_6px_20px_rgba(0,0,0,0.08)] border-2 border-sky-200 max-w-xl mx-auto">
+                  <div className="text-sm sm:text-lg md:text-xl font-black font-heading text-blue-950 flex items-center justify-center gap-2 flex-wrap">
                     <span>The Magical Adventure Across Vietnam!</span>
-                    <span className="text-xl sm:text-2xl">🌈</span>
+                    <span className="text-lg sm:text-xl">🌈</span>
                   </div>
-                  <div className="text-xs sm:text-sm md:text-base font-bold text-sky-800 font-heading mt-0.5 flex items-center justify-center gap-1.5">
+                  <div className="text-xs sm:text-sm font-bold text-sky-800 font-heading mt-0.5 flex items-center justify-center gap-1.5">
                     <span>Cuộc phiêu lưu kỳ diệu trên đất Việt!</span>
                     <span className="text-rose-500">✨</span>
                   </div>
@@ -389,21 +395,19 @@ export const LearningHub: React.FC<LearningHubProps> = ({
 
               </div>
 
-              {/* Mascot 2: Boy Explorer Chibi */}
-              <div className="hidden lg:flex flex-col items-center shrink-0">
+              {/* Mascot 2: Little Explorers (Boy & Girl with Vietnam Map & Compass) */}
+              <div className="flex flex-col items-center shrink-0 w-full lg:w-auto mt-2 lg:mt-0">
                 <div 
-                  className="relative group cursor-pointer" 
+                  className="relative group cursor-pointer transition-transform duration-300 hover:scale-105 active:scale-95" 
                   onClick={() => soundEffects.playHover()}
-                  title="Little Adventurer!"
+                  title="Little Explorers - Welcome young adventurers! 🎒🧭"
                 >
                   <img
-                    src="/assets/cute/boy_explorer_chibi.png"
-                    alt="Little Explorer Chibi"
-                    className="w-26 sm:w-32 h-auto object-contain drop-shadow-[0_12px_20px_rgba(0,0,0,0.25)] group-hover:scale-108 transition-transform duration-300 select-none"
+                    src="/assets/cute/little_explorers_duo.webp"
+                    alt="Little Explorers"
+                    className="w-36 sm:w-44 md:w-48 lg:w-52 xl:w-56 h-auto object-contain drop-shadow-[0_12px_24px_rgba(0,0,0,0.22)] select-none rounded-2xl block"
+                    style={{ aspectRatio: '1 / 1' }}
                   />
-                  <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap px-3 py-0.5 rounded-full bg-amber-500 text-amber-950 font-black text-[11px] shadow-md border border-white">
-                    Little Explorer 🎒
-                  </div>
                 </div>
               </div>
 
@@ -1074,19 +1078,20 @@ export const LearningHub: React.FC<LearningHubProps> = ({
             </button>
 
             {/* Character Header: Image Card + Identity */}
-            <div className="flex items-center gap-4">
-              <div className="relative w-24 sm:w-28 rounded-2xl overflow-hidden border-3 border-pink-400 shadow-md shrink-0 bg-white group">
+            <div className="flex flex-col sm:flex-row items-center gap-3.5 sm:gap-4">
+              <div className="relative w-full max-w-[280px] sm:max-w-[320px] rounded-2xl overflow-hidden border-2 border-pink-400 shadow-md shrink-0 bg-white group p-1">
                 <img
-                  src="/assets/cute/captain_trang_official.png"
-                  alt="Captain Trang"
+                  src="/assets/cute/captain_trang_banner_official.png"
+                  alt="Captain Trần Thị Thu Trang"
                   className="w-full h-auto object-contain select-none"
+                  style={{ aspectRatio: '1024 / 341' }}
                 />
               </div>
 
-              <div className="min-w-0 pr-8">
+              <div className="min-w-0 pr-8 text-center sm:text-left">
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 text-white font-black text-xs shadow-xs mb-1">
                   <Sparkles className="w-3.5 h-3.5 text-amber-200 fill-amber-200" />
-                  <span>Captain Trang 🧭</span>
+                  <span>Captain Trần Thị Thu Trang 🧭</span>
                 </div>
                 <h3 className="text-base sm:text-lg font-black text-slate-900 font-heading leading-tight">
                   Your Vietnam Adventure Guide

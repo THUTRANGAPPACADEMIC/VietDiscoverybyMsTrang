@@ -49,4 +49,11 @@ export const localStore = {
       console.warn('LocalStorage error:', e);
     }
   },
+  remove: (key: string): void => {
+    try {
+      localStorage.removeItem(`vietdiscovery_${key}`);
+    } catch (e) {
+      console.warn('LocalStorage error:', e);
+    }
+  },
 };

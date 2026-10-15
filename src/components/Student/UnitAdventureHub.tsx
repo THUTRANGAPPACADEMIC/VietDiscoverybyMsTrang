@@ -516,11 +516,11 @@ export const UnitAdventureHub: React.FC<UnitAdventureHubProps> = ({
                   />
                 </div>
               ) : (
-                /* Boy with camera & cap surrounded by lanterns on the right corner */
+                /* Little Explorers duo surrounded by lanterns on the right corner */
                 <div className="absolute -right-6 sm:-right-9 -bottom-3 sm:-bottom-5 w-20 sm:w-24 h-20 sm:h-24 rounded-full overflow-hidden border-3 border-white shadow-xl z-20 pointer-events-none bg-amber-100 animate-bounce-subtle ring-2 ring-pink-300/80">
                   <img
-                    src="/assets/cute/boy_explorer_chibi.png"
-                    alt="Boy Explorer"
+                    src="/assets/cute/little_explorers_duo.webp"
+                    alt="Little Explorers"
                     className="w-full h-full object-cover scale-110"
                   />
                 </div>
