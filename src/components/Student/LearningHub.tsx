@@ -10,6 +10,7 @@ import { Grade12LessonModal } from './Grade12LessonModal';
 import { UnitAdventureHub } from './UnitAdventureHub';
 import { DestinationExplorerModal } from './DestinationExplorerModal';
 import { LandmarkDragDropGame } from './LandmarkDragDropGame';
+import { InteractiveMap34ProvincesGame } from './InteractiveMap34ProvincesGame';
 import { 
   Sparkles, 
   Compass, 
@@ -85,7 +86,7 @@ export const LearningHub: React.FC<LearningHubProps> = ({
   // Sub-view on Explore tab: 'all' (both map & unit cards), 'map' (focused map), 'units' (focused unit cards)
   const [exploreViewMode, setExploreViewMode] = useState<'both' | 'map' | 'units'>('both');
   const [isVectorGisModalOpen, setIsVectorGisModalOpen] = useState(false);
-  const [mapDisplayMode, setMapDisplayMode] = useState<'interactive_34_provinces' | 'adventure_illustrated'>('interactive_34_provinces');
+  const [mapDisplayMode, setMapDisplayMode] = useState<'interactive_34_provinces' | 'game_34_provinces' | 'adventure_illustrated'>('game_34_provinces');
   const [isLandmarkGameModalOpen, setIsLandmarkGameModalOpen] = useState(false);
 
   const handleOpenLesson = (dest: Destination, initialTab: LessonTabType = 'vocabulary') => {
@@ -483,6 +484,24 @@ export const LearningHub: React.FC<LearningHubProps> = ({
                   <button
                     onClick={() => {
                       soundEffects.playClick();
+                      setMapDisplayMode('game_34_provinces');
+                    }}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 shadow-xs ${
+                      mapDisplayMode === 'game_34_provinces'
+                        ? 'bg-amber-500 text-amber-950 shadow-amber-200 scale-102 ring-2 ring-amber-300'
+                        : 'text-slate-700 hover:text-amber-900 hover:bg-white/60'
+                    }`}
+                  >
+                    <span>🎯</span>
+                    <span>Game 34 Tỉnh (3 Chế độ)</span>
+                    <span className="text-[9.5px] bg-rose-500 text-white px-1.5 py-0.5 rounded-full font-black uppercase">
+                      Genially
+                    </span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      soundEffects.playClick();
                       setMapDisplayMode('adventure_illustrated');
                     }}
                     className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 shadow-xs ${
@@ -511,8 +530,15 @@ export const LearningHub: React.FC<LearningHubProps> = ({
                 </div>
               </div>
 
-              {/* VIEW 1: OFFICIAL 34 PROVINCES GIS INTERACTIVE MAP (DEFAULT & OFFICIAL) */}
-              {mapDisplayMode === 'interactive_34_provinces' ? (
+              {/* VIEW: 34 PROVINCES INTERACTIVE LEARNING GAME (GENIALLY STYLE 3 MODES) */}
+              {mapDisplayMode === 'game_34_provinces' ? (
+                <InteractiveMap34ProvincesGame
+                  user={user}
+                  gradeBand={activeGradeBand}
+                  onUpdateProgress={onUpdateProgress}
+                  onEarnStars={onEarnStars}
+                />
+              ) : mapDisplayMode === 'interactive_34_provinces' ? (
                 <div className="rounded-3xl overflow-hidden border-2 border-sky-200/80 shadow-inner">
                   <VietnamMap
                     destinations={destinations}

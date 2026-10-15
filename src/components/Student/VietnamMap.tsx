@@ -26,9 +26,9 @@ import {
   AdministrativeUnitInfo 
 } from '../../data/administrativeData';
 import { 
-  VIETNAM_PROVINCES_GEO, 
-  ProvinceGeoFeature 
-} from '../../data/vietnamGeoData';
+  VIETNAM_34_PROVINCES_GEO, 
+  Province34GeoFeature 
+} from '../../data/vietnam34ProvincesGeoData';
 import { playEnglishSpeech, playSpeech } from '../../lib/speech';
 import { projectGeoToSvg } from '../../lib/geoProjection';
 import { soundEffects } from '../../lib/soundEffects';
@@ -52,6 +52,10 @@ interface DestinationVisualLayout {
   pronounceTextEn: string;
   pronounceTextVi: string;
 }
+
+const HOANG_SA_SVG_PATH = "M 553.6 524.5 L 552.9 524.6 L 552.4 524 L 553.1 523.2 L 553.9 522.9 L 554.3 523.6 L 553.9 524.3 L 553.6 524.5 Z M 622.1 509.8 L 620.8 509.6 L 620.4 508.7 L 620.8 507.8 L 622.3 507.1 L 626.6 505.9 L 627.9 505.6 L 628.9 505.8 L 628.9 506.2 L 625.5 509 L 622.1 509.8 Z M 584.5 508.1 L 582.9 507.8 L 582.6 507.2 L 583 506.3 L 584 505.6 L 585 505.4 L 585.9 505.5 L 586.6 506 L 586.6 506.6 L 586.3 507.1 L 584.5 508.1 Z M 583.3 497.2 L 574 499.2 L 572.7 498.9 L 572.3 498.1 L 572.6 497 L 577.1 492.7 L 584.1 492.1 L 585 492.7 L 585.6 493.5 L 585.9 494.4 L 585.8 495 L 584.9 496.1 L 583.3 497.2 Z M 594.8 490.6 L 593.6 490.6 L 593.3 489.6 L 594.4 488.6 L 596.3 488 L 597.8 487.8 L 598.9 488 L 600.1 488.6 L 600.6 489.2 L 600.2 489.8 L 594.8 490.6 Z M 631.1 475.3 L 630.8 475.2 L 630.8 474.9 L 631.3 474.9 L 631.1 475.3 Z M 582.3 483 L 575 483.4 L 570.7 483.3 L 570.2 483.1 L 570 482.7 L 575 477.1 L 577.4 475.3 L 580.8 474.2 L 581.2 474.4 L 584.3 478.9 L 584 480 L 582.5 482.9 L 582.3 483 Z M 636.7 469.7 L 635.9 469.3 L 635.7 468.7 L 636 468.6 L 636.7 469.2 L 636.8 469.5 L 636.7 469.7 Z M 563 466.6 L 562 466.5 L 561.5 465.9 L 561.8 464.5 L 562.5 464.3 L 563.4 464.4 L 563.8 465 L 563.8 466 L 563.3 466.5 L 563 466.6 Z M 614.4 459.2 L 614.2 459.2 L 613.8 458.5 L 614 458 L 615 457.8 L 615.4 458.1 L 614.9 459 L 614.4 459.2 Z M 615 453.4 L 607.4 450.5 L 606.9 450.3 L 606.9 449.6 L 607.9 448.8 L 608.9 448.4 L 609.3 448.3 L 610.8 448.9 L 614.7 451.6 L 615.1 452.7 L 615 453.4 Z M 568.6 444.5 L 566.6 444.3 L 566.1 443.9 L 566.1 443.1 L 567 442.5 L 569.6 441.5 L 571 441.5 L 572.3 442.1 L 572.4 442.5 L 572.1 442.9 L 568.6 444.5 Z";
+
+const TRUONG_SA_SVG_PATH = "M 683.1 1070.4 L 682.7 1070.5 L 682.5 1070.3 L 682.6 1069.6 L 683.2 1069.8 L 683.1 1070.4 Z M 697 1043.3 L 694.7 1042.8 L 695.1 1042.4 L 697 1042 L 698.1 1042.1 L 698.2 1042.5 L 698.1 1042.8 L 697 1043.3 Z M 695.3 1028.3 L 693.5 1028.6 L 693.2 1027.9 L 697.2 1026.9 L 696.6 1027.8 L 695.3 1028.3 Z M 439.8 1017.2 L 439.1 1016.9 L 438.8 1016.1 L 439.1 1015.3 L 439.8 1015 L 440.5 1015.3 L 440.8 1016.1 L 440.5 1016.9 L 439.8 1017.2 Z M 512 1017.9 L 511.8 1017.9 L 511.9 1017.4 L 513.8 1015.1 L 514.8 1014.9 L 515.2 1015 L 514.9 1016.1 L 514.4 1016.8 L 513.5 1017.4 L 512 1017.9 Z M 646.5 1012.3 L 646.1 1012.4 L 646.6 1011.8 L 646.8 1011.9 L 646.5 1012.3 Z M 571.4 1035.9 L 570.8 1035.8 L 570.7 1035.4 L 571.2 1026.7 L 580 1009.1 L 580.5 1008.9 L 581.4 1009.1 L 581.8 1009.7 L 583 1022 L 582.9 1025 L 581.4 1026.7 L 571.4 1035.9 Z M 713.4 1030.5 L 707.9 1030.3 L 702.3 1028.6 L 702 1027.1 L 723.5 1009.2 L 729.3 1007 L 730.2 1007.1 L 730.7 1007.5 L 733 1010.8 L 725.2 1024.9 L 713.4 1030.5 Z M 703.3 1008.7 L 702.4 1008.7 L 699.7 1005.4 L 699.6 1005.1 L 700 1004.4 L 701.7 1004.8 L 703.6 1008.4 L 703.3 1008.7 Z M 521.3 1005.2 L 521 1005.4 L 520.3 1005.1 L 519.4 1003.5 L 519.5 1002 L 520.2 1000.9 L 521.1 1001.1 L 521.9 1001.9 L 522.1 1002.4 L 522.1 1003.1 L 521.3 1005.2 Z M 713 1000.8 L 712.5 1000.8 L 712.3 1000.3 L 712.7 999.7 L 713.2 999.5 L 713.5 999.7 L 713.7 1000.2 L 713 1000.8 Z M 514.6 1001.4 L 512.3 1000.9 L 511.2 996.6 L 513.5 995.3 L 514 995.3 L 517.6 998.2 L 514.6 1001.4 Z M 745.6 1001.4 L 740.9 1001.4 L 733.2 999.7 L 734.1 998.4 L 734.5 998.2 L 744.1 994.9 L 747.4 995.4 L 749.3 997.3 L 749.6 998.2 L 749.5 999.3 L 747.3 1000.7 L 745.6 1001.4 Z M 847.5 992.9 L 846.8 992.7 L 846.6 992.3 L 846.9 991.7 L 847.4 991.5 L 848.1 992.1 L 847.5 992.9 Z M 664.1 1000.3 L 663.2 1000.7 L 670.7 987.5 L 670.5 990.5 L 669.6 993.1 L 668.5 995.2 L 664.1 1000.3 Z M 774.9 984.4 L 774.3 984.6 L 770.8 984.1 L 769.3 982.3 L 770.7 981.8 L 774.7 983.2 L 775.3 983.6 L 774.9 984.4 Z M 737.8 975.7 L 737.2 976.4 L 736.7 975.8 L 737.6 975 L 737.8 975.7 Z M 591.8 966.1 L 591.8 965.7 L 592.1 965.7 L 591.8 966.1 Z M 578.5 964.3 L 576.9 964.2 L 576.8 963.8 L 579.2 962.8 L 579.5 962.9 L 579.7 963.3 L 579.4 963.8 L 578.5 964.3 Z M 715.4 964.3 L 715.1 964.4 L 714.6 963 L 714 959.9 L 714.4 959.3 L 716 960.1 L 716.2 960.6 L 716.8 963.3 L 715.4 964.3 Z M 708.4 958.4 L 705.6 958 L 699.9 954.6 L 700.6 953.5 L 700.9 953.5 L 704.6 954 L 707.3 954.9 L 708.7 957.1 L 708.8 958.3 L 708.4 958.4 Z M 632.1 955.1 L 628.2 955.8 L 627.1 955.8 L 626.2 954.4 L 626.2 953.5 L 629.9 953.6 L 632.1 954.3 L 633 954.9 L 632.1 955.1 Z M 643.1 952.5 L 643.3 952.5 L 643.1 952.5 Z M 740.4 954.5 L 739.9 954.3 L 740.1 952.6 L 741.4 951.9 L 742.9 951.7 L 742.4 952.6 L 740.4 954.5 Z M 643.1 952.5 L 641.3 952.3 L 640.6 951.5 L 640.9 951.4 L 643.1 952 L 643.2 952.2 L 643.1 952.5 Z M 608.3 954.5 L 608.1 954.6 L 605.7 953.6 L 605.9 952.7 L 607.1 951.4 L 609.9 950.7 L 610.3 950.7 L 610.7 951.3 L 610.7 951.8 L 608.3 954.5 Z M 829.9 952 L 829 951.8 L 829.5 949.7 L 829.8 949.3 L 831.1 949.1 L 831.5 949.3 L 830.5 951.4 L 829.9 952 Z M 615.5 948.2 L 615.2 948.2 L 615.2 947.9 L 615.6 947.8 L 615.5 948.2 Z M 688 947 L 685.9 947.6 L 685.7 947.3 L 685.7 946.9 L 686.7 946 L 689.5 945 L 690.2 945.1 L 688 947 Z M 851.8 942.4 L 851.3 942.5 L 850.5 942 L 850.1 941 L 850.2 940.5 L 850.9 940.4 L 851.9 941.4 L 852 941.9 L 851.8 942.4 Z M 841.4 933 L 840.7 932.8 L 841 932.6 L 841.6 932.8 L 841.4 933 Z M 687.3 931.1 L 687 930.8 L 687.1 930.4 L 687.4 930.7 L 687.3 931.1 Z M 811.5 924.6 L 809.7 924.7 L 809.1 924.4 L 810.5 923.7 L 812.1 923.7 L 812.5 924 L 812.4 924.3 L 811.5 924.6 Z M 784.3 922.3 L 783.4 922 L 782.9 920.3 L 784.1 917.9 L 784.5 918.6 L 785.2 921.4 L 784.3 922.3 Z M 865.1 916.5 L 864.7 915.9 L 865.3 915.1 L 865.7 915.4 L 865.6 916.1 L 865.1 916.5 Z M 706.5 910.9 L 706.3 910.4 L 706.5 910.3 L 706.7 910.5 L 706.5 910.9 Z M 823.8 907 L 823.3 906.8 L 823.4 906.4 L 823.9 906 L 823.8 907 Z M 648.5 906.1 L 644.9 908.3 L 644.3 908.2 L 648.1 902.1 L 649.5 900.9 L 654.5 898.9 L 654.5 900.4 L 653.8 901.8 L 650.3 904.9 L 648.5 906.1 Z M 806.8 901.1 L 806.1 902.5 L 806.2 895.9 L 807 894.3 L 807.8 893.8 L 808.5 894.2 L 808.7 894.9 L 807.8 898.3 L 806.8 901.1 Z M 847.5 900 L 841.5 900.3 L 840.9 900.1 L 838.3 897.4 L 837.4 896 L 837.2 894.6 L 839.6 893.7 L 840.3 893.9 L 847.3 898.5 L 847.9 899.5 L 847.5 900 Z M 790.2 889.5 L 788.2 889.4 L 787.6 889.1 L 787.1 887.7 L 787.4 886.6 L 787.8 886.2 L 788.9 886.1 L 790.3 886.2 L 791.5 886.8 L 791.7 887.9 L 790.2 889.5 Z M 720.7 900.5 L 720.3 900.4 L 719 896.2 L 720.6 890.4 L 721.8 889.2 L 738.8 881.9 L 741.9 881.7 L 741.1 885 L 740.4 886.3 L 720.7 900.5 Z M 823.5 874.9 L 823.1 875 L 822.4 874.7 L 822.2 874.2 L 822.5 873.9 L 822.9 874 L 823.5 874.9 Z M 697.1 881.5 L 696.7 881.6 L 696.9 873.6 L 697.1 873.5 L 698 874.1 L 698 874.4 L 697.4 881.3 L 697.1 881.5 Z M 776.1 871.2 L 775.8 871.3 L 775.4 869.7 L 775.6 868.7 L 778.1 869.3 L 777.3 870.5 L 776.1 871.2 Z M 780.1 866.7 L 779.8 866.6 L 780 865.9 L 780.7 865.9 L 780.1 866.7 Z M 684.5 866.2 L 684.4 866.6 L 683.8 866.4 L 683.9 865.4 L 684.8 865.3 L 684.5 866.2 Z M 722.2 871.7 L 719.5 871.7 L 717.6 869.3 L 717.4 868.6 L 724.8 858.5 L 725.7 858.1 L 737.2 856 L 744.7 858.6 L 743.9 861.9 L 743.2 862.9 L 742.1 863.8 L 739.4 865.2 L 725.4 871.1 L 722.2 871.7 Z M 800 853.4 L 799.7 853.2 L 800 853.4 Z M 802.7 853.7 L 802 853.6 L 803.2 852.7 L 803.1 853.4 L 802.7 853.7 Z M 798.5 851.9 L 798.3 851.5 L 799.2 850.1 L 798.5 851.9 Z M 799.7 849.3 L 799.6 849.1 L 799.9 848.7 L 800.8 848.8 L 799.7 849.3 Z M 802.1 853.4 L 801.5 853.4 L 799.8 852.6 L 799.2 851.9 L 799.3 851.6 L 800.1 849.6 L 800.9 848.8 L 803.1 848.4 L 803.6 848.5 L 803.8 848.8 L 803.2 852.2 L 802.7 853 L 802.1 853.4 Z M 852.8 861.1 L 841.7 864.2 L 840.9 864.1 L 840.1 863 L 844.7 850.3 L 846.6 847.6 L 848.5 845.9 L 858.8 839.1 L 866 847.3 L 866.2 848 L 865.6 849.2 L 857.7 858.5 L 856.2 859.8 L 852.8 861.1 Z M 819.7 832.4 L 819.4 832.4 L 819.3 832.1 L 819.5 831.5 L 819.7 832.4 Z M 805.1 845 L 805 845.1 L 804.6 844 L 803.8 836.3 L 803.9 833.3 L 804.5 831.7 L 805.5 830.5 L 807.5 833.1 L 809 838.7 L 807.6 841.5 L 805.1 845 Z M 755.6 828.4 L 753 829.1 L 752.9 828.9 L 756.5 825.6 L 756.6 826 L 756.2 827.3 L 755.6 828.4 Z M 824 844.5 L 823.4 844.5 L 823.2 844.2 L 823.4 837.6 L 825.2 832.4 L 827.9 826.6 L 841.3 825.2 L 824.6 844.1 L 824 844.5 Z M 850.6 834.1 L 849.2 833.9 L 848.2 832.6 L 848.2 831.8 L 849.4 827.2 L 850 826.4 L 851.7 825.6 L 864.3 824.9 L 864.8 825.1 L 864.9 825.8 L 861.8 829.6 L 858.9 831.3 L 850.6 834.1 Z M 728.7 840.8 L 726.5 840.5 L 722.8 839.2 L 722.7 838.9 L 724.4 836.9 L 738.8 824.1 L 739.5 824.1 L 737.6 834.5 L 737 836 L 734.1 838.6 L 730.8 840.2 L 728.7 840.8 Z M 761.1 815.6 L 760.8 815.3 L 761.3 814.8 L 761.4 815.2 L 761.1 815.6 Z M 709.6 826.1 L 708.7 826 L 708.4 825.8 L 709.4 824.3 L 715 817.6 L 716.8 816.2 L 719.4 815.2 L 725.9 814.1 L 726.4 814.3 L 724.2 816.9 L 709.6 826.1 Z M 740.8 823.1 L 740.5 823.1 L 740.5 822.9 L 741.4 820.9 L 748 811.6 L 749.2 810.3 L 749.6 810.5 L 749.8 811.7 L 749.5 814 L 746 819.4 L 740.8 823.1 Z M 721.8 796.5 L 721.6 796.5 L 721.7 795.8 L 723.3 793.3 L 724.6 791.8 L 726.6 791 L 727.2 791.1 L 727.2 791.8 L 721.8 796.5 Z M 738.3 799.9 L 737.9 800.1 L 736.1 799.8 L 735.8 799 L 735.9 797.9 L 739.7 789.3 L 740.6 788.8 L 741.4 788.8 L 743.7 790.5 L 743.8 790.9 L 743.5 792.5 L 738.3 799.9 Z M 831.8 797.1 L 820.7 798.4 L 820.4 798.3 L 820.4 797.6 L 821.9 795 L 825.4 789.8 L 840.4 773.2 L 841.1 773.1 L 841.3 773.8 L 841.4 777.1 L 841.2 778.3 L 832.6 796.4 L 831.8 797.1 Z M 823.7 756.3 L 822.6 756.2 L 822.3 755.6 L 823 755.2 L 823.7 755.2 L 824.2 755.7 L 824 756.2 L 823.7 756.3 Z";
 
 const DESTINATION_LAYOUT_CONFIG: Record<string, DestinationVisualLayout> = {
   hanoi: {
@@ -149,7 +153,7 @@ export const VietnamMap: React.FC<VietnamMapProps> = ({
   // Administrative layer state & GIS hover
   const [adminSearch, setAdminSearch] = useState<string>('');
   const [selectedAdminUnit, setSelectedAdminUnit] = useState<AdministrativeUnitInfo | null>(null);
-  const [hoveredGeo, setHoveredGeo] = useState<ProvinceGeoFeature | null>(null);
+  const [hoveredGeo, setHoveredGeo] = useState<Province34GeoFeature | null>(null);
   const [activeSovereigntyIsland, setActiveSovereigntyIsland] = useState<'HoangSa' | 'TruongSa' | null>(null);
   
   // Data compliance & custom file upload modal
@@ -392,10 +396,10 @@ export const VietnamMap: React.FC<VietnamMapProps> = ({
               <span className="p-1.5 rounded-xl bg-rose-500 text-white font-bold text-xs">📍</span>
               <div>
                 <div className="font-extrabold text-sm text-amber-300 font-heading">
-                  {hoveredGeo.name}
+                  {hoveredGeo.nameVi} ({hoveredGeo.nameEn})
                 </div>
                 <div className="text-[10.5px] text-slate-300 font-medium">
-                  {hoveredGeo.englishName} • {hoveredGeo.zone} ({hoveredGeo.region === 'North' ? 'Miền Bắc' : hoveredGeo.region === 'Central' ? 'Miền Trung' : 'Miền Nam'})
+                  {hoveredGeo.zone} ({hoveredGeo.region === 'North' ? 'Miền Bắc' : hoveredGeo.region === 'Central' ? 'Miền Trung' : 'Miền Nam'}) • {hoveredGeo.landmarkEn}
                 </div>
               </div>
             </div>
@@ -531,14 +535,13 @@ export const VietnamMap: React.FC<VietnamMapProps> = ({
                 VỊNH THÁI LAN
               </text>
 
-              {/* 2. Official GIS Mainland Provinces Boundaries (Real WGS84 Polygons) */}
+              {/* 2. Official GIS Mainland Provinces Boundaries (Real WGS84 Polygons for 34 Units) */}
               <g id="vietnam-mainland-gis" filter="url(#cartoGlow)">
-                {VIETNAM_PROVINCES_GEO.map((geo) => {
-                  if (geo.isSpecialArchipelago) return null; // Handled in prominent sovereignty section
-
+                {VIETNAM_34_PROVINCES_GEO.map((geo) => {
                   const isMatchRegion = activeRegion === 'All' || geo.region === activeRegion;
                   const isHovered = hoveredGeo?.id === geo.id;
-                  const isSelectedAdmin = selectedAdminUnit?.name.toLowerCase().includes(geo.name.toLowerCase());
+                  const isSelectedAdmin = selectedAdminUnit?.code === geo.code || 
+                    (selectedAdminUnit?.name && geo.nameVi.toLowerCase().includes(selectedAdminUnit.name.toLowerCase()));
 
                   // Dynamic harmonic palette
                   let fill = '#10b981';
@@ -559,11 +562,12 @@ export const VietnamMap: React.FC<VietnamMapProps> = ({
                   return (
                     <path
                       key={geo.id}
+                      id={`geo-${geo.id}`}
                       d={geo.svgPath}
                       fill={fill}
-                      fillOpacity={!isMatchRegion ? 0.35 : isHovered ? 0.95 : isSelectedAdmin ? 0.9 : 0.8}
-                      stroke={isHovered ? '#ffffff' : '#064e3b'}
-                      strokeWidth={isHovered ? 2 : 0.8}
+                      fillOpacity={!isMatchRegion ? 0.35 : isHovered ? 0.95 : isSelectedAdmin ? 0.92 : 0.8}
+                      stroke={isHovered ? '#ffffff' : isSelectedAdmin ? '#4338ca' : '#064e3b'}
+                      strokeWidth={isHovered ? 2.5 : isSelectedAdmin ? 2 : 0.8}
                       strokeLinejoin="round"
                       className="transition-colors duration-150 cursor-pointer"
                       onMouseEnter={() => {
@@ -574,8 +578,9 @@ export const VietnamMap: React.FC<VietnamMapProps> = ({
                       onClick={() => {
                         soundEffects.playClick();
                         const matchedAdmin = OFFICIAL_34_PROVINCES_DATA.find(u => 
-                          u.name.toLowerCase().includes(geo.name.toLowerCase()) || 
-                          geo.name.toLowerCase().includes(u.name.toLowerCase())
+                          u.code === geo.code ||
+                          u.name.toLowerCase().includes(geo.nameVi.toLowerCase()) || 
+                          geo.nameVi.toLowerCase().includes(u.name.toLowerCase())
                         );
                         if (matchedAdmin) {
                           setSelectedAdminUnit(matchedAdmin);
@@ -583,100 +588,88 @@ export const VietnamMap: React.FC<VietnamMapProps> = ({
                         }
                       }}
                     >
-                      <title>{geo.name} ({geo.englishName}) - {geo.zone}</title>
+                      <title>{geo.nameVi} ({geo.nameEn}) - {geo.zone}</title>
                     </path>
                   );
                 })}
               </g>
 
               {/* 3. PARACEL ISLANDS (Quần đảo Hoàng Sa - Thuộc TP. Đà Nẵng, Việt Nam) */}
-              {(() => {
-                const hoangSaGeo = VIETNAM_PROVINCES_GEO.find(g => g.isSpecialArchipelago === 'HoangSa');
-                return (
-                  <g 
-                    id="hoang-sa-sovereignty" 
-                    className="cursor-pointer group"
-                    onClick={() => setActiveSovereigntyIsland('HoangSa')}
-                  >
-                    {/* Visual Frame & Sovereignty Plaque */}
-                    <rect 
-                      x="535" 
-                      y="420" 
-                      width="240" 
-                      height="125" 
-                      rx="18" 
-                      fill="#fffbeb" 
-                      stroke="#d97706" 
-                      strokeWidth="2" 
-                      strokeDasharray="4 3"
-                      className="shadow-md group-hover:stroke-rose-600 transition-colors"
-                    />
+              <g 
+                id="hoang-sa-sovereignty" 
+                className="cursor-pointer group"
+                onClick={() => setActiveSovereigntyIsland('HoangSa')}
+              >
+                {/* Visual Frame & Sovereignty Plaque */}
+                <rect 
+                  x="535" 
+                  y="420" 
+                  width="240" 
+                  height="125" 
+                  rx="18" 
+                  fill="#fffbeb" 
+                  stroke="#d97706" 
+                  strokeWidth="2" 
+                  strokeDasharray="4 3"
+                  className="shadow-md group-hover:stroke-rose-600 transition-colors"
+                />
 
-                    {/* Exact GIS Polygons for Hoang Sa Islands */}
-                    {hoangSaGeo && (
-                      <path
-                        d={hoangSaGeo.svgPath}
-                        fill="#f59e0b"
-                        stroke="#b45309"
-                        strokeWidth="1.5"
-                        className="group-hover:fill-rose-500 transition-colors"
-                      />
-                    )}
+                {/* Exact GIS Polygons for Hoang Sa Islands */}
+                <path
+                  d={HOANG_SA_SVG_PATH}
+                  fill="#f59e0b"
+                  stroke="#b45309"
+                  strokeWidth="1.5"
+                  className="group-hover:fill-rose-500 transition-colors"
+                />
 
-                    {/* Radar Pulse around centroid */}
-                    <circle cx="592.3" cy="480.9" r="15" fill="#f59e0b" opacity="0.3" className="animate-ping" />
-                    <circle cx="592.3" cy="480.9" r="6" fill="#f59e0b" stroke="#ffffff" strokeWidth="1.5" />
+                {/* Radar Pulse around centroid */}
+                <circle cx="592.3" cy="480.9" r="15" fill="#f59e0b" opacity="0.3" className="animate-ping" />
+                <circle cx="592.3" cy="480.9" r="6" fill="#f59e0b" stroke="#ffffff" strokeWidth="1.5" />
 
-                    {/* Sovereignty Typography */}
-                    <text x="550" y="445" fill="#b45309" fontSize="13" fontWeight="900" className="font-heading">
-                      🇻🇳 QĐ. HOÀNG SA
-                    </text>
-                    <text x="550" y="462" fill="#92400e" fontSize="10.5" fontWeight="bold">
-                      (Thuộc TP. Đà Nẵng, VN)
-                    </text>
-                    <text x="550" y="478" fill="#78350f" fontSize="9" fontStyle="italic">
-                      Paracel Islands • 16°–17°B, 111°–113°Đ
-                    </text>
-                    <text x="550" y="530" fill="#b45309" fontSize="9" fontWeight="600">
-                      Đảo Hoàng Sa, Đảo Phú Lâm, Tri Tôn...
-                    </text>
-                  </g>
-                );
-              })()}
+                {/* Sovereignty Typography */}
+                <text x="550" y="445" fill="#b45309" fontSize="13" fontWeight="900" className="font-heading">
+                  🇻🇳 QĐ. HOÀNG SA
+                </text>
+                <text x="550" y="462" fill="#92400e" fontSize="10.5" fontWeight="bold">
+                  (Thuộc TP. Đà Nẵng, VN)
+                </text>
+                <text x="550" y="478" fill="#78350f" fontSize="9" fontStyle="italic">
+                  Paracel Islands • 16°–17°B, 111°–113°Đ
+                </text>
+                <text x="550" y="530" fill="#b45309" fontSize="9" fontWeight="600">
+                  Đảo Hoàng Sa, Đảo Phú Lâm, Tri Tôn...
+                </text>
+              </g>
 
               {/* 4. SPRATLY ISLANDS (Quần đảo Trường Sa - Thuộc Tỉnh Khánh Hòa, Việt Nam) */}
-              {(() => {
-                const truongSaGeo = VIETNAM_PROVINCES_GEO.find(g => g.isSpecialArchipelago === 'TruongSa');
-                return (
-                  <g 
-                    id="truong-sa-sovereignty" 
-                    className="cursor-pointer group"
-                    onClick={() => setActiveSovereigntyIsland('TruongSa')}
-                  >
-                    {/* Visual Frame & Sovereignty Plaque */}
-                    <rect 
-                      x="510" 
-                      y="780" 
-                      width="275" 
-                      height="165" 
-                      rx="18" 
-                      fill="#fffbeb" 
-                      stroke="#d97706" 
-                      strokeWidth="2" 
-                      strokeDasharray="4 3"
-                      className="shadow-md group-hover:stroke-rose-600 transition-colors"
-                    />
+              <g 
+                id="truong-sa-sovereignty" 
+                className="cursor-pointer group"
+                onClick={() => setActiveSovereigntyIsland('TruongSa')}
+              >
+                {/* Visual Frame & Sovereignty Plaque */}
+                <rect 
+                  x="510" 
+                  y="780" 
+                  width="275" 
+                  height="165" 
+                  rx="18" 
+                  fill="#fffbeb" 
+                  stroke="#d97706" 
+                  strokeWidth="2" 
+                  strokeDasharray="4 3"
+                  className="shadow-md group-hover:stroke-rose-600 transition-colors"
+                />
 
-                    {/* Exact GIS Polygons for Truong Sa (67 atolls) */}
-                    {truongSaGeo && (
-                      <path
-                        d={truongSaGeo.svgPath}
-                        fill="#f59e0b"
-                        stroke="#b45309"
-                        strokeWidth="1.5"
-                        className="group-hover:fill-rose-500 transition-colors"
-                      />
-                    )}
+                {/* Exact GIS Polygons for Truong Sa (67 atolls) */}
+                <path
+                  d={TRUONG_SA_SVG_PATH}
+                  fill="#f59e0b"
+                  stroke="#b45309"
+                  strokeWidth="1.5"
+                  className="group-hover:fill-rose-500 transition-colors"
+                />
 
                     {/* Radar Pulse around centroid */}
                     <circle cx="729.7" cy="912.8" r="16" fill="#f59e0b" opacity="0.3" className="animate-ping" />
@@ -696,8 +689,6 @@ export const VietnamMap: React.FC<VietnamMapProps> = ({
                       Đảo Trường Sa Lớn, Song Tử Tây, Sinh Tồn...
                     </text>
                   </g>
-                );
-              })()}
 
               {/* 5. PHU QUOC ISLAND & THO CHU (WGS84: 10.23°N, 103.96°E & 9.30°N, 103.48°E) */}
               <g id="phu-quoc-island">

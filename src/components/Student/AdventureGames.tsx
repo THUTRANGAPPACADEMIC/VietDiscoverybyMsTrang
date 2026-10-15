@@ -24,6 +24,7 @@ import {
 import { GradeBand, Destination } from '../../types';
 import { playEnglishSpeech, playSpeech, stopSpeech } from '../../lib/speech';
 import { LandmarkDragDropGame } from './LandmarkDragDropGame';
+import { InteractiveMap34ProvincesGame } from './InteractiveMap34ProvincesGame';
 
 interface AdventureGamesProps {
   gradeBand?: GradeBand;
@@ -31,7 +32,7 @@ interface AdventureGamesProps {
   destinations: Destination[];
 }
 
-type GameMode = 'map-drop' | 'province-match' | 'photo-mystery' | 'audio-explorer' | 'vocab-scramble';
+type GameMode = 'map-drop' | '34-provinces-game' | 'province-match' | 'photo-mystery' | 'audio-explorer' | 'vocab-scramble';
 
 // Web Audio sound synthesizer for instant playful feedback
 const playTone = (type: 'success' | 'wrong' | 'complete' | 'click') => {
@@ -802,10 +803,11 @@ export const AdventureGames: React.FC<AdventureGamesProps> = ({
       <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
         {[
           { id: 'map-drop', labelVi: '1. Kéo thả Địa danh', labelEn: 'Landmark Map Drop', icon: '📍' },
-          { id: 'province-match', labelVi: '2. Nối Tỉnh/Thành', labelEn: 'Province Matching', icon: '🔗' },
-          { id: 'photo-mystery', labelVi: '3. Thám tử Ảnh bí ẩn', labelEn: 'Photo Detective', icon: '🔍' },
-          { id: 'audio-explorer', labelVi: '4. Thám hiểm Âm thanh', labelEn: 'Audio Explorer', icon: '🎧' },
-          { id: 'vocab-scramble', labelVi: '5. Thử thách Xếp chữ', labelEn: 'Word Challenge', icon: '🔠' }
+          { id: '34-provinces-game', labelVi: '2. Bản đồ 34 Tỉnh 2025', labelEn: '34 Provinces Map Game', icon: '🗺️' },
+          { id: 'province-match', labelVi: '3. Nối Tỉnh/Thành', labelEn: 'Province Matching', icon: '🔗' },
+          { id: 'photo-mystery', labelVi: '4. Thám tử Ảnh bí ẩn', labelEn: 'Photo Detective', icon: '🔍' },
+          { id: 'audio-explorer', labelVi: '5. Thám hiểm Âm thanh', labelEn: 'Audio Explorer', icon: '🎧' },
+          { id: 'vocab-scramble', labelVi: '6. Thử thách Xếp chữ', labelEn: 'Word Challenge', icon: '🔠' }
         ].map(tab => (
           <button
             key={tab.id}
@@ -834,6 +836,16 @@ export const AdventureGames: React.FC<AdventureGamesProps> = ({
       {/* ========================================================= */}
       {activeGame === 'map-drop' && (
         <LandmarkDragDropGame
+          gradeBand={selectedGradeBand}
+          onEarnStars={awardGameStars}
+        />
+      )}
+
+      {/* ========================================================= */}
+      {/* GAME 2: 34 PROVINCES INTERACTIVE MAP LEARNING GAME        */}
+      {/* ========================================================= */}
+      {activeGame === '34-provinces-game' && (
+        <InteractiveMap34ProvincesGame
           gradeBand={selectedGradeBand}
           onEarnStars={awardGameStars}
         />

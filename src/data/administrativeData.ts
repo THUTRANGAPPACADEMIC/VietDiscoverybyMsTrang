@@ -65,8 +65,8 @@ export const OFFICIAL_34_PROVINCES_DATA: AdministrativeUnitInfo[] = [
     region: 'South',
     zone: 'Đông Nam Bộ',
     administrativeCenter: 'Quận 1',
-    districtMergerSummary: 'Đô thị đặc biệt, trung tâm kinh tế, tài chính, khoa học công nghệ lớn nhất cả nước; theo bản đồ hành chính 2025 quản lý Quần đảo Côn Sơn (Côn Đảo).',
-    officialSource: 'Bản đồ Hành chính Nước CHXHCN Việt Nam năm 2025',
+    districtMergerSummary: 'Đô thị đặc biệt, sáp nhập và hợp nhất không gian phát triển toàn diện giữa TP. Hồ Chí Minh, Bình Dương và Bà Rịa – Vũng Tàu theo Nghị quyết 202/2025/QH15; quản lý toàn bộ Quần đảo Côn Sơn (Côn Đảo).',
+    officialSource: 'Nghị quyết số 202/2025/QH15 & Bản đồ Hành chính Nước CHXHCN Việt Nam năm 2025',
     dateAnnounced: 'Năm 2025',
     islandDistricts: ['Quần đảo Côn Sơn (Côn Đảo - TP. Hồ Chí Minh)']
   },
@@ -76,8 +76,8 @@ export const OFFICIAL_34_PROVINCES_DATA: AdministrativeUnitInfo[] = [
     region: 'South',
     zone: 'Đồng bằng Sông Cửu Long',
     administrativeCenter: 'Quận Ninh Kiều',
-    districtMergerSummary: 'Đô thị hạt nhân trung tâm kinh tế, văn hóa, giáo dục và đầu mối liên kết sản xuất nông thủy sản toàn vùng Đồng bằng Sông Cửu Long.',
-    officialSource: 'Bản đồ Hành chính Nước CHXHCN Việt Nam năm 2025',
+    districtMergerSummary: 'Đô thị hạt nhân trung tâm kinh tế, văn hóa và đầu mối liên kết sản xuất nông thủy sản toàn vùng Tây Nam Bộ, hợp nhất Cần Thơ, Hậu Giang và Sóc Trăng theo Nghị quyết 202/2025/QH15.',
+    officialSource: 'Nghị quyết số 202/2025/QH15 & Bản đồ Hành chính Nước CHXHCN Việt Nam năm 2025',
     dateAnnounced: 'Năm 2025'
   },
 
@@ -319,18 +319,18 @@ export const OFFICIAL_34_PROVINCES_DATA: AdministrativeUnitInfo[] = [
     region: 'South',
     zone: 'Đông Nam Bộ',
     administrativeCenter: 'TP. Biên Hòa',
-    districtMergerSummary: 'Cửa ngõ công nghiệp và logistics lớn của vùng Đông Nam Bộ; trung tâm hàng không quốc tế Cảng hàng không Long Thành và Vườn quốc gia Cát Tiên.',
-    officialSource: 'Bản đồ Hành chính Nước CHXHCN Việt Nam năm 2025',
+    districtMergerSummary: 'Cửa ngõ công nghiệp và logistics lớn của vùng Đông Nam Bộ, hợp nhất Đồng Nai và Bình Phước theo Nghị quyết 202/2025/QH15; trung tâm hàng không quốc tế Long Thành, Vườn quốc gia Cát Tiên và Bù Gia Mập.',
+    officialSource: 'Nghị quyết số 202/2025/QH15 & Bản đồ Hành chính Nước CHXHCN Việt Nam năm 2025',
     dateAnnounced: 'Năm 2025'
   },
   {
-    code: 'TN',
+    code: 'TNI',
     name: 'Tỉnh Tây Ninh',
     region: 'South',
     zone: 'Đông Nam Bộ',
     administrativeCenter: 'TP. Tây Ninh',
-    districtMergerSummary: 'Trung tâm kinh tế cửa khẩu biên giới Tây Nam (Mộc Bài, Xa Mát); địa danh Núi Bà Đen cao nhất Nam Bộ và hồ thủy lợi Dầu Tiếng.',
-    officialSource: 'Bản đồ Hành chính Nước CHXHCN Việt Nam năm 2025',
+    districtMergerSummary: 'Trung tâm kinh tế cửa khẩu biên giới Tây Nam (Mộc Bài, Xa Mát) theo Nghị quyết 202/2025/QH15; địa danh Núi Bà Đen cao nhất Nam Bộ và hồ thủy lợi Dầu Tiếng.',
+    officialSource: 'Nghị quyết số 202/2025/QH15 & Bản đồ Hành chính Nước CHXHCN Việt Nam năm 2025',
     dateAnnounced: 'Năm 2025'
   },
   {
@@ -339,8 +339,8 @@ export const OFFICIAL_34_PROVINCES_DATA: AdministrativeUnitInfo[] = [
     region: 'South',
     zone: 'Đồng bằng Sông Cửu Long',
     administrativeCenter: 'TP. Cao Lãnh',
-    districtMergerSummary: 'Vùng Đồng Tháp Mười trù phú, xứ sở sen hồng; bảo tồn Vườn quốc gia Tràm Chim và miệt vườn hoa kiểng Sa Đéc.',
-    officialSource: 'Bản đồ Hành chính Nước CHXHCN Việt Nam năm 2025',
+    districtMergerSummary: 'Vùng châu thổ trù phú hợp nhất Đồng Tháp, Tiền Giang và Long An theo Nghị quyết 2025; bảo tồn Vườn quốc gia Tràm Chim, Láng Sen và miệt vườn hoa Sa Đéc.',
+    officialSource: 'Nghị quyết số 202/2025/QH15 & Bản đồ Hành chính Nước CHXHCN Việt Nam năm 2025',
     dateAnnounced: 'Năm 2025'
   },
   {
@@ -349,8 +349,8 @@ export const OFFICIAL_34_PROVINCES_DATA: AdministrativeUnitInfo[] = [
     region: 'South',
     zone: 'Đồng bằng Sông Cửu Long',
     administrativeCenter: 'TP. Vĩnh Long',
-    districtMergerSummary: 'Nằm giữa hai dòng sông Tiền và sông Hậu; mạng lưới sông rạch chằng chịt, cù lao cây trái xanh tốt quanh năm.',
-    officialSource: 'Bản đồ Hành chính Nước CHXHCN Việt Nam năm 2025',
+    districtMergerSummary: 'Hợp nhất không gian sinh thái sông nước giữa Vĩnh Long, Bến Tre và Trà Vinh theo Nghị quyết 202/2025/QH15; mạng lưới sông Tiền, sông Cổ Chiên, cù lao An Bình và xứ sở dừa.',
+    officialSource: 'Nghị quyết số 202/2025/QH15 & Bản đồ Hành chính Nước CHXHCN Việt Nam năm 2025',
     dateAnnounced: 'Năm 2025'
   },
   {
