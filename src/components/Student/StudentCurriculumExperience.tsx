@@ -39,6 +39,7 @@ import { playEnglishSpeech, stopSpeech } from '../../lib/speech';
 import { soundEffects } from '../../lib/soundEffects';
 import { RealisticVisualVocabularyCard } from './RealisticVisualVocabularyCard';
 import { getVocabularyVisual } from '../../data/vocabularyVisualsRegistry';
+import { ImmersiveListeningQuest } from './ImmersiveListeningQuest';
 
 interface StudentCurriculumExperienceProps {
   user: UserProfile | null;
@@ -937,25 +938,25 @@ export const StudentCurriculumExperience: React.FC<StudentCurriculumExperiencePr
                     </div>
                   </div>
 
-                  {/* Listening Challenge Box */}
-                  <div className="bg-amber-50 rounded-3xl p-5 border-2 border-amber-200 shadow-xs space-y-3">
-                    <div className="flex items-center gap-2 text-xs font-black text-amber-950 uppercase">
-                      <Volume2 className="w-4 h-4 text-amber-600" />
-                      <span>{activeLesson.listening.audioTitleEn}</span>
-                    </div>
-
-                    <button
-                      onClick={() => handlePlayAudio(activeLesson.listening.audioScriptEn, 0.88)}
-                      className="px-4 py-2 rounded-2xl bg-amber-400 hover:bg-amber-300 text-amber-950 font-black text-xs shadow-xs flex items-center gap-1.5 cursor-pointer"
-                    >
-                      <Play className="w-3.5 h-3.5 fill-amber-950" />
-                      <span>Play Listening Dialogue 🎙️</span>
-                    </button>
-
-                    <p className="text-xs text-amber-900 font-medium">
-                      Q: {activeLesson.listening.questionEn}
-                    </p>
-                  </div>
+                  {/* Immersive Listening Quest */}
+                  <ImmersiveListeningQuest
+                    key={activeLesson.id}
+                    destinationName={activeLesson.titleEn}
+                    destinationProvince={activeLesson.topicEn}
+                    landmarkImage={activeLesson.reading.readingImage || activeLesson.coverImage || '/destinations/danang_dragon_bridge.jpg'}
+                    landmarkName={activeLesson.topicEn}
+                    audioScriptEn={activeLesson.listening.audioScriptEn}
+                    audioScriptVi={activeLesson.listening.audioScriptVi}
+                    audioTitleEn={activeLesson.listening.audioTitleEn}
+                    speakerRole={activeLesson.listening.speakerRole}
+                    questionEn={activeLesson.listening.questionEn}
+                    questionVi={activeLesson.listening.questionVi}
+                    options={activeLesson.listening.options}
+                    correctIndex={activeLesson.listening.correctIndex}
+                    gradeBadge={`${activeLesson.gradeLevel} LISTENING QUEST`}
+                    onEarnStars={(stars) => onEarnStars && onEarnStars(stars)}
+                    onContinue={() => setCurrentStage('play')}
+                  />
 
                   <div className="flex items-center justify-between gap-3 pt-2">
                     <button

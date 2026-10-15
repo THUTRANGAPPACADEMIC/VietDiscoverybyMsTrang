@@ -25,6 +25,7 @@ import { GradeBand, Destination } from '../../types';
 import { playEnglishSpeech, playSpeech, stopSpeech } from '../../lib/speech';
 import { LandmarkDragDropGame } from './LandmarkDragDropGame';
 import { InteractiveMap34ProvincesGame } from './InteractiveMap34ProvincesGame';
+import { ImmersiveListeningQuest } from './ImmersiveListeningQuest';
 
 interface AdventureGamesProps {
   gradeBand?: GradeBand;
@@ -1179,16 +1180,14 @@ export const AdventureGames: React.FC<AdventureGamesProps> = ({
       {/* ========================================================= */}
       {activeGame === 'audio-explorer' && (
         <div className="bg-white/95 backdrop-blur-md rounded-[32px] p-5 sm:p-7 border-3 border-sky-300/80 shadow-[0_12px_36px_rgba(56,189,248,0.18)] space-y-6">
-          
-          {/* Header Bar */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-4 border-b border-sky-100">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-2 border-b border-sky-100">
             <div>
               <div className="flex items-center gap-2">
                 <span className="w-8 h-8 rounded-full bg-gradient-to-tr from-sky-500 to-indigo-600 text-white flex items-center justify-center text-sm shadow-xs font-bold shrink-0">
                   🎧
                 </span>
                 <h3 className="text-lg sm:text-xl font-black font-heading text-slate-900 flex items-center gap-2">
-                  <span>Audio Explorer</span>
+                  <span>Audio Explorer: Listening Quest</span>
                   <span className="text-xs px-2.5 py-0.5 rounded-full bg-sky-100 text-sky-800 border border-sky-200 uppercase font-black tracking-wider">
                     {selectedGradeBand.replace('_', ' ').toUpperCase()} LISTENING
                   </span>
@@ -1208,164 +1207,83 @@ export const AdventureGames: React.FC<AdventureGamesProps> = ({
             </button>
           </div>
 
-          <div className="max-w-xl mx-auto space-y-6 text-center">
-            
-            {/* Audio Play Centerpiece with Cute 3D Mascot */}
-            <div className="p-6 sm:p-8 rounded-[28px] bg-gradient-to-b from-sky-50/80 via-indigo-50/40 to-pink-50/40 border-2 border-sky-200/80 shadow-inner space-y-4">
-              
-              {/* Cute 3D Headphone Mascot */}
-              <div className="relative inline-block my-1">
-                <div className={`w-32 h-32 sm:w-36 sm:h-36 mx-auto relative rounded-3xl flex items-center justify-center transition-transform ${isPlayingAudioPrompt ? 'scale-105' : 'hover:scale-102'}`}>
-                  <img
-                    src="/assets/cute/cute_3d_headphones.png"
-                    alt="Cute 3D Audio Explorer Mascot"
-                    className="w-full h-full object-contain drop-shadow-xl select-none animate-bounce-subtle"
-                  />
-                  {isPlayingAudioPrompt && (
-                    <span className="absolute -top-2 -right-2 flex h-6 w-6">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-pink-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-6 w-6 bg-pink-500 text-white text-[10px] items-center justify-center font-bold">
-                        🔊
-                      </span>
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              {/* Main Instruction: English FIRST and PROMINENT */}
-              <div className="space-y-1.5">
-                <div className="text-[11px] font-black uppercase tracking-widest text-sky-600 font-heading">
-                  LISTEN CAREFULLY • NGHE KỸ NHÉ!
-                </div>
-                <h4 className="font-black text-slate-900 text-lg sm:text-2xl font-heading leading-snug tracking-tight">
-                  {currentAudioQ.questionEn}
-                </h4>
-                <div className="pt-1">
-                  <span className="inline-block px-3 py-1 rounded-full bg-white/90 text-slate-600 text-xs font-semibold border border-slate-200/80 shadow-2xs">
-                    {currentAudioQ.questionVi}
-                  </span>
-                </div>
-              </div>
-
-              {/* Primary Audio Action Buttons: Listen, Replay, Slow */}
-              <div className="flex flex-wrap items-center justify-center gap-2.5 pt-2">
-                {/* 1. Listen / Play Button */}
-                <button
-                  onClick={() => handlePlayTourGuideAudio(false)}
-                  className={`px-5 py-3 rounded-2xl font-black text-sm text-white shadow-md transition-all flex items-center gap-2 cursor-pointer ${
-                    isPlayingAudioPrompt
-                      ? 'bg-gradient-to-r from-pink-500 to-rose-500 ring-4 ring-pink-200 animate-pulse'
-                      : 'bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 shadow-emerald-200 hover:scale-102 active:scale-98'
-                  }`}
-                >
-                  <Play className="w-4 h-4 fill-white" />
-                  <span>{isPlayingAudioPrompt ? 'Playing Audio... 🔊' : 'Listen (Nghe)'}</span>
-                </button>
-
-                {/* 2. Replay Button */}
-                <button
-                  onClick={() => handlePlayTourGuideAudio(isSlowAudioMode)}
-                  className="px-4 py-3 rounded-2xl bg-white hover:bg-slate-50 text-slate-700 border-2 border-slate-200 hover:border-slate-300 font-bold text-xs shadow-xs transition-all flex items-center gap-1.5 cursor-pointer hover:scale-102 active:scale-98"
-                  title="Replay from beginning"
-                >
-                  <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
-                  <span>Replay (Phát lại)</span>
-                </button>
-
-                {/* 3. Slow Playback Toggle */}
-                <button
-                  onClick={handleToggleSlow}
-                  className={`px-4 py-3 rounded-2xl font-bold text-xs transition-all flex items-center gap-1.5 cursor-pointer shadow-xs hover:scale-102 active:scale-98 border-2 ${
-                    isSlowAudioMode
-                      ? 'bg-amber-100 text-amber-900 border-amber-300 ring-2 ring-amber-200'
-                      : 'bg-white hover:bg-amber-50/50 text-slate-700 border-slate-200'
-                  }`}
-                  title="Toggle slow playback speed"
-                >
-                  <span>🐢</span>
-                  <span>Slow {isSlowAudioMode ? '(ON)' : '(Chậm)'}</span>
-                </button>
-              </div>
-
-              {/* Optional English Transcript Toggle */}
-              <div className="pt-2">
-                <button
-                  onClick={() => setShowTranscript(prev => !prev)}
-                  className="text-xs font-bold text-sky-700 hover:text-sky-900 inline-flex items-center gap-1 cursor-pointer underline underline-offset-2"
-                >
-                  <Eye className="w-3.5 h-3.5" />
-                  <span>{showTranscript ? 'Hide English Transcript (Ẩn lời đọc)' : 'Show English Transcript (Xem lời đọc tiếng Anh)'}</span>
-                </button>
-              </div>
-
-              {/* Transcript Drawer */}
-              {showTranscript && (
-                <div className="p-4 rounded-2xl bg-white border border-sky-200 text-left text-xs sm:text-sm text-slate-800 space-y-1.5 animate-in fade-in duration-200 shadow-xs">
-                  <div className="font-black text-sky-900 text-xs uppercase tracking-wider flex items-center gap-1.5 font-heading">
-                    <span>📜</span>
-                    <span>ENGLISH AUDIO SCRIPT:</span>
-                  </div>
-                  <p className="italic font-medium text-slate-800 leading-relaxed">
-                    "{currentAudioQ.audioScriptEn}"
-                  </p>
-                  <div className="pt-1.5 border-t border-sky-100 text-xs text-slate-500">
-                    <span className="font-bold text-slate-600">Bản dịch: </span>
-                    <span>{currentAudioQ.audioScriptVi}</span>
-                  </div>
-                </div>
-              )}
-
-              {/* Audio error banner if any */}
-              {audioErrorMessage && (
-                <div className="p-3 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold flex items-center justify-center gap-2">
-                  <span>⚠️</span>
-                  <span>{audioErrorMessage}</span>
-                </div>
-              )}
-            </div>
-
-            {/* Feedback alert */}
-            {audioAnswerStatus && (
-              <div className={`p-4 rounded-2xl text-xs sm:text-sm font-black flex items-center justify-between shadow-xs animate-in fade-in duration-200 ${
-                audioAnswerStatus.isCorrect 
-                  ? 'bg-emerald-50 text-emerald-900 border-2 border-emerald-300' 
-                  : 'bg-rose-50 text-rose-900 border-2 border-rose-300'
-              }`}>
-                <div className="flex items-center gap-2">
-                  <span>{audioAnswerStatus.isCorrect ? '🎉' : '💡'}</span>
-                  <span>{audioAnswerStatus.message}</span>
-                </div>
-                <button
-                  onClick={handleNextAudio}
-                  className="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-black cursor-pointer shrink-0 transition-transform active:scale-95"
-                >
-                  Next Question ›
-                </button>
-              </div>
-            )}
-
-            {/* Answer Options (English Primary) */}
-            <div className="space-y-2 text-left">
-              <div className="text-xs font-black uppercase tracking-wider text-slate-500 px-1 font-heading">
-                SELECT YOUR ANSWER (CHỌN ĐÁP ÁN ĐÚNG):
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {currentAudioQ.options.map((option, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => handleAnswerAudio(idx)}
-                    className="p-4 rounded-2xl border-2 border-sky-100 hover:border-sky-400 hover:bg-sky-50/70 bg-white text-xs sm:text-sm font-bold text-slate-800 transition-all flex items-center gap-3 cursor-pointer shadow-xs hover:scale-101 active:scale-99 min-h-[52px]"
-                  >
-                    <span className="w-7 h-7 rounded-full bg-sky-100 text-sky-800 font-black font-mono flex items-center justify-center text-xs shrink-0 border border-sky-200">
-                      {String.fromCharCode(65 + idx)}
-                    </span>
-                    <span className="leading-snug">{option}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-          </div>
+          <ImmersiveListeningQuest
+            key={currentAudioQ.id}
+            destinationName={
+              currentAudioQ.id === 'aud-g3-1'
+                ? 'Dragon Bridge • Da Nang'
+                : currentAudioQ.id === 'aud-g3-2'
+                ? 'Mekong Delta Floating Market'
+                : currentAudioQ.id === 'aud-g3-3'
+                ? 'Hue Imperial City'
+                : currentAudioQ.id === 'aud-g4-1'
+                ? 'Turtle Tower • Hanoi'
+                : currentAudioQ.id === 'aud-g4-2'
+                ? 'Da Lat Pine City'
+                : currentAudioQ.id === 'aud-g4-3'
+                ? 'Ho Chi Minh City'
+                : currentAudioQ.id === 'aud-g5-1'
+                ? 'Ha Long Bay UNESCO Site'
+                : 'Vietnam Explorer'
+            }
+            destinationProvince={
+              currentAudioQ.id === 'aud-g3-1'
+                ? 'Đà Nẵng City'
+                : currentAudioQ.id === 'aud-g3-2'
+                ? 'Cần Thơ & Sông Cửu Long'
+                : currentAudioQ.id === 'aud-g3-3'
+                ? 'Thừa Thiên Huế'
+                : currentAudioQ.id === 'aud-g4-1'
+                ? 'Thủ đô Hà Nội'
+                : currentAudioQ.id === 'aud-g4-2'
+                ? 'Lâm Đồng'
+                : currentAudioQ.id === 'aud-g4-3'
+                ? 'TP. Hồ Chí Minh'
+                : 'Quảng Ninh'
+            }
+            landmarkName={
+              currentAudioQ.id === 'aud-g3-1'
+                ? 'Dragon Bridge (Cầu Rồng Đà Nẵng)'
+                : currentAudioQ.id === 'aud-g3-2'
+                ? 'Cai Rang Floating Market'
+                : currentAudioQ.id === 'aud-g3-3'
+                ? 'Imperial City & Perfume River'
+                : currentAudioQ.id === 'aud-g4-1'
+                ? 'Turtle Tower at Hoan Kiem Lake'
+                : currentAudioQ.id === 'aud-g4-2'
+                ? 'Da Lat Flower & Pine City'
+                : currentAudioQ.id === 'aud-g4-3'
+                ? 'Ben Thanh Market & Landmark 81'
+                : 'Ha Long Bay Limestone Karsts'
+            }
+            landmarkImage={
+              currentAudioQ.id === 'aud-g3-1'
+                ? '/destinations/danang_dragon_bridge.jpg'
+                : currentAudioQ.id === 'aud-g3-2'
+                ? '/destinations/mekong_delta.jpg'
+                : currentAudioQ.id === 'aud-g3-3'
+                ? '/destinations/hue_citadel.jpg'
+                : currentAudioQ.id === 'aud-g4-1'
+                ? '/destinations/hanoi_turtle_tower.jpg'
+                : currentAudioQ.id === 'aud-g4-2'
+                ? '/destinations/dalat_pine_hills.jpg'
+                : currentAudioQ.id === 'aud-g4-3'
+                ? '/destinations/hcmc_benthanh.jpg'
+                : currentAudioQ.id === 'aud-g5-1'
+                ? '/destinations/halong_bay.jpg'
+                : '/destinations/danang_dragon_bridge.jpg'
+            }
+            audioScriptEn={currentAudioQ.audioScriptEn}
+            audioScriptVi={currentAudioQ.audioScriptVi}
+            questionEn={currentAudioQ.questionEn}
+            questionVi={currentAudioQ.questionVi}
+            options={currentAudioQ.options}
+            correctIndex={currentAudioQ.correctIndex}
+            explanationEn={currentAudioQ.revealedInfo}
+            gradeBadge={`${selectedGradeBand.replace('_', ' ').toUpperCase()} LISTENING`}
+            onEarnStars={(stars) => awardGameStars(stars)}
+            onContinue={handleNextAudio}
+          />
         </div>
       )}
 
