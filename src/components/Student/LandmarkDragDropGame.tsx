@@ -472,11 +472,19 @@ export const LandmarkDragDropGame: React.FC<LandmarkDragDropGameProps> = ({
       {/* 3. Instruction Bar & Mascot Advice */}
       <div className="bg-gradient-to-r from-sky-50 via-indigo-50/50 to-pink-50 p-4 rounded-[24px] border-2 border-sky-200/80 flex flex-col sm:flex-row items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-pink-300 shadow-xs shrink-0 bg-white">
+          <div 
+            className="w-16 h-12 sm:w-20 sm:h-14 rounded-xl overflow-hidden border-2 border-pink-300 shadow-md shrink-0 bg-white cursor-pointer hover:scale-105 transition-transform"
+            onClick={() => {
+              playEnglishSpeech(selectedLandmark
+                ? `You selected ${selectedLandmark.nameEn}. Now place it into the correct region!`
+                : 'Drag a landmark card or tap it, then choose Northern, Central, or Southern Vietnam!');
+            }}
+            title="Click to hear Captain Trang's tip!"
+          >
             <img
-              src="/assets/cute/captain_trang_chibi.png"
+              src="/assets/cute/captain_trang_official.png"
               alt="Captain Trang Mascot"
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover object-top"
             />
           </div>
           <div>

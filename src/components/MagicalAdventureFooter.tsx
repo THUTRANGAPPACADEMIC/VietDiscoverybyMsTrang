@@ -122,17 +122,23 @@ export const MagicalAdventureFooter: React.FC<MagicalAdventureFooterProps> = ({
             
             {/* Cute Mascots & Globe Cluster */}
             <div className="flex items-center justify-center gap-3 sm:gap-6">
-              {/* Captain Trang Chibi Mascot */}
-              <img 
-                src="/assets/cute/captain_trang_clean.png" 
-                alt="Captain Trang Mascot" 
-                className="w-14 h-14 sm:w-20 sm:h-20 object-contain drop-shadow-[0_8px_16px_rgba(0,0,0,0.3)] hover:scale-110 transition-transform duration-300 cursor-pointer hidden xs:block"
+              {/* Captain Trang Official Artwork Mascot */}
+              <div
+                className="relative group cursor-pointer"
                 onClick={() => {
                   soundEffects.playHover();
                   onOpenCreatorModal();
                 }}
-                title="Cô Trần Thị Thu Trang - Tác giả VietDiscovery"
-              />
+                title="Cô Trần Thị Thu Trang - Tác giả & Super Admin VietDiscovery"
+              >
+                <div className="w-18 sm:w-24 rounded-2xl overflow-hidden border-2 border-white/60 shadow-[0_8px_20px_rgba(0,0,0,0.35)] group-hover:scale-108 group-hover:border-pink-300 transition-all duration-300 bg-white/20">
+                  <img 
+                    src="/assets/cute/captain_trang_official.png" 
+                    alt="Captain Trang Mascot" 
+                    className="w-full h-auto object-contain select-none"
+                  />
+                </div>
+              </div>
 
               {/* Official Globe Brand Logo */}
               <div 
@@ -156,9 +162,9 @@ export const MagicalAdventureFooter: React.FC<MagicalAdventureFooterProps> = ({
               <img 
                 src="/assets/cute/boy_explorer_chibi.png" 
                 alt="Little Explorer Mascot" 
-                className="w-14 h-14 sm:w-20 sm:h-20 object-contain drop-shadow-[0_8px_16px_rgba(0,0,0,0.3)] hover:scale-110 transition-transform duration-300 cursor-pointer hidden xs:block"
+                className="w-14 h-14 sm:w-20 sm:h-20 object-contain drop-shadow-[0_8px_16px_rgba(0,0,0,0.3)] hover:scale-110 transition-transform duration-300 cursor-pointer"
                 onClick={() => soundEffects.playHover()}
-                title="Little Adventurer!"
+                title="Little Explorer 🎒"
               />
             </div>
 

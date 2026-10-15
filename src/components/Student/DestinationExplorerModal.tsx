@@ -85,20 +85,29 @@ export const DestinationExplorerModal: React.FC<DestinationExplorerModalProps> =
             <span>{destination.province}</span>
           </div>
 
-          {/* Captain Trang Chibi Sticker + Speech Bubble (Top-Right) */}
-          <div className="absolute -right-1 -bottom-2 sm:-bottom-1 flex items-end pointer-events-none z-20">
+          {/* Captain Trang Official Guide Sticker + Speech Bubble (Top-Right) */}
+          <div className="absolute -right-1 -bottom-2 sm:-bottom-1 flex items-end z-20">
             {/* Cute Speech Bubble */}
-            <div className="mb-8 mr-[-10px] bg-white/95 rounded-2xl px-3 py-1 shadow-md border border-pink-200 text-center animate-bounce-subtle">
+            <div className="mb-6 mr-[-8px] bg-white/95 rounded-2xl px-3 py-1 shadow-md border border-pink-200 text-center animate-bounce-subtle pointer-events-none">
               <div className="text-[11px] sm:text-xs font-black text-blue-900 leading-tight">Vietnam</div>
               <div className="text-[10px] sm:text-[11px] font-bold text-pink-600 leading-tight">is so beautiful! ❤️</div>
             </div>
 
-            {/* Chibi Mascot */}
-            <img
-              src="/assets/cute/captain_trang_chibi.png"
-              alt="Captain Trang"
-              className="w-24 sm:w-28 h-auto object-contain drop-shadow-xl"
-            />
+            {/* Official Artwork Card */}
+            <div 
+              className="w-24 sm:w-32 rounded-2xl overflow-hidden border-2 border-white shadow-xl bg-white/90 cursor-pointer hover:scale-105 transition-transform"
+              onClick={() => {
+                soundEffects.playClick();
+                playSpeech("Vietnam is so beautiful! Let's explore together!");
+              }}
+              title="Click to hear Captain Trang!"
+            >
+              <img
+                src="/assets/cute/captain_trang_official.png"
+                alt="Captain Trang"
+                className="w-full h-auto object-contain select-none"
+              />
+            </div>
           </div>
         </div>
 

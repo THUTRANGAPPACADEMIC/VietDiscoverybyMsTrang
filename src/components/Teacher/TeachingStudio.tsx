@@ -17,9 +17,10 @@ import { ClassManagement } from './ClassManagement';
 import { StudentProgressTable } from './StudentProgressTable';
 import { LearningAssessment } from './LearningAssessment';
 import { AIAssistant } from './AIAssistant';
+import { TeacherContentStudio } from './TeacherContentStudio';
 
 interface TeachingStudioProps {
-  activeTab: 'materials' | 'classes' | 'progress' | 'assessment' | 'ai';
+  activeTab: 'curriculum' | 'materials' | 'classes' | 'progress' | 'assessment' | 'ai';
   classes: ClassRoom[];
   students: StudentRosterItem[];
   materials: MaterialItem[];
@@ -130,6 +131,11 @@ export const TeachingStudio: React.FC<TeachingStudioProps> = ({
             </button>
           </div>
         </div>
+      )}
+
+      {/* Tab 0: Teacher Content Studio (Giáo trình độc quyền) */}
+      {activeTab === 'curriculum' && (
+        <TeacherContentStudio />
       )}
 
       {/* Tab 1: Learning Materials */}

@@ -22,6 +22,24 @@ export type Region = 'North' | 'Central' | 'South';
 export type Theme = 'Nature' | 'Culture' | 'History' | 'Modern Innovation';
 export type BloomLevel = 'Remember' | 'Understand' | 'Apply' | 'Analyze';
 
+// Circular 27/2020/TT-BGDDT Article 7 Elementary Learning Challenge Levels:
+// Level 1: Recognize (Nhận biết)
+// Level 2: Connect (Kết nối)
+// Level 3: Apply (Vận dụng)
+export type ChallengeLevel = 1 | 2 | 3;
+export type ChallengeLevelName = 'Recognize' | 'Connect' | 'Apply';
+
+export interface ChallengeBreakdownItem {
+  correct: number;
+  total: number;
+}
+
+export interface ChallengeBreakdown {
+  level1: ChallengeBreakdownItem; // Level 1: Recognize (Nhận biết)
+  level2: ChallengeBreakdownItem; // Level 2: Connect (Kết nối)
+  level3: ChallengeBreakdownItem; // Level 3: Apply (Vận dụng)
+}
+
 export interface VocabularyItem {
   word: string;
   phonetic: string;
@@ -34,7 +52,8 @@ export interface VocabularyItem {
 
 export interface QuizQuestion {
   id: string;
-  bloomLevel: BloomLevel;
+  bloomLevel?: BloomLevel;
+  challengeLevel?: ChallengeLevel; // Circular 27 Level (1 | 2 | 3)
   questionEn: string;
   questionVi: string;
   options: string[];
@@ -115,6 +134,60 @@ export interface DestinationProgress {
   attempts: number;
   starsEarned: number;
   lastAttemptDate: string;
+  challengeBreakdown?: ChallengeBreakdown;
+}
+
+// Helper: Map Bloom's taxonomy or explicit challengeLevel to Circular 27 Levels (1, 2, 3)
+export function getChallengeLevel(q: { bloomLevel?: BloomLevel; challengeLevel?: ChallengeLevel }): ChallengeLevel {
+  if (q.challengeLevel) return q.challengeLevel;
+  switch (q.bloomLevel) {
+    case 'Remember': return 1;
+    case 'Understand': return 2;
+    case 'Apply':
+    case 'Analyze': return 3;
+    default: return 1;
+  }
+}
+
+export function getChallengeLevelInfo(level: ChallengeLevel) {
+  switch (level) {
+    case 1:
+      return {
+        level: 1,
+        nameEn: 'Recognize',
+        nameVi: 'Nhận biết',
+        fullLabel: 'Level 1: Recognize (Nhận biết)',
+        badgeText: 'MỨC 1 • RECOGNIZE',
+        colorTheme: 'emerald',
+        icon: '🔍',
+        summaryEn: 'Recalling vocabulary, sounds, landmarks, and familiar phrases accurately.',
+        summaryVi: 'Nhận biết từ vựng, hình ảnh, âm thanh và mẫu câu giao tiếp quen thuộc.'
+      };
+    case 2:
+      return {
+        level: 2,
+        nameEn: 'Connect',
+        nameVi: 'Kết nối',
+        fullLabel: 'Level 2: Connect (Kết nối)',
+        badgeText: 'MỨC 2 • CONNECT',
+        colorTheme: 'sky',
+        icon: '🧩',
+        summaryEn: 'Connecting cultural contexts, reading details, and similar situations.',
+        summaryVi: 'Kết nối ý nghĩa văn hóa, hội thoại và giải quyết các tình huống tương tự.'
+      };
+    case 3:
+      return {
+        level: 3,
+        nameEn: 'Apply',
+        nameVi: 'Vận dụng',
+        fullLabel: 'Level 3: Apply (Vận dụng)',
+        badgeText: 'MỨC 3 • APPLY',
+        colorTheme: 'amber',
+        icon: '🚀',
+        summaryEn: 'Applying English sentences to travel scenarios, practical problems, and real-world expression.',
+        summaryVi: 'Vận dụng tiếng Anh tự tin giải quyết tình huống du lịch và trải nghiệm thực tế.'
+      };
+  }
 }
 
 export interface ClassRoom {

@@ -502,12 +502,12 @@ export const UnitAdventureHub: React.FC<UnitAdventureHubProps> = ({
 
               {/* Cute Cartoon Mascots at bottom corners matching reference */}
               {isLeftCard ? (
-                /* Girl in traditional 'nón lá' with a map on the left corner */
-                <div className="absolute -left-6 sm:-left-9 -bottom-3 sm:-bottom-5 w-20 sm:w-24 h-20 sm:h-24 rounded-full overflow-hidden border-3 border-white shadow-xl z-20 pointer-events-none bg-sky-200 animate-bounce-subtle ring-2 ring-amber-300/80">
+                /* Captain Trang Official Artwork on the left corner */
+                <div className="absolute -left-6 sm:-left-8 -bottom-3 sm:-bottom-5 w-22 sm:w-28 h-18 sm:h-22 rounded-2xl overflow-hidden border-3 border-white shadow-xl z-20 pointer-events-none bg-sky-100 animate-bounce-subtle ring-2 ring-pink-300/80">
                   <img
-                    src="/assets/cute/captain_trang_chibi.png"
+                    src="/assets/cute/captain_trang_official.png"
                     alt="Captain Trang"
-                    className="w-full h-full object-cover scale-110"
+                    className="w-full h-full object-cover object-top"
                   />
                 </div>
               ) : (

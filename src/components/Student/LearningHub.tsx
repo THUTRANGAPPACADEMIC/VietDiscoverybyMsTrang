@@ -11,6 +11,7 @@ import { UnitAdventureHub } from './UnitAdventureHub';
 import { DestinationExplorerModal } from './DestinationExplorerModal';
 import { LandmarkDragDropGame } from './LandmarkDragDropGame';
 import { InteractiveMap34ProvincesGame } from './InteractiveMap34ProvincesGame';
+import { StudentCurriculumExperience } from './StudentCurriculumExperience';
 import { 
   Sparkles, 
   Compass, 
@@ -31,9 +32,11 @@ import {
   Search,
   ZoomIn,
   ZoomOut,
-  Map as MapIcon
+  Map as MapIcon,
+  X
 } from 'lucide-react';
 import { soundEffects } from '../../lib/soundEffects';
+import { playEnglishSpeech, stopSpeech } from '../../lib/speech';
 
 interface LearningHubProps {
   user: UserProfile | null;
@@ -88,6 +91,53 @@ export const LearningHub: React.FC<LearningHubProps> = ({
   const [isVectorGisModalOpen, setIsVectorGisModalOpen] = useState(false);
   const [mapDisplayMode, setMapDisplayMode] = useState<'interactive_34_provinces' | 'game_34_provinces' | 'adventure_illustrated'>('game_34_provinces');
   const [isLandmarkGameModalOpen, setIsLandmarkGameModalOpen] = useState(false);
+  const [curriculumDisplayMode, setCurriculumDisplayMode] = useState<'curriculum_pathways' | 'map_and_units'>('curriculum_pathways');
+
+  // Captain Trang Interactive Guide States & Voice Engine
+  const [showCaptainTrangDialog, setShowCaptainTrangDialog] = useState(false);
+  const [isCaptainTrangSpeaking, setIsCaptainTrangSpeaking] = useState(false);
+  const [isCaptainSlowMode, setIsCaptainSlowMode] = useState(false);
+
+  const handleCaptainTrangClick = (slow = isCaptainSlowMode) => {
+    soundEffects.playClick();
+    setShowCaptainTrangDialog(true);
+    setIsCaptainTrangSpeaking(true);
+    playEnglishSpeech(
+      "Hello, Little Explorer! I'm Captain Trang. Let's discover Vietnam and learn English together!",
+      {
+        slow,
+        onStart: () => setIsCaptainTrangSpeaking(true),
+        onEnd: () => setIsCaptainTrangSpeaking(false),
+        onError: () => setIsCaptainTrangSpeaking(false),
+      }
+    );
+  };
+
+  const handleCloseCaptainTrangDialog = () => {
+    stopSpeech();
+    setIsCaptainTrangSpeaking(false);
+    setShowCaptainTrangDialog(false);
+  };
+
+  const handleQuickAction = (action: 'adventure' | 'map' | 'games') => {
+    soundEffects.playClick();
+    stopSpeech();
+    setIsCaptainTrangSpeaking(false);
+    setShowCaptainTrangDialog(false);
+    if (action === 'adventure') {
+      setExploreViewMode('units');
+      setTimeout(() => {
+        document.getElementById('adventure-units-section')?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    } else if (action === 'map') {
+      setExploreViewMode('map');
+      setTimeout(() => {
+        document.getElementById('vietnam-map-section')?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    } else if (action === 'games') {
+      onSelectTab?.('games');
+    }
+  };
 
   const handleOpenLesson = (dest: Destination, initialTab: LessonTabType = 'vocabulary') => {
     soundEffects.playClick();
@@ -245,20 +295,35 @@ export const LearningHub: React.FC<LearningHubProps> = ({
 
             <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
               
-              {/* Mascot 1: Captain Trang */}
-              <div className="hidden lg:flex flex-col items-center shrink-0">
+              {/* Mascot 1: Captain Trang - Official Character & Interactive Adventure Guide */}
+              <div className="flex flex-col items-center shrink-0">
                 <div 
                   className="relative group cursor-pointer" 
-                  onClick={() => soundEffects.playHover()}
-                  title="Cô Trần Thị Thu Trang - Captain Trang"
+                  onClick={() => handleCaptainTrangClick(false)}
+                  title="Captain Trang 🧭 - Chạm để trò chuyện và nghe giọng nói!"
                 >
-                  <img
-                    src="/assets/cute/captain_trang_clean.png"
-                    alt="Captain Trang Explorer"
-                    className="w-28 sm:w-36 h-auto object-contain drop-shadow-[0_12px_20px_rgba(0,0,0,0.25)] group-hover:scale-108 transition-transform duration-300 select-none"
-                  />
-                  <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap px-3 py-0.5 rounded-full bg-rose-500 text-white font-black text-[11px] shadow-md border border-white">
-                    Captain Trang 🧭
+                  {/* Subtle glowing halo and rounded container with official aspect ratio */}
+                  <div className="relative rounded-2xl sm:rounded-3xl p-1 bg-gradient-to-br from-pink-300 via-purple-300 to-sky-300 shadow-[0_10px_25px_rgba(244,63,94,0.3)] group-hover:shadow-[0_16px_36px_rgba(244,63,94,0.45)] group-hover:scale-105 transition-all duration-300">
+                    <img
+                      src="/assets/cute/captain_trang_official.png"
+                      alt="Captain Trang - Official Explorer Guide"
+                      className="w-32 sm:w-36 md:w-44 lg:w-48 h-auto rounded-xl sm:rounded-2xl object-contain select-none"
+                    />
+                    
+                    {/* Speaking Sound Wave Indicator Badge */}
+                    {isCaptainTrangSpeaking && (
+                      <div className="absolute -top-3 -right-2 px-2.5 py-1 rounded-full bg-rose-600 text-white text-[11px] font-black shadow-lg flex items-center gap-1.5 animate-pulse border-2 border-white">
+                        <Volume2 className="w-3.5 h-3.5 animate-bounce" />
+                        <span>Speaking...</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Tap to Talk Badge directly underneath */}
+                  <div className="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/95 text-rose-600 font-black text-xs shadow-md border border-rose-200 group-hover:bg-rose-500 group-hover:text-white transition-all transform group-hover:scale-105">
+                    <span>💬</span>
+                    <span>{isCaptainTrangSpeaking ? "I'm Talking! 🔊" : "Tap to Talk!"}</span>
+                    <Sparkles className="w-3 h-3 text-amber-400" />
                   </div>
                 </div>
               </div>
@@ -275,9 +340,9 @@ export const LearningHub: React.FC<LearningHubProps> = ({
                     title="VietDiscovery by Ms. Trang"
                   >
                     <img
-                      src="/assets/cute/logo_vietdiscovery.png"
+                      src="/assets/cute/globe_official.png"
                       alt="VietDiscovery by Ms. Trang Globe Logo"
-                      className="w-full h-full object-contain select-none"
+                      className="w-full h-full object-contain select-none drop-shadow-md"
                     />
                   </div>
 
@@ -436,9 +501,74 @@ export const LearningHub: React.FC<LearningHubProps> = ({
             ))}
           </div>
 
-          {/* 3. INTERACTIVE VIETNAM MAP CONTAINER - WITH OFFICIAL 34 PROVINCES & ILLUSTRATED MODES */}
-          {(exploreViewMode === 'both' || exploreViewMode === 'map') && (
-            <div className="relative bg-white/95 backdrop-blur-md rounded-[32px] p-4 sm:p-5 border-3 border-sky-300/80 shadow-[0_12px_36px_rgba(56,189,248,0.18)] space-y-4">
+          {/* CURRICULUM MODE SWITCHER: 5 ORIGINAL ADVENTURES VS 34 PROVINCES MAP */}
+          <div className="bg-white/95 backdrop-blur-md rounded-3xl p-3 border-2 border-indigo-200 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <span className="p-2.5 rounded-2xl bg-gradient-to-tr from-amber-400 to-rose-400 text-amber-950 font-black shadow-xs text-lg">
+                ✨
+              </span>
+              <div>
+                <h4 className="text-xs sm:text-sm font-black font-heading text-slate-900">
+                  Select Discovery Mode (Chọn chế độ học tập):
+                </h4>
+                <p className="text-[11px] text-slate-500 font-medium">
+                  {curriculumDisplayMode === 'curriculum_pathways'
+                    ? '5 Chặng Thám hiểm Giáo trình Độc quyền Cô Trang (Grades 1–5 • Thông tư 27)'
+                    : 'Bản đồ Tương tác 34 Tỉnh/Thành 2025, Game Kéo thả & Khám phá Địa danh'}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <button
+                onClick={() => {
+                  soundEffects.playClick();
+                  setCurriculumDisplayMode('curriculum_pathways');
+                }}
+                className={`flex-1 sm:flex-initial px-4 py-2 rounded-2xl text-xs font-black transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-xs ${
+                  curriculumDisplayMode === 'curriculum_pathways'
+                    ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-indigo-200 scale-102 ring-2 ring-indigo-300'
+                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                }`}
+              >
+                <span>🌟</span>
+                <span>5 Chặng Thám hiểm Giáo trình</span>
+                <span className="text-[9px] bg-amber-400 text-amber-950 px-1.5 py-0.5 rounded-full uppercase font-black">
+                  Mới
+                </span>
+              </button>
+
+              <button
+                onClick={() => {
+                  soundEffects.playClick();
+                  setCurriculumDisplayMode('map_and_units');
+                }}
+                className={`flex-1 sm:flex-initial px-4 py-2 rounded-2xl text-xs font-black transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-xs ${
+                  curriculumDisplayMode === 'map_and_units'
+                    ? 'bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-sky-200 scale-102 ring-2 ring-sky-300'
+                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                }`}
+              >
+                <span>🗺️</span>
+                <span>Bản đồ & Địa danh 2025</span>
+              </button>
+            </div>
+          </div>
+
+          {/* 3A. INDEPENDENT CURRICULUM EXPERIENCE */}
+          {curriculumDisplayMode === 'curriculum_pathways' && (
+            <StudentCurriculumExperience
+              user={user}
+              activeGradeBand={activeGradeBand}
+              onEarnStars={onEarnStars}
+            />
+          )}
+
+          {/* 3B. INTERACTIVE VIETNAM MAP CONTAINER - WITH OFFICIAL 34 PROVINCES & ILLUSTRATED MODES */}
+          {curriculumDisplayMode === 'map_and_units' && (
+            <>
+              {(exploreViewMode === 'both' || exploreViewMode === 'map') && (
+            <div id="vietnam-map-section" className="relative bg-white/95 backdrop-blur-md rounded-[32px] p-4 sm:p-5 border-3 border-sky-300/80 shadow-[0_12px_36px_rgba(56,189,248,0.18)] space-y-4">
               
               {/* Header Bar: Title, Pill & Mode Switcher */}
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-sky-100 pb-3">
@@ -842,7 +972,7 @@ export const LearningHub: React.FC<LearningHubProps> = ({
 
           {/* 4. MAIN UNIT ADVENTURE HUB - MATCHING IMAGE 1 */}
           {(exploreViewMode === 'both' || exploreViewMode === 'units') && (
-            <div className="space-y-4 pt-2">
+            <div id="adventure-units-section" className="space-y-4 pt-2">
               <UnitAdventureHub
                 destinations={destinations}
                 progressMap={progressMap}
@@ -855,6 +985,8 @@ export const LearningHub: React.FC<LearningHubProps> = ({
                 activeStudentTab={activeTab}
               />
             </div>
+          )}
+            </>
           )}
 
         </div>
@@ -973,6 +1105,144 @@ export const LearningHub: React.FC<LearningHubProps> = ({
             initialTab={initialLessonTab}
           />
         )
+      )}
+
+      {/* ============================================================== */}
+      {/* CAPTAIN TRANG INTERACTIVE ADVENTURE GUIDE DIALOG               */}
+      {/* ============================================================== */}
+      {showCaptainTrangDialog && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-slate-900/60 backdrop-blur-sm animate-fade-in"
+          onClick={handleCloseCaptainTrangDialog}
+        >
+          <div 
+            className="relative w-full max-w-lg bg-gradient-to-b from-[#f0f9ff] via-[#ffffff] to-[#fff1f2] rounded-[32px] p-5 sm:p-7 shadow-[0_25px_60px_rgba(244,63,94,0.35)] border-4 border-pink-300 space-y-5 animate-in fade-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Top Close Button */}
+            <button
+              onClick={handleCloseCaptainTrangDialog}
+              className="absolute top-4 right-4 w-9 h-9 rounded-full bg-slate-100 hover:bg-rose-100 text-slate-500 hover:text-rose-600 flex items-center justify-center transition-colors cursor-pointer border border-slate-200 z-10"
+              title="Close"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            {/* Character Header: Image Card + Identity */}
+            <div className="flex items-center gap-4">
+              <div className="relative w-24 sm:w-28 rounded-2xl overflow-hidden border-3 border-pink-400 shadow-md shrink-0 bg-white group">
+                <img
+                  src="/assets/cute/captain_trang_official.png"
+                  alt="Captain Trang"
+                  className="w-full h-auto object-contain select-none"
+                />
+              </div>
+
+              <div className="min-w-0 pr-8">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 text-white font-black text-xs shadow-xs mb-1">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-200 fill-amber-200" />
+                  <span>Captain Trang 🧭</span>
+                </div>
+                <h3 className="text-base sm:text-lg font-black text-slate-900 font-heading leading-tight">
+                  Your Vietnam Adventure Guide
+                </h3>
+                <p className="text-xs text-slate-600 font-bold">
+                  Cô Trần Thị Thu Trang • Tác giả VietDiscovery
+                </p>
+              </div>
+            </div>
+
+            {/* Speech Bubble: English First + Vietnamese Subtitle */}
+            <div className="relative p-4 sm:p-5 rounded-2xl bg-white/95 border-2 border-pink-200 shadow-sm space-y-2.5">
+              {/* Cute speech tail */}
+              <div className="absolute -top-2.5 left-10 w-5 h-5 bg-white border-t-2 border-l-2 border-pink-200 transform rotate-45"></div>
+
+              <div className="text-[11px] font-black uppercase tracking-widest text-pink-600 font-heading flex items-center gap-1.5">
+                <span>ENGLISH GREETING • LỜI CHÀO TỪ CÔ TRANG:</span>
+              </div>
+
+              {/* English text (FIRST, LARGE, BOLD) */}
+              <p className="text-base sm:text-lg font-black font-heading text-blue-950 leading-snug">
+                “Hello, Little Explorer! I'm Captain Trang. Let's discover Vietnam and learn English together!”
+              </p>
+
+              {/* Vietnamese translation */}
+              <p className="text-xs sm:text-sm font-bold text-sky-800 leading-normal pt-1 border-t border-sky-100">
+                “Xin chào Nhà thám hiểm nhí! Cô là Captain Trang. Hãy cùng khám phá Việt Nam và học tiếng Anh nhé!”
+              </p>
+            </div>
+
+            {/* Audio Controls Bar */}
+            <div className="flex flex-wrap items-center justify-between gap-2 p-2.5 rounded-2xl bg-sky-50/80 border border-sky-200">
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => handleCaptainTrangClick(isCaptainSlowMode)}
+                  className={`px-4 py-2 rounded-xl text-xs font-black text-white shadow-sm flex items-center gap-1.5 transition-all cursor-pointer ${
+                    isCaptainTrangSpeaking
+                      ? 'bg-gradient-to-r from-pink-500 to-rose-500 animate-pulse ring-2 ring-pink-300'
+                      : 'bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700'
+                  }`}
+                >
+                  <Volume2 className="w-4 h-4" />
+                  <span>{isCaptainTrangSpeaking ? 'Speaking... 🔊' : 'Listen Again 🔊'}</span>
+                </button>
+
+                <button
+                  onClick={() => {
+                    const nextSlow = !isCaptainSlowMode;
+                    setIsCaptainSlowMode(nextSlow);
+                    handleCaptainTrangClick(nextSlow);
+                  }}
+                  className={`px-3 py-2 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
+                    isCaptainSlowMode 
+                      ? 'bg-amber-100 text-amber-900 border-amber-300 ring-1 ring-amber-300'
+                      : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                  }`}
+                >
+                  <span>🐢 Slow {isCaptainSlowMode ? '(ON)' : '(Chậm)'}</span>
+                </button>
+              </div>
+
+              {isCaptainTrangSpeaking && (
+                <div className="flex items-center gap-1 px-3 py-1 rounded-full bg-rose-100 text-rose-700 text-xs font-black animate-pulse">
+                  <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
+                  <span>Audio Playing</span>
+                </div>
+              )}
+            </div>
+
+            {/* Quick Action Navigation Buttons */}
+            <div className="space-y-2">
+              <div className="text-[11px] font-black uppercase tracking-wider text-slate-500 font-heading text-center">
+                CHỌN HOẠT ĐỘNG KHÁM PHÁ (CHOOSE YOUR ADVENTURE):
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <button
+                  onClick={() => handleQuickAction('adventure')}
+                  className="p-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black text-xs shadow-sm hover:scale-102 active:scale-98 transition-all flex items-center justify-center gap-1.5 cursor-pointer text-center"
+                >
+                  <span>🚀</span>
+                  <span>Start Adventure</span>
+                </button>
+                <button
+                  onClick={() => handleQuickAction('map')}
+                  className="p-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 text-white font-black text-xs shadow-sm hover:scale-102 active:scale-98 transition-all flex items-center justify-center gap-1.5 cursor-pointer text-center"
+                >
+                  <span>🗺️</span>
+                  <span>Explore Map</span>
+                </button>
+                <button
+                  onClick={() => handleQuickAction('games')}
+                  className="p-2.5 rounded-xl bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 text-white font-black text-xs shadow-sm hover:scale-102 active:scale-98 transition-all flex items-center justify-center gap-1.5 cursor-pointer text-center"
+                >
+                  <span>🎮</span>
+                  <span>Play Games</span>
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
       )}
 
     </div>

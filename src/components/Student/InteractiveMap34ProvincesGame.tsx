@@ -464,8 +464,22 @@ export const InteractiveMap34ProvincesGame: React.FC<InteractiveMap34ProvincesGa
         <div className="bg-gradient-to-r from-amber-50 via-sky-50 to-pink-50 border-b-2 border-amber-300/60 p-3 relative z-20">
           <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
             
-            {/* Mission Instructions & Score */}
+            {/* Mission Instructions & Score with Captain Trang Guide */}
             <div className="flex items-center gap-3 shrink-0">
+              <div 
+                className="w-14 h-10 sm:w-16 sm:h-12 rounded-xl overflow-hidden border-2 border-pink-300 shadow-sm shrink-0 bg-white cursor-pointer hover:scale-105 transition-transform"
+                onClick={() => {
+                  soundEffects.playClick();
+                  playEnglishSpeech("Drag or tap each province card, then place it on the Vietnam map!");
+                }}
+                title="Captain Trang Guide: Tap to hear instructions!"
+              >
+                <img
+                  src="/assets/cute/captain_trang_official.png"
+                  alt="Captain Trang"
+                  className="w-full h-full object-cover object-top select-none"
+                />
+              </div>
               <div className="space-y-0.5">
                 <div className="text-xs font-black font-heading text-slate-900 flex items-center gap-1.5">
                   <span>🎯 Kéo thả hoặc Chạm chọn tỉnh thành:</span>

@@ -22,6 +22,7 @@ import {
 import { UserProfile, UserRole, GradeBand } from '../types';
 import { isSupabaseConfigured } from '../lib/supabase';
 import { soundEffects } from '../lib/soundEffects';
+import { playEnglishSpeech } from '../lib/speech';
 
 interface HeaderProps {
   currentRole: UserRole;
@@ -30,8 +31,8 @@ interface HeaderProps {
   setActiveSection: (section: 'student' | 'teacher' | 'admin') => void;
   activeStudentTab: 'explore' | 'games' | 'passport' | 'progress';
   setActiveStudentTab: (tab: 'explore' | 'games' | 'passport' | 'progress') => void;
-  activeTeacherTab: 'materials' | 'classes' | 'progress' | 'assessment' | 'ai';
-  setActiveTeacherTab: (tab: 'materials' | 'classes' | 'progress' | 'assessment' | 'ai') => void;
+  activeTeacherTab: 'curriculum' | 'materials' | 'classes' | 'progress' | 'assessment' | 'ai';
+  setActiveTeacherTab: (tab: 'curriculum' | 'materials' | 'classes' | 'progress' | 'assessment' | 'ai') => void;
   previewGradeBand?: GradeBand;
   onOpenStudentAuth: () => void;
   onLogout: () => void;
@@ -105,26 +106,61 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="relative z-10 max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2.5 sm:py-3">
           <div className="flex flex-col md:flex-row items-center justify-between gap-3">
             
-            {/* Left: Captain Trang Mascot + 3D Globe + VietDiscovery Banner */}
-            <div className="flex items-center gap-1 sm:gap-2 shrink-0">
-              <img 
-                src="/assets/cute/captain_trang_clean.png" 
-                alt="Captain Trang" 
-                className="h-10 sm:h-12 md:h-13 w-auto object-contain drop-shadow-md select-none rounded-xl"
-              />
-              <img 
-                src="/assets/cute/logo_vietdiscovery.png" 
-                alt="VietDiscovery by Ms. Trang" 
-                className="h-10 sm:h-12 md:h-13 object-contain drop-shadow-md select-none hover:scale-102 transition-transform cursor-pointer"
+            {/* Left: Illustrated Explorer Character (Without nameplate) + Bilingual Title: Vietnam – Land of Wonders */}
+            <div className="flex items-center gap-2.5 sm:gap-3.5 shrink-0">
+              {/* Illustrated Character Image without "Captain Trang" nameplate */}
+              <div 
+                className="relative group cursor-pointer shrink-0"
+                onClick={() => {
+                  soundEffects.playClick();
+                  playEnglishSpeech("Welcome to Vietnam, Land of Wonders! Let's explore together!");
+                  setActiveStudentTab('explore');
+                }}
+                title="Vietnam – Land of Wonders • Chạm để khám phá!"
+              >
+                <div className="rounded-2xl overflow-hidden border-2 border-white/90 shadow-[0_4px_12px_rgba(0,0,0,0.2)] group-hover:scale-105 group-hover:border-amber-300 transition-all duration-300 bg-white/20">
+                  <img 
+                    src="/assets/cute/header_character_clean.png" 
+                    alt="Vietnam – Land of Wonders" 
+                    className="h-10 sm:h-12 md:h-13 w-auto object-contain select-none"
+                  />
+                </div>
+              </div>
+
+              {/* Bilingual Title: Vietnam – Land of Wonders / Việt Nam – Vùng đất diệu kỳ */}
+              <div 
+                className="flex flex-col justify-center cursor-pointer select-none group text-left"
                 onClick={() => {
                   soundEffects.playClick();
                   setActiveStudentTab('explore');
                 }}
-              />
+                title="Vietnam – Land of Wonders • Việt Nam – Vùng đất diệu kỳ"
+              >
+                {/* English Title: Large, bold, playful, rounded font */}
+                <div className="flex items-center gap-1.5 leading-none">
+                  <span 
+                    className="text-base sm:text-lg md:text-[19px] lg:text-[21px] font-black font-heading tracking-tight text-white drop-shadow-[0_2px_4px_rgba(2,132,199,0.6)] group-hover:text-amber-200 transition-colors whitespace-nowrap"
+                    style={{
+                      textShadow: '0 2px 4px rgba(3, 105, 161, 0.7), 0 1px 2px rgba(0, 0, 0, 0.2)'
+                    }}
+                  >
+                    Vietnam <span className="text-amber-300 font-bold">–</span> Land of Wonders
+                  </span>
+                  <span className="text-xs sm:text-sm animate-pulse">✨</span>
+                </div>
+
+                {/* Vietnamese translation directly underneath in a slightly smaller font */}
+                <div className="flex items-center gap-1.5 mt-0.5 sm:mt-1 leading-none">
+                  <span className="text-[11px] sm:text-xs md:text-[13px] font-bold font-heading text-sky-100 tracking-wide drop-shadow-[0_1px_2px_rgba(0,0,0,0.3)] group-hover:text-white transition-colors whitespace-nowrap">
+                    Việt Nam – Vùng đất diệu kỳ
+                  </span>
+                  <span className="text-[11px] inline-block">🇻🇳</span>
+                </div>
+              </div>
             </div>
 
-            {/* Center: White Cloud Slogan Pill */}
-            <div className="bg-white/95 backdrop-blur-md rounded-full px-4 sm:px-6 py-1.5 sm:py-2 shadow-md border border-sky-200 flex flex-col items-center justify-center text-center">
+            {/* Center: White Cloud Slogan Pill - Preserving the main homepage title */}
+            <div className="hidden lg:flex bg-white/95 backdrop-blur-md rounded-full px-4 sm:px-6 py-1.5 sm:py-2 shadow-md border border-sky-200 flex-col items-center justify-center text-center shrink-0">
               <div className="text-xs sm:text-sm md:text-base font-black font-heading text-blue-900 leading-tight flex items-center justify-center gap-1.5 whitespace-nowrap">
                 <span>The Magical Adventure Across Vietnam!</span>
                 <span className="text-base">🌈</span>
@@ -373,6 +409,21 @@ export const Header: React.FC<HeaderProps> = ({
           ) : activeSection === 'teacher' ? (
             /* Teacher Sub-tabs */
             <div className="flex items-center gap-2 overflow-x-auto py-1">
+              <button
+                onClick={() => {
+                  soundEffects.playClick();
+                  setActiveTeacherTab('curriculum');
+                }}
+                className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-black flex items-center gap-1.5 whitespace-nowrap transition-all cursor-pointer ${
+                  activeTeacherTab === 'curriculum'
+                    ? 'bg-gradient-to-r from-purple-600 via-pink-600 to-rose-600 text-white shadow-md shadow-pink-200 ring-2 ring-pink-300'
+                    : 'text-slate-600 hover:bg-slate-100'
+                }`}
+              >
+                <Sparkles className="w-4 h-4 text-amber-300" />
+                <span>Content Studio (Giáo trình độc quyền)</span>
+              </button>
+
               <button
                 onClick={() => {
                   soundEffects.playClick();

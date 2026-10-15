@@ -17,7 +17,7 @@ import {
   Play
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { Destination, DestinationProgress, QuizQuestion, GradeBand } from '../../types';
+import { Destination, DestinationProgress, QuizQuestion, GradeBand, ChallengeBreakdown, getChallengeLevel } from '../../types';
 import { playSpeech, stopSpeech } from '../../lib/speech';
 import { VoiceRecorder } from '../../lib/audioRecorder';
 import { soundEffects } from '../../lib/soundEffects';
@@ -28,7 +28,7 @@ interface LessonModalProps {
   isOpen: boolean;
   initialTab?: LessonTab;
   onClose: () => void;
-  onCompleteLesson: (destId: string, score: number, stars: number) => void;
+  onCompleteLesson: (destId: string, score: number, stars: number, breakdown?: ChallengeBreakdown) => void;
   existingProgress?: DestinationProgress;
 }
 
