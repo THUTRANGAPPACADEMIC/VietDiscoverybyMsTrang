@@ -10,6 +10,7 @@ import { StudentAuthModal } from './components/StudentAuthModal';
 import { StaffAuthModal } from './components/StaffAuthModal';
 import { AboutCreatorModal } from './components/AboutCreatorModal';
 import { MagicalAdventureFooter } from './components/MagicalAdventureFooter';
+import { FloatingMusicPlayer } from './components/FloatingMusicPlayer';
 import { 
   UserProfile, 
   DestinationProgress, 
@@ -449,6 +450,9 @@ export const App: React.FC = () => {
           }}
         />
       )}
+
+      {/* Persistent Floating Piano Background Music Player */}
+      <FloatingMusicPlayer />
 
     </div>
   );

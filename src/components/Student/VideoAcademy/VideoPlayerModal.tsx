@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   X, 
   Play, 
@@ -16,6 +16,7 @@ import {
 import { EducationalVideo, StudentVideoProgress } from '../../../types';
 import { VideoQuizSection } from './VideoQuizSection';
 import { soundEffects } from '../../../lib/soundEffects';
+import { backgroundMusic } from '../../../lib/backgroundMusic';
 
 interface VideoPlayerModalProps {
   video: EducationalVideo | null;
@@ -41,6 +42,18 @@ export const VideoPlayerModal: React.FC<VideoPlayerModalProps> = ({
   // Lazy-load state: video iframe only loads when student explicitly clicks "Play"
   const [isPlaying, setIsPlaying] = useState(false);
   const [activeTab, setActiveTab] = useState<'quiz' | 'details' | 'objectives'>('quiz');
+
+  // Intelligent Audio: Duck background music while video lesson is playing
+  useEffect(() => {
+    if (isOpen && isPlaying) {
+      backgroundMusic.duck('video');
+    } else {
+      backgroundMusic.unduck('video');
+    }
+    return () => {
+      backgroundMusic.unduck('video');
+    };
+  }, [isOpen, isPlaying]);
 
   if (!isOpen || !video) return null;
 

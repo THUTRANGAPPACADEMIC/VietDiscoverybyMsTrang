@@ -3,6 +3,7 @@ import { FloatingIslandDef, IslandActivityStep } from './floatingIslandData';
 import { Island3DVisual } from './Island3DVisual';
 import { soundEffects } from '../../../lib/soundEffects';
 import { playEnglishSpeech, stopSpeech } from '../../../lib/speech';
+import { backgroundMusic } from '../../../lib/backgroundMusic';
 import { 
   X, 
   Volume2, 
@@ -82,10 +83,12 @@ export const IslandActivityModal: React.FC<IslandActivityModalProps> = ({
     }
   }, [currentStepIndex, island.id, currentStep]);
 
-  // Clean up speech on unmount
+  // Clean up speech and audio ducking on unmount
   useEffect(() => {
     return () => {
       stopSpeech();
+      backgroundMusic.unduck('mic_recording');
+      backgroundMusic.unduck('listening');
     };
   }, []);
 
@@ -152,9 +155,11 @@ export const IslandActivityModal: React.FC<IslandActivityModalProps> = ({
     setIsRecording(true);
     setSpeechRecognized(false);
     setSpeechScore(null);
+    backgroundMusic.duck('mic_recording');
 
     // Simulate 2 seconds of high-fidelity speech capture with visual feedback
     setTimeout(() => {
+      backgroundMusic.unduck('mic_recording');
       setIsRecording(false);
       setSpeechRecognized(true);
       const generatedScore = Math.floor(92 + Math.random() * 8); // 92% - 100%

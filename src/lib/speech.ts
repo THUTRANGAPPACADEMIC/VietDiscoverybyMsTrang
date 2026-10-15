@@ -1,6 +1,8 @@
 // Web Speech API for English-First Educational Pronunciation
 // Audio Engine with Async Voice Loading, Safe English Voice Selection & Slow Mode
 
+import { backgroundMusic } from './backgroundMusic';
+
 export interface SpeechPlayOptions {
   slow?: boolean;
   pitch?: number;
@@ -122,22 +124,26 @@ export const playEnglishSpeech = async (
     console.warn(`[VietDiscovery Audio] No dedicated English voice found. SpeechSynthesis will use default ${targetLang} language definition.`);
   }
 
-  if (options.onStart) {
-    utterance.onstart = options.onStart;
-  }
+  // Automatically duck background music so English speech is crystal clear
+  backgroundMusic.duck('speech');
 
-  if (options.onEnd) {
-    utterance.onend = options.onEnd;
-  }
+  utterance.onstart = () => {
+    backgroundMusic.duck('speech');
+    options.onStart?.();
+  };
 
-  if (options.onError) {
-    utterance.onerror = (e) => {
-      // Ignore user-initiated cancellation
-      if (e.error === 'canceled' || e.error === 'interrupted') return;
-      console.error('[VietDiscovery Audio] Speech synthesis error:', e);
-      options.onError?.(e);
-    };
-  }
+  utterance.onend = () => {
+    backgroundMusic.unduck('speech');
+    options.onEnd?.();
+  };
+
+  utterance.onerror = (e) => {
+    backgroundMusic.unduck('speech');
+    // Ignore user-initiated cancellation
+    if (e.error === 'canceled' || e.error === 'interrupted') return;
+    console.error('[VietDiscovery Audio] Speech synthesis error:', e);
+    options.onError?.(e);
+  };
 
   window.speechSynthesis.speak(utterance);
   return true;
@@ -145,6 +151,7 @@ export const playEnglishSpeech = async (
 
 // Stop speech helper
 export const stopSpeech = () => {
+  backgroundMusic.unduck('speech');
   if ('speechSynthesis' in window) {
     window.speechSynthesis.cancel();
   }
