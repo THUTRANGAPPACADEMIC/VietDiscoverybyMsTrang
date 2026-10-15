@@ -70,6 +70,10 @@ export interface VocabularyItem {
   meaningVi: string;
   exampleSentence: string;
   emoji: string;
+  imageUrl?: string;
+  imageAttribution?: string;
+  britishPhonetic?: string;
+  exampleSentenceVi?: string;
 }
 
 export interface SentencePatternItem {

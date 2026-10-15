@@ -26,6 +26,7 @@ import confetti from 'canvas-confetti';
 import { ProvinceEducationalData, getProvinceByCode, getProvinceById } from '../../data/provinces';
 import { soundEffects } from '../../lib/soundEffects';
 import { playEnglishSpeech } from '../../lib/speech';
+import { RealisticVisualVocabularyCard } from './RealisticVisualVocabularyCard';
 
 interface ProvinceDetailModalProps {
   provinceCode?: string;
@@ -450,57 +451,28 @@ export const ProvinceDetailModal: React.FC<ProvinceDetailModalProps> = ({
                 <span>Từ vựng Tiếng Anh theo Chủ đề Địa phương</span>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                {data.ageAppropriateEnglishVocabulary.map((item, idx) => (
-                  <div
-                    key={idx}
-                    className="p-4 rounded-2xl bg-gradient-to-br from-white to-sky-50/50 border-2 border-sky-100 hover:border-sky-300 shadow-xs transition-all space-y-2"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className="text-2xl">{item.emoji}</span>
-                        <div>
-                          <div className="text-lg font-black font-heading text-sky-950 leading-tight">
-                            {item.word}
-                          </div>
-                          <div className="text-xs font-bold text-sky-700 font-mono">
-                            {item.phonetic} • <span className="text-slate-400 font-sans italic">{item.partOfSpeech}</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <button
-                        onClick={() => handleSpeak(item.word)}
-                        className="w-8 h-8 rounded-full bg-sky-500 text-white flex items-center justify-center hover:bg-sky-600 transition-transform hover:scale-110 active:scale-95 cursor-pointer shadow-md"
-                        title="Nghe phát âm từ"
-                      >
-                        <Volume2 className="w-4 h-4" />
-                      </button>
-                    </div>
-
-                    <div className="pt-1 border-t border-sky-100/80 space-y-1">
-                      <div className="text-xs font-black text-slate-800">
-                        {item.meaningVi}
-                      </div>
-                      <div className="text-xs text-slate-600 leading-snug">
-                        {item.meaningEn}
-                      </div>
-                    </div>
-
-                    <div className="p-2.5 rounded-xl bg-white border border-sky-100 flex items-start justify-between gap-2">
-                      <div className="text-xs text-sky-900 font-medium italic">
-                        "{item.exampleSentence}"
-                      </div>
-                      <button
-                        onClick={() => handleSpeak(item.exampleSentence)}
-                        className="text-sky-600 hover:text-sky-800 shrink-0 p-1 cursor-pointer"
-                        title="Nghe câu mẫu"
-                      >
-                        <Volume2 className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                {data.ageAppropriateEnglishVocabulary.map((item, idx) => {
+                  const colors: ('sky' | 'purple' | 'amber' | 'emerald' | 'rose')[] = ['sky', 'purple', 'amber', 'emerald', 'rose'];
+                  const theme = colors[idx % colors.length];
+                  return (
+                    <RealisticVisualVocabularyCard
+                      key={idx}
+                      word={item.word}
+                      phonetic={item.phonetic}
+                      britishPhonetic={item.britishPhonetic}
+                      meaningEn={item.meaningEn}
+                      meaningVi={item.meaningVi}
+                      exampleSentence={item.exampleSentence}
+                      exampleSentenceVi={item.exampleSentenceVi}
+                      imageUrl={item.imageUrl}
+                      imageAttribution={item.imageAttribution}
+                      category="landmark"
+                      colorTheme={theme}
+                      onEarnStars={onEarnStars}
+                    />
+                  );
+                })}
               </div>
             </div>
           )}

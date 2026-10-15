@@ -48,6 +48,9 @@ export interface VocabularyItem {
   example: string;
   emoji?: string;
   imageUrl?: string;
+  imageAttribution?: string;
+  britishPhonetic?: string;
+  exampleVi?: string;
 }
 
 export interface QuizQuestion {

@@ -21,6 +21,7 @@ import { Destination, DestinationProgress, QuizQuestion, GradeBand, ChallengeBre
 import { playSpeech, stopSpeech } from '../../lib/speech';
 import { VoiceRecorder } from '../../lib/audioRecorder';
 import { soundEffects } from '../../lib/soundEffects';
+import { RealisticVisualVocabularyCard } from './RealisticVisualVocabularyCard';
 
 interface LessonModalProps {
   destination: Destination | null;
@@ -302,44 +303,28 @@ export const LessonModal: React.FC<LessonModalProps> = ({
                 </span>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {content.vocabulary.map((item, idx) => (
-                  <div
-                    key={idx}
-                    className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs hover:border-rose-300 transition-all flex flex-col justify-between"
-                  >
-                    <div>
-                      <div className="flex items-center justify-between mb-1">
-                        <div className="flex items-center gap-2">
-                          <span className="text-lg font-extrabold text-rose-600 font-heading">
-                            {item.word}
-                          </span>
-                          <span className="text-xs font-mono text-slate-400">
-                            {item.phonetic}
-                          </span>
-                        </div>
-                        <button
-                          onClick={() => handlePlayVocab(item.word)}
-                          title="Listen pronunciation"
-                          className="p-2 rounded-xl bg-rose-50 text-rose-600 hover:bg-rose-100 transition-colors"
-                        >
-                          <Volume2 className="w-4 h-4" />
-                        </button>
-                      </div>
-
-                      <div className="text-xs font-medium text-slate-700 mt-1">
-                        {item.meaningEn}
-                      </div>
-                      <div className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md inline-block mt-1">
-                        🇻🇳 {item.meaningVi}
-                      </div>
-                    </div>
-
-                    <div className="mt-3 pt-2 border-t border-slate-100 text-[11px] text-slate-500 italic">
-                      "{item.example}"
-                    </div>
-                  </div>
-                ))}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                {content.vocabulary.map((item, idx) => {
+                  const colors: ('sky' | 'purple' | 'amber' | 'emerald' | 'rose')[] = ['sky', 'purple', 'amber', 'emerald', 'rose'];
+                  const theme = colors[idx % colors.length];
+                  return (
+                    <RealisticVisualVocabularyCard
+                      key={idx}
+                      word={item.word}
+                      phonetic={item.phonetic}
+                      britishPhonetic={item.britishPhonetic}
+                      meaningEn={item.meaningEn}
+                      meaningVi={item.meaningVi}
+                      exampleSentence={item.example}
+                      exampleSentenceVi={item.exampleVi}
+                      imageUrl={item.imageUrl}
+                      imageAttribution={item.imageAttribution}
+                      category={destination.theme === 'Culture' ? 'culture' : destination.theme === 'Nature' ? 'nature' : 'landmark'}
+                      colorTheme={theme}
+                      onEarnStars={() => soundEffects.playCorrect()}
+                    />
+                  );
+                })}
               </div>
 
               <div className="flex justify-end pt-2">

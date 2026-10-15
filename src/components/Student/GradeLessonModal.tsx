@@ -17,6 +17,7 @@ import {
 import { PathwayLesson, GradeNumber } from '../../data/gradePathwaysData';
 import { playEnglishSpeech, stopSpeech } from '../../lib/speech';
 import { soundEffects } from '../../lib/soundEffects';
+import { RealisticVisualVocabularyCard } from './RealisticVisualVocabularyCard';
 
 interface GradeLessonModalProps {
   lesson: PathwayLesson;
@@ -161,65 +162,38 @@ export const GradeLessonModal: React.FC<GradeLessonModalProps> = ({
           {/* TAB 2: VOCABULARY */}
           {activeTab === 'vocabulary' && (
             <div className="space-y-4">
-              <div className="p-5 rounded-3xl bg-gradient-to-br from-purple-50 via-indigo-50 to-pink-50 border-2 border-purple-200 text-center space-y-3">
-                <div className="text-5xl">{currentVocab.emoji}</div>
+              <div className="flex items-center justify-between pb-1 border-b border-purple-100 flex-wrap gap-2">
                 <div>
-                  <div className="flex items-center justify-center gap-2">
-                    <h4 className="text-2xl sm:text-3xl font-black font-heading text-purple-950">
-                      {currentVocab.word}
-                    </h4>
-                    <button
-                      onClick={() => handleSpeak(currentVocab.word)}
-                      className="p-2 rounded-full bg-purple-600 text-white hover:scale-110 active:scale-95 transition-transform cursor-pointer shadow-xs"
-                      title="Listen"
-                    >
-                      <Volume2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                  <div className="text-sm font-mono text-purple-700 font-bold mt-0.5">
-                    {currentVocab.ipa}
-                  </div>
+                  <h4 className="text-base font-black font-heading text-purple-950">
+                    Visual Vocabulary Studio ({lesson.vocabulary.length} Words)
+                  </h4>
+                  <p className="text-xs text-slate-500">
+                    Khám phá từ vựng thực tế với hình ảnh trực quan và phát âm bản ngữ Anh - Anh (UK)
+                  </p>
                 </div>
-
-                <div className="p-3 bg-white/90 rounded-2xl border border-purple-200 max-w-md mx-auto space-y-1">
-                  <div className="text-xs text-purple-900 font-bold">
-                    {currentVocab.meaningEn}
-                  </div>
-                  <div className="text-xs text-slate-600">
-                    Nghĩa: <span className="font-bold text-purple-700">{currentVocab.meaningVi}</span>
-                  </div>
-                </div>
-
-                <div className="p-2.5 bg-purple-100/70 rounded-xl text-xs font-semibold text-purple-900 flex items-center justify-center gap-2">
-                  <span>Example: "{currentVocab.exampleEn}"</span>
-                  <button
-                    onClick={() => handleSpeak(currentVocab.exampleEn)}
-                    className="p-1 rounded-full bg-white text-purple-700 hover:bg-purple-200 cursor-pointer"
-                  >
-                    <Volume2 className="w-3.5 h-3.5" />
-                  </button>
-                </div>
+                <span className="px-2.5 py-1 rounded-full bg-purple-100 text-purple-900 font-black text-xs">
+                  Grade {gradeNum} Visual Learning
+                </span>
               </div>
 
-              {/* Vocab Selector Pills */}
-              <div className="flex flex-wrap items-center justify-center gap-2">
-                {lesson.vocabulary.map((v, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => {
-                      soundEffects.playClick();
-                      setActiveVocabIdx(idx);
-                    }}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 border ${
-                      activeVocabIdx === idx
-                        ? 'bg-purple-600 text-white border-purple-700 scale-105 shadow-sm'
-                        : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-300'
-                    }`}
-                  >
-                    <span>{v.emoji}</span>
-                    <span>{v.word}</span>
-                  </button>
-                ))}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                {lesson.vocabulary.map((v, idx) => {
+                  const colors: ('sky' | 'purple' | 'amber' | 'emerald' | 'rose')[] = ['purple', 'sky', 'emerald', 'amber', 'rose'];
+                  const theme = colors[idx % colors.length];
+                  return (
+                    <RealisticVisualVocabularyCard
+                      key={idx}
+                      word={v.word}
+                      phonetic={v.ipa}
+                      meaningEn={v.meaningEn}
+                      meaningVi={v.meaningVi}
+                      exampleSentence={v.exampleEn}
+                      exampleSentenceVi={(v as any).exampleVi}
+                      colorTheme={theme}
+                      onEarnStars={() => soundEffects.playCorrect()}
+                    />
+                  );
+                })}
               </div>
             </div>
           )}

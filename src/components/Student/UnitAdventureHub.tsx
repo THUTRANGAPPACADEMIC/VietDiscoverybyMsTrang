@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Destination, DestinationProgress, GradeBand } from '../../types';
 import { soundEffects } from '../../lib/soundEffects';
+import { getVocabularyVisual } from '../../data/vocabularyVisualsRegistry';
 import { Volume2, Sparkles, BookOpen, ChevronRight, CheckCircle2, Eye, Compass, Map, X } from 'lucide-react';
 
 interface UnitAdventureHubProps {
@@ -373,7 +374,11 @@ export const UnitAdventureHub: React.FC<UnitAdventureHubProps> = ({
                         }`}
                       >
                         <div className="flex items-center gap-1.5 min-w-0">
-                          <span className="text-base shrink-0">{item.icon}</span>
+                          <img 
+                            src={getVocabularyVisual(item.word).imageUrl} 
+                            alt={item.word} 
+                            className="w-5 h-5 rounded-md object-cover shrink-0" 
+                          />
                           <span className="text-xs sm:text-sm font-black text-slate-800 truncate">
                             {item.word}
                           </span>
@@ -575,7 +580,11 @@ export const UnitAdventureHub: React.FC<UnitAdventureHubProps> = ({
                   className="p-3 rounded-2xl bg-amber-50/80 border border-amber-200/80 flex items-center justify-between gap-3 hover:bg-amber-100/60 transition-colors"
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <span className="text-2xl shrink-0">{item.icon}</span>
+                    <img
+                      src={getVocabularyVisual(item.word).imageUrl}
+                      alt={item.word}
+                      className="w-14 h-14 rounded-2xl object-cover shrink-0 border border-amber-200 shadow-2xs"
+                    />
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
                         <span className="font-black text-sm sm:text-base text-slate-900">{item.word}</span>

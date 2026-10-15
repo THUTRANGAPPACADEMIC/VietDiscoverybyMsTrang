@@ -457,12 +457,60 @@ export const AdventureGames: React.FC<AdventureGamesProps> = ({
   // GAME 2: PROVINCE MATCHING (Nối Danh lam với Tỉnh/Thành)
   // ----------------------------------------------------
   const MATCHING_PAIRS = [
-    { id: 'p1', landmark: 'Chùa Một Cột', landmarkEn: 'One Pillar Pagoda', province: 'Thủ đô Hà Nội', provinceEn: 'Hanoi Capital', icon: '🏛️' },
-    { id: 'p2', landmark: 'Vịnh Hạ Long', landmarkEn: 'Ha Long Bay', province: 'Tỉnh Quảng Ninh', provinceEn: 'Quang Ninh Province', icon: '⛵' },
-    { id: 'p3', landmark: 'Đại Nội Huế', landmarkEn: 'Hue Imperial Citadel', province: 'Thừa Thiên Huế', provinceEn: 'Thua Thien Hue', icon: '👑' },
-    { id: 'p4', landmark: 'Cầu Rồng Sông Hàn', landmarkEn: 'Dragon Bridge', province: 'Thành phố Đà Nẵng', provinceEn: 'Da Nang City', icon: '🐉' },
-    { id: 'p5', landmark: 'Chợ Bến Thành', landmarkEn: 'Ben Thanh Market', province: 'TP. Hồ Chí Minh', provinceEn: 'Ho Chi Minh City', icon: '🏢' },
-    { id: 'p6', landmark: 'Chợ Nổi Cái Răng', landmarkEn: 'Floating Market', province: 'Thành phố Cần Thơ', provinceEn: 'Can Tho City', icon: '🛶' }
+    { 
+      id: 'p1', 
+      landmark: 'Chùa Một Cột', 
+      landmarkEn: 'One Pillar Pagoda', 
+      province: 'Thủ đô Hà Nội', 
+      provinceEn: 'Hanoi Capital', 
+      icon: '🏛️',
+      image: 'https://images.unsplash.com/photo-1599707367072-cd6ada2bc375?auto=format&fit=crop&w=400&q=80'
+    },
+    { 
+      id: 'p2', 
+      landmark: 'Vịnh Hạ Long', 
+      landmarkEn: 'Ha Long Bay', 
+      province: 'Tỉnh Quảng Ninh', 
+      provinceEn: 'Quang Ninh Province', 
+      icon: '⛵',
+      image: 'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=400&q=80'
+    },
+    { 
+      id: 'p3', 
+      landmark: 'Đại Nội Huế', 
+      landmarkEn: 'Hue Imperial Citadel', 
+      province: 'Thành phố Huế', 
+      provinceEn: 'Hue City', 
+      icon: '👑',
+      image: 'https://images.unsplash.com/photo-1583417319070-4a69db38a482?auto=format&fit=crop&w=400&q=80'
+    },
+    { 
+      id: 'p4', 
+      landmark: 'Cầu Rồng Sông Hàn', 
+      landmarkEn: 'Dragon Bridge', 
+      province: 'Thành phố Đà Nẵng', 
+      provinceEn: 'Da Nang City', 
+      icon: '🐉',
+      image: 'https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?auto=format&fit=crop&w=400&q=80'
+    },
+    { 
+      id: 'p5', 
+      landmark: 'Chợ Bến Thành', 
+      landmarkEn: 'Ben Thanh Market', 
+      province: 'TP. Hồ Chí Minh', 
+      provinceEn: 'Ho Chi Minh City', 
+      icon: '🏢',
+      image: '/destinations/hcmc_benthanh.jpg'
+    },
+    { 
+      id: 'p6', 
+      landmark: 'Chợ Nổi Cái Răng', 
+      landmarkEn: 'Floating Market', 
+      province: 'Thành phố Cần Thơ', 
+      provinceEn: 'Can Tho City', 
+      icon: '🛶',
+      image: '/destinations/mekong_delta.jpg'
+    }
   ];
 
   const [selectedLandmarkMatch, setSelectedLandmarkMatch] = useState<string | null>(null);
@@ -927,7 +975,11 @@ export const AdventureGames: React.FC<AdventureGamesProps> = ({
                       }`}
                     >
                       <div className="flex items-center gap-3">
-                        <span className="text-2xl">{item.icon}</span>
+                        <img
+                          src={item.image}
+                          alt={item.landmarkEn}
+                          className="w-14 h-14 rounded-2xl object-cover shrink-0 border border-slate-200 shadow-2xs"
+                        />
                         <div>
                           <div className="font-extrabold text-slate-900 text-sm font-heading">{item.landmark}</div>
                           <div className="text-xs text-slate-500 font-medium">{item.landmarkEn}</div>

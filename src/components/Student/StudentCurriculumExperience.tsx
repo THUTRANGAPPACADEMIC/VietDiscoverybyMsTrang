@@ -37,6 +37,8 @@ import {
 } from '../../data/curriculumData';
 import { playEnglishSpeech, stopSpeech } from '../../lib/speech';
 import { soundEffects } from '../../lib/soundEffects';
+import { RealisticVisualVocabularyCard } from './RealisticVisualVocabularyCard';
+import { getVocabularyVisual } from '../../data/vocabularyVisualsRegistry';
 
 interface StudentCurriculumExperienceProps {
   user: UserProfile | null;
@@ -828,59 +830,29 @@ export const StudentCurriculumExperience: React.FC<StudentCurriculumExperiencePr
                     </h4>
                   </div>
 
-                  {/* Active Vocab Spotlight Card */}
+                  {/* Active Vocab Spotlight Card with Realistic Visual */}
                   {(() => {
                     const vocab = activeLesson.vocabulary[activeVocabIndex];
                     if (!vocab) return null;
 
                     return (
-                      <div className="bg-white rounded-3xl p-6 border-3 border-indigo-200 shadow-md space-y-4 text-center">
-                        <div className="text-5xl select-none">{vocab.emoji || '📖'}</div>
-                        
-                        <div>
-                          <div className="text-2xl font-black font-heading text-slate-900 tracking-tight">
-                            {vocab.word}
-                          </div>
-                          <div className="text-sm font-mono text-indigo-600 font-bold mt-0.5">
-                            {vocab.ipa}
-                          </div>
-                        </div>
-
-                        {/* Pronunciation Audio Button */}
-                        <button
-                          onClick={() => handlePlayAudio(vocab.audioPromptEn || vocab.word)}
-                          className={`px-5 py-2.5 rounded-full font-black text-xs shadow-md transition-all flex items-center justify-center gap-2 mx-auto cursor-pointer ${
-                            speakingWord === (vocab.audioPromptEn || vocab.word)
-                              ? 'bg-amber-400 text-amber-950 scale-105'
-                              : 'bg-indigo-600 text-white hover:bg-indigo-700'
-                          }`}
-                        >
-                          <Volume2 className="w-4 h-4" />
-                          <span>Listen & Repeat (Nghe phát âm)</span>
-                        </button>
-
-                        <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 text-left space-y-2 text-xs">
-                          <div>
-                            <span className="font-bold text-slate-800">English: </span>
-                            <span className="text-slate-600">{vocab.meaningEn}</span>
-                          </div>
-                          <div>
-                            <span className="font-bold text-slate-800">Tiếng Việt: </span>
-                            <span className="text-slate-600">{vocab.meaningVi}</span>
-                          </div>
-                          <div className="pt-1 border-t border-slate-200">
-                            <span className="font-bold text-indigo-700">Example: </span>
-                            <span className="text-slate-800 italic">"{vocab.exampleSentenceEn}"</span>
-                            {showVietnameseTranslation && (
-                              <p className="text-[11px] text-slate-500 mt-0.5">"{vocab.exampleSentenceVi}"</p>
-                            )}
-                          </div>
-                        </div>
+                      <div className="max-w-xl mx-auto">
+                        <RealisticVisualVocabularyCard
+                          word={vocab.word}
+                          phonetic={vocab.ipa}
+                          meaningEn={vocab.meaningEn}
+                          meaningVi={vocab.meaningVi}
+                          exampleSentence={vocab.exampleSentenceEn}
+                          exampleSentenceVi={vocab.exampleSentenceVi}
+                          imageUrl={vocab.imageUrl}
+                          colorTheme="purple"
+                          onEarnStars={onEarnStars}
+                        />
                       </div>
                     );
                   })()}
 
-                  {/* Vocabulary Carousel Thumbnails */}
+                  {/* Vocabulary Carousel Thumbnails with Real Photos */}
                   <div className="flex items-center justify-center gap-2 overflow-x-auto py-1">
                     {activeLesson.vocabulary.map((v, i) => (
                       <button
@@ -889,13 +861,17 @@ export const StudentCurriculumExperience: React.FC<StudentCurriculumExperiencePr
                           soundEffects.playClick();
                           setActiveVocabIndex(i);
                         }}
-                        className={`px-3 py-2 rounded-2xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 border-2 ${
+                        className={`px-3 py-2 rounded-2xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 border-2 ${
                           activeVocabIndex === i
                             ? 'bg-indigo-600 text-white border-indigo-700 shadow-md scale-105'
                             : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
                         }`}
                       >
-                        <span>{v.emoji || '📖'}</span>
+                        <img
+                          src={getVocabularyVisual(v.word).imageUrl}
+                          alt={v.word}
+                          className="w-5 h-5 rounded-md object-cover shrink-0"
+                        />
                         <span>{v.word}</span>
                       </button>
                     ))}

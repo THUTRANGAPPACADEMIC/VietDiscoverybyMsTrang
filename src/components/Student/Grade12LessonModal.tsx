@@ -17,6 +17,8 @@ import { Destination, DestinationProgress } from '../../types';
 import { playSpeech, stopSpeech } from '../../lib/speech';
 import { VoiceRecorder } from '../../lib/audioRecorder';
 import { soundEffects } from '../../lib/soundEffects';
+import { RealisticVisualVocabularyCard } from './RealisticVisualVocabularyCard';
+import { getVocabularyVisual } from '../../data/vocabularyVisualsRegistry';
 
 interface Grade12LessonModalProps {
   destination: Destination | null;
@@ -215,27 +217,28 @@ export const Grade12LessonModal: React.FC<Grade12LessonModalProps> = ({
                 Tap words to hear pronunciation! 🎧
               </h4>
 
-              <div className="grid grid-cols-2 gap-4">
-                {content.vocabulary.map((vocab, i) => (
-                  <button
-                    key={i}
-                    onClick={() => handlePlayVoice(vocab.word)}
-                    className="p-4 rounded-3xl bg-white border-2 border-amber-200 shadow-sm hover:shadow-md hover:border-amber-400 transition-all flex flex-col items-center justify-center gap-2 group active:scale-95"
-                  >
-                    <span className="text-5xl group-hover:scale-110 transition-transform">
-                      {vocab.emoji || '✨'}
-                    </span>
-                    <div className="text-xl font-extrabold text-rose-600 font-heading">
-                      {vocab.word}
-                    </div>
-                    <div className="text-xs font-bold text-slate-500">
-                      🇻🇳 {vocab.meaningVi}
-                    </div>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-50 text-rose-600 flex items-center gap-1">
-                      <Volume2 className="w-3 h-3" /> Tap to Listen
-                    </span>
-                  </button>
-                ))}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
+                {content.vocabulary.map((vocab, i) => {
+                  const colors: ('sky' | 'purple' | 'amber' | 'emerald' | 'rose')[] = ['rose', 'sky', 'emerald', 'amber', 'purple'];
+                  const theme = colors[i % colors.length];
+                  return (
+                    <RealisticVisualVocabularyCard
+                      key={i}
+                      word={vocab.word}
+                      phonetic={vocab.phonetic}
+                      britishPhonetic={vocab.britishPhonetic}
+                      meaningEn={vocab.meaningEn}
+                      meaningVi={vocab.meaningVi}
+                      exampleSentence={vocab.example}
+                      exampleSentenceVi={vocab.exampleVi}
+                      imageUrl={vocab.imageUrl}
+                      imageAttribution={vocab.imageAttribution}
+                      category="landmark"
+                      colorTheme={theme}
+                      onEarnStars={() => soundEffects.playCorrect()}
+                    />
+                  );
+                })}
               </div>
 
               <div className="pt-2">
@@ -254,10 +257,10 @@ export const Grade12LessonModal: React.FC<Grade12LessonModalProps> = ({
           {activeStep === 'play' && (
             <div className="space-y-4 text-center">
               <h4 className="text-lg font-extrabold text-slate-800 font-heading">
-                Match Word to Picture! 🎯
+                Match Word to Real Photograph! 🎯
               </h4>
               <p className="text-xs text-slate-500">
-                Tap a word, then tap its picture to make a match!
+                Tap a word, then tap its corresponding real photo to make a match!
               </p>
 
               <div className="grid grid-cols-3 gap-3">
@@ -270,7 +273,7 @@ export const Grade12LessonModal: React.FC<Grade12LessonModalProps> = ({
                       <button
                         disabled={isMatched}
                         onClick={() => handleMatchSelect(p.word)}
-                        className={`w-full py-4 px-2 rounded-2xl font-extrabold text-sm border-2 transition-all ${
+                        className={`w-full py-3 px-2 rounded-2xl font-extrabold text-xs sm:text-sm border-2 transition-all ${
                           isMatched
                             ? 'bg-emerald-100 border-emerald-300 text-emerald-800 opacity-60'
                             : isSelected
@@ -284,15 +287,24 @@ export const Grade12LessonModal: React.FC<Grade12LessonModalProps> = ({
                       <button
                         disabled={isMatched}
                         onClick={() => handleMatchSelect(p.word)}
-                        className={`w-full py-5 rounded-2xl border-2 text-4xl transition-all ${
+                        className={`w-full h-24 rounded-2xl border-2 overflow-hidden relative transition-all group cursor-pointer ${
                           isMatched
                             ? 'bg-emerald-100 border-emerald-300 opacity-60'
                             : isSelected
-                            ? 'bg-amber-100 border-amber-400 shadow-md scale-105'
-                            : 'bg-white border-slate-200 hover:border-amber-300'
+                            ? 'border-amber-400 shadow-md scale-105 ring-2 ring-amber-300'
+                            : 'border-slate-200 hover:border-amber-300'
                         }`}
                       >
-                        {p.emoji}
+                        <img
+                          src={getVocabularyVisual(p.word).imageUrl}
+                          alt={p.word}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                        />
+                        <div className="absolute inset-0 bg-black/25 flex items-end justify-center p-1">
+                          <span className="text-[10px] font-black text-white bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-xs">
+                            {p.meaningVi}
+                          </span>
+                        </div>
                       </button>
                     </div>
                   );

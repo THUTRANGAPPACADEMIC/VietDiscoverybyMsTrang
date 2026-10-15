@@ -643,10 +643,50 @@ export const DESTINATIONS: Destination[] = [
         cefrLevel: 'Pre-A1 Foundation',
         instructionalTarget: 'Simple sentences, basic questions, short listening tasks, bilingual hints',
         vocabulary: [
-          { word: 'Citadel', phonetic: '/ˈsɪt̬.ə.dəl/', meaningEn: 'A fortified fortress protecting royal courts', meaningVi: 'Kinh thành kiên cố', example: 'Hue Citadel has thick stone walls.' },
-          { word: 'Perfume River', phonetic: '/ˈpɝː.fjuːm ˈrɪv.ɚ/', meaningEn: 'The gentle river flowing through Hue', meaningVi: 'Sông Hương thơ mộng', example: 'Boats glide on the Perfume River.' },
-          { word: 'Heritage', phonetic: '/ˈher.ɪ.t̬ɪdʒ/', meaningEn: 'Valuable traditions passed down by ancestors', meaningVi: 'Di sản quý báu', example: 'Hue Court Music is UNESCO world heritage.' },
-          { word: 'Harmony', phonetic: '/ˈhɑːr.mə.ni/', meaningEn: 'Peaceful balance between nature and buildings', meaningVi: 'Sự hài hòa cảnh quan', example: 'Hue architecture lives in harmony with gardens.' }
+          {
+            word: 'Citadel',
+            phonetic: '/ˈsɪt̬.ə.dəl/',
+            britishPhonetic: '/ˈsɪt.ə.dəl/',
+            meaningEn: 'A fortified imperial fortress with stone ramparts protecting royal palaces',
+            meaningVi: 'Kinh thành kiên cố, thành lũy hoàng gia',
+            example: 'The ancient imperial citadel of Hue has magnificent stone walls and golden gates.',
+            exampleVi: 'Kinh thành Huế có những bức tường thành bằng đá tráng lệ và cổng son mạ vàng.',
+            imageUrl: 'https://images.unsplash.com/photo-1583417319070-4a69db38a482?auto=format&fit=crop&w=1200&q=85',
+            imageAttribution: 'Photo by Nguyen Huy on Unsplash (Ngo Mon Gate, Hue Imperial Citadel)'
+          },
+          {
+            word: 'Perfume River',
+            phonetic: '/ˈpɝː.fjuːm ˈrɪv.ɚ/',
+            britishPhonetic: '/ˈpɜː.fjuːm ˈrɪv.ər/',
+            meaningEn: 'The peaceful and poetic river flowing through the heart of Hue',
+            meaningVi: 'Sông Hương thơ mộng của xứ Huế',
+            example: 'Wooden dragon boats glide peacefully along the romantic Perfume River.',
+            exampleVi: 'Những chiếc thuyền rồng bằng gỗ lướt êm đềm trên dòng sông Hương thơ mộng.',
+            imageUrl: 'https://images.unsplash.com/photo-1569154941061-e231b4725ef1?auto=format&fit=crop&w=1200&q=85',
+            imageAttribution: 'Photo by Tron Le on Unsplash (Perfume River Dragon Boats, Hue)'
+          },
+          {
+            word: 'Heritage',
+            phonetic: '/ˈher.ə.t̬ɪdʒ/',
+            britishPhonetic: '/ˈher.ɪ.tɪdʒ/',
+            meaningEn: 'Valuable traditions, royal monuments, and court music passed down by ancestors',
+            meaningVi: 'Di sản văn hóa quý báu truyền từ ngàn xưa',
+            example: 'Hue Court Music and royal architecture are precious world cultural heritage.',
+            exampleVi: 'Nhã nhạc cung đình Huế và kiến trúc hoàng gia là di sản văn hóa thế giới quý giá.',
+            imageUrl: 'https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?auto=format&fit=crop&w=1200&q=85',
+            imageAttribution: 'Photo by Silver Ringvein on Unsplash (UNESCO Heritage of Hue)'
+          },
+          {
+            word: 'Harmony',
+            phonetic: '/ˈhɑːr.mə.ni/',
+            britishPhonetic: '/ˈhɑː.mə.ni/',
+            meaningEn: 'The peaceful relationship between royal wooden architecture and natural surroundings',
+            meaningVi: 'Sự hài hòa cảnh quan giữa kiến trúc và thiên nhiên',
+            example: 'Hue royal tombs were planned in perfect harmony with surrounding pine forests and lakes.',
+            exampleVi: 'Lăng tẩm các vua triều Nguyễn được quy hoạch hài hòa tuyệt mỹ với rừng thông và hồ nước.',
+            imageUrl: 'https://images.unsplash.com/photo-1578637387939-43c525550085?auto=format&fit=crop&w=1200&q=85',
+            imageAttribution: 'Photo by Doan Tuan on Unsplash (Hue Royal Pavilion on Lotus Lake)'
+          }
         ],
         reading: {
           titleEn: 'The Royal Charms of Hue',
