@@ -81,11 +81,11 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     accessCodeHash: "5c54b8f0ec69c78ac8be8e2f976208f937152171e1e93242a67f0f7385d91e7f",
     failedPinAttempts: 0,
     isLocked: false,
-    completedDestinations: 4,
-    totalStars: 220,
-    averageScore: 95,
-    lastActive: "H\u00f4m nay, 08:30",
-    status: "online"
+    completedDestinations: 0,
+    totalStars: 0,
+    averageScore: 0,
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-2202",
@@ -100,11 +100,11 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     accessCodeHash: "5c54b8f0ec69c78ac8be8e2f976208f937152171e1e93242a67f0f7385d91e7f",
     failedPinAttempts: 0,
     isLocked: false,
-    completedDestinations: 3,
-    totalStars: 170,
-    averageScore: 90,
-    lastActive: "H\u00f4m nay, 08:30",
-    status: "online"
+    completedDestinations: 0,
+    totalStars: 0,
+    averageScore: 0,
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-22001",
@@ -120,10 +120,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-22002",
@@ -139,10 +139,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-2203",
@@ -158,10 +158,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-2204",
@@ -177,10 +177,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-2205",
@@ -196,10 +196,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-2206",
@@ -215,10 +215,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-2207",
@@ -234,10 +234,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-2208",
@@ -253,10 +253,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-2209",
@@ -272,10 +272,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-2210",
@@ -291,10 +291,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-2211",
@@ -310,10 +310,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-2212",
@@ -329,10 +329,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-2213",
@@ -348,10 +348,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-2214",
@@ -367,10 +367,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-2215",
@@ -386,10 +386,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-2216",
@@ -405,10 +405,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-2217",
@@ -424,10 +424,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-2218",
@@ -443,10 +443,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-2219",
@@ -462,10 +462,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-2220",
@@ -481,10 +481,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-2221",
@@ -500,10 +500,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-2222",
@@ -519,10 +519,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-2223",
@@ -538,10 +538,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-2224",
@@ -557,10 +557,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-2225",
@@ -576,10 +576,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-2226",
@@ -595,10 +595,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-2227",
@@ -614,10 +614,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-2228",
@@ -633,10 +633,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-2229",
@@ -652,10 +652,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-2230",
@@ -671,10 +671,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-2231",
@@ -690,10 +690,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-2232",
@@ -709,10 +709,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-2233",
@@ -728,10 +728,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-2234",
@@ -747,10 +747,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-2235",
@@ -766,10 +766,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-2236",
@@ -785,10 +785,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-2237",
@@ -804,10 +804,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-22100",
@@ -823,10 +823,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4101",
@@ -841,11 +841,11 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     accessCodeHash: "1456b6d514f17161db91fd523525536cc41e40c17124ebcafa96e5b95985fb89",
     failedPinAttempts: 0,
     isLocked: false,
-    completedDestinations: 5,
-    totalStars: 310,
-    averageScore: 98,
-    lastActive: "H\u00f4m nay, 08:30",
-    status: "online"
+    completedDestinations: 0,
+    totalStars: 0,
+    averageScore: 0,
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4102",
@@ -860,11 +860,11 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     accessCodeHash: "1456b6d514f17161db91fd523525536cc41e40c17124ebcafa96e5b95985fb89",
     failedPinAttempts: 0,
     isLocked: false,
-    completedDestinations: 4,
-    totalStars: 240,
-    averageScore: 92,
-    lastActive: "H\u00f4m nay, 08:30",
-    status: "online"
+    completedDestinations: 0,
+    totalStars: 0,
+    averageScore: 0,
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-41001",
@@ -880,10 +880,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-41002",
@@ -899,10 +899,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4103",
@@ -918,10 +918,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4104",
@@ -937,10 +937,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4105",
@@ -956,10 +956,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4106",
@@ -975,10 +975,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4107",
@@ -994,10 +994,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4108",
@@ -1013,10 +1013,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4109",
@@ -1032,10 +1032,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4110",
@@ -1051,10 +1051,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4111",
@@ -1070,10 +1070,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4112",
@@ -1089,10 +1089,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4113",
@@ -1108,10 +1108,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4114",
@@ -1127,10 +1127,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4115",
@@ -1146,10 +1146,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4116",
@@ -1165,10 +1165,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4117",
@@ -1184,10 +1184,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4118",
@@ -1203,10 +1203,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4119",
@@ -1222,10 +1222,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4120",
@@ -1241,10 +1241,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4121",
@@ -1260,10 +1260,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4122",
@@ -1279,10 +1279,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4123",
@@ -1298,10 +1298,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4124",
@@ -1317,10 +1317,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4125",
@@ -1336,10 +1336,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4126",
@@ -1355,10 +1355,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4127",
@@ -1374,10 +1374,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4128",
@@ -1393,10 +1393,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4129",
@@ -1412,10 +1412,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4130",
@@ -1431,10 +1431,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4131",
@@ -1450,10 +1450,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4132",
@@ -1469,10 +1469,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4133",
@@ -1488,10 +1488,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4134",
@@ -1507,10 +1507,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4135",
@@ -1526,10 +1526,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4136",
@@ -1545,10 +1545,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4137",
@@ -1564,10 +1564,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4138",
@@ -1583,10 +1583,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4601",
@@ -1601,11 +1601,11 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     accessCodeHash: "c28473a5d3ecc78ebe379e1571c9ad94e9de9f55a2e0ef94e046a7d19d523119",
     failedPinAttempts: 0,
     isLocked: false,
-    completedDestinations: 6,
-    totalStars: 350,
-    averageScore: 100,
-    lastActive: "H\u00f4m nay, 08:30",
-    status: "online"
+    completedDestinations: 0,
+    totalStars: 0,
+    averageScore: 0,
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4602",
@@ -1620,11 +1620,11 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     accessCodeHash: "c28473a5d3ecc78ebe379e1571c9ad94e9de9f55a2e0ef94e046a7d19d523119",
     failedPinAttempts: 0,
     isLocked: false,
-    completedDestinations: 3,
-    totalStars: 190,
-    averageScore: 88,
-    lastActive: "H\u00f4m nay, 08:30",
-    status: "online"
+    completedDestinations: 0,
+    totalStars: 0,
+    averageScore: 0,
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-46001",
@@ -1640,10 +1640,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-46002",
@@ -1659,10 +1659,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4603",
@@ -1678,10 +1678,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4604",
@@ -1697,10 +1697,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4605",
@@ -1716,10 +1716,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4606",
@@ -1735,10 +1735,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4607",
@@ -1754,10 +1754,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4608",
@@ -1773,10 +1773,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4609",
@@ -1792,10 +1792,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4610",
@@ -1811,10 +1811,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4611",
@@ -1830,10 +1830,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4612",
@@ -1849,10 +1849,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4613",
@@ -1868,10 +1868,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4614",
@@ -1887,10 +1887,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4615",
@@ -1906,10 +1906,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4616",
@@ -1925,10 +1925,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4617",
@@ -1944,10 +1944,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4618",
@@ -1963,10 +1963,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4619",
@@ -1982,10 +1982,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4620",
@@ -2001,10 +2001,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4621",
@@ -2020,10 +2020,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4622",
@@ -2039,10 +2039,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4623",
@@ -2058,10 +2058,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4624",
@@ -2077,10 +2077,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4625",
@@ -2096,10 +2096,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4626",
@@ -2115,10 +2115,30 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
+  },
+  {
+    id: "STU-46027",
+    studentCode: "VD46027",
+    name: "Võ Anh Thư",
+    classId: "cls-46",
+    classCode: "4.6",
+    className: "Class 4.6 - Global Scholars",
+    gradeLevel: "Grade 4",
+    gradeBand: "grade_4_5",
+    accessCode: "VD46027",
+    accessCodeHash: "e16c2872ce9493f9972081973a8566bd6ee20483693659cd049c3c6dfd4e01b9",
+    failedPinAttempts: 0,
+    isLocked: false,
+    completedDestinations: 0,
+    totalStars: 0,
+    averageScore: 0,
+    lastActive: "Chưa có hoạt động",
+    status: "offline",
+    avatar: "girl_explorer_chibi"
   },
   {
     id: "STU-4627",
@@ -2134,10 +2154,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4628",
@@ -2153,10 +2173,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4629",
@@ -2172,10 +2192,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4630",
@@ -2191,10 +2211,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4631",
@@ -2210,10 +2230,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4632",
@@ -2229,10 +2249,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4633",
@@ -2248,10 +2268,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-4634",
@@ -2267,10 +2287,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5201",
@@ -2285,11 +2305,11 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     accessCodeHash: "dd42d69fece5569cdc72c1e73bb7e3e08c2eb8ebba0ab98cc4492cefc88bb19a",
     failedPinAttempts: 0,
     isLocked: false,
-    completedDestinations: 5,
-    totalStars: 320,
-    averageScore: 96,
-    lastActive: "H\u00f4m nay, 08:30",
-    status: "online"
+    completedDestinations: 0,
+    totalStars: 0,
+    averageScore: 0,
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5202",
@@ -2304,11 +2324,11 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     accessCodeHash: "dd42d69fece5569cdc72c1e73bb7e3e08c2eb8ebba0ab98cc4492cefc88bb19a",
     failedPinAttempts: 0,
     isLocked: false,
-    completedDestinations: 4,
-    totalStars: 260,
-    averageScore: 91,
-    lastActive: "H\u00f4m nay, 08:30",
-    status: "online"
+    completedDestinations: 0,
+    totalStars: 0,
+    averageScore: 0,
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-52001",
@@ -2324,10 +2344,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-52002",
@@ -2343,10 +2363,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5203",
@@ -2362,10 +2382,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5204",
@@ -2381,10 +2401,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5205",
@@ -2400,10 +2420,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5206",
@@ -2419,10 +2439,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5207",
@@ -2438,10 +2458,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5208",
@@ -2457,10 +2477,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5209",
@@ -2476,10 +2496,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5210",
@@ -2495,10 +2515,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5211",
@@ -2514,10 +2534,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5212",
@@ -2533,10 +2553,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5213",
@@ -2552,10 +2572,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5214",
@@ -2571,10 +2591,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5215",
@@ -2590,10 +2610,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5216",
@@ -2609,10 +2629,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5217",
@@ -2628,10 +2648,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5218",
@@ -2647,10 +2667,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5219",
@@ -2666,10 +2686,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5220",
@@ -2685,10 +2705,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5221",
@@ -2704,10 +2724,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5222",
@@ -2723,10 +2743,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5223",
@@ -2742,10 +2762,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5224",
@@ -2761,10 +2781,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5225",
@@ -2780,10 +2800,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5226",
@@ -2799,10 +2819,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5227",
@@ -2818,10 +2838,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5228",
@@ -2837,10 +2857,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5229",
@@ -2856,10 +2876,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5230",
@@ -2875,10 +2895,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5231",
@@ -2894,10 +2914,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5232",
@@ -2913,10 +2933,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5233",
@@ -2932,10 +2952,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5234",
@@ -2951,10 +2971,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5235",
@@ -2970,10 +2990,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5236",
@@ -2989,10 +3009,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5237",
@@ -3008,10 +3028,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5238",
@@ -3027,10 +3047,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5239",
@@ -3046,10 +3066,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5601",
@@ -3064,11 +3084,11 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     accessCodeHash: "452c5142d2dd5d522801f20aada4e77ebfe711471376a5d6d320811fbd3cf7a7",
     failedPinAttempts: 0,
     isLocked: false,
-    completedDestinations: 6,
-    totalStars: 390,
-    averageScore: 99,
-    lastActive: "H\u00f4m nay, 08:30",
-    status: "online"
+    completedDestinations: 0,
+    totalStars: 0,
+    averageScore: 0,
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5602",
@@ -3083,11 +3103,11 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     accessCodeHash: "452c5142d2dd5d522801f20aada4e77ebfe711471376a5d6d320811fbd3cf7a7",
     failedPinAttempts: 0,
     isLocked: false,
-    completedDestinations: 5,
-    totalStars: 300,
-    averageScore: 94,
-    lastActive: "H\u00f4m nay, 08:30",
-    status: "online"
+    completedDestinations: 0,
+    totalStars: 0,
+    averageScore: 0,
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-56001",
@@ -3103,10 +3123,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-56002",
@@ -3122,10 +3142,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5603",
@@ -3141,10 +3161,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5604",
@@ -3160,10 +3180,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5605",
@@ -3179,10 +3199,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5606",
@@ -3198,10 +3218,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5607",
@@ -3217,10 +3237,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5608",
@@ -3236,10 +3256,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5609",
@@ -3255,10 +3275,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5610",
@@ -3274,10 +3294,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5611",
@@ -3293,10 +3313,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5612",
@@ -3312,10 +3332,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5613",
@@ -3331,10 +3351,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5614",
@@ -3350,10 +3370,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5615",
@@ -3369,10 +3389,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5616",
@@ -3388,10 +3408,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5617",
@@ -3407,10 +3427,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5618",
@@ -3426,10 +3446,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5619",
@@ -3445,10 +3465,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5620",
@@ -3464,10 +3484,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5621",
@@ -3483,10 +3503,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5622",
@@ -3502,10 +3522,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5623",
@@ -3521,10 +3541,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5624",
@@ -3540,10 +3560,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5625",
@@ -3559,10 +3579,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5626",
@@ -3578,10 +3598,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5627",
@@ -3597,10 +3617,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5628",
@@ -3616,10 +3636,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5629",
@@ -3635,10 +3655,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5630",
@@ -3654,10 +3674,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5631",
@@ -3673,10 +3693,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5632",
@@ -3692,10 +3712,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5633",
@@ -3711,10 +3731,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5634",
@@ -3730,10 +3750,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5635",
@@ -3749,10 +3769,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5636",
@@ -3768,10 +3788,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "STU-5637",
@@ -3787,10 +3807,10 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     failedPinAttempts: 0,
     isLocked: false,
     completedDestinations: 0,
-    totalStars: 200,
+    totalStars: 0,
     averageScore: 0,
-    lastActive: "S\u1eb5n s\u00e0ng h\u1ecdc",
-    status: "online"
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   },
   {
     id: "168",
@@ -3805,11 +3825,11 @@ export const INITIAL_STUDENTS: StudentRosterItem[] = [
     accessCodeHash: "94ed1d8799179f9c22c729be3bcd3534452040beae9694a22455a4b086f0a000",
     failedPinAttempts: 0,
     isLocked: false,
-    completedDestinations: 2,
-    totalStars: 250,
-    averageScore: 95,
-    lastActive: "Hôm nay, 14:10",
-    status: "online"
+    completedDestinations: 0,
+    totalStars: 0,
+    averageScore: 0,
+    lastActive: "Chưa có hoạt động",
+    status: "offline"
   }
 ];
 

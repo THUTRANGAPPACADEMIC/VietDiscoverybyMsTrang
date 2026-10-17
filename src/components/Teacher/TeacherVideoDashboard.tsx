@@ -18,9 +18,13 @@ import {
   Filter,
   Check,
   ChevronRight,
-  ExternalLink
+  ExternalLink,
+  MapPin,
+  Compass,
+  Archive,
+  Send
 } from 'lucide-react';
-import { EducationalVideo, VideoQuestion, VideoSourceType, VideoStatus, VideoDifficulty } from '../../types';
+import { EducationalVideo, VideoQuestion, VideoSourceType, VideoStatus, VideoDifficulty, VideoLearningAdventure } from '../../types';
 import { 
   getEducationalVideos, 
   addEducationalVideo, 
@@ -29,6 +33,7 @@ import {
   setVideoStatus, 
   parseVideoUrl 
 } from '../../lib/videoAcademyService';
+import { OFFICIAL_34_PROVINCES_DATA } from '../../data/administrativeData';
 import { VideoPlayerModal } from '../Student/VideoAcademy/VideoPlayerModal';
 import { soundEffects } from '../../lib/soundEffects';
 
@@ -39,6 +44,8 @@ export const TeacherVideoDashboard: React.FC = () => {
   // Filter & Search
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedGrade, setSelectedGrade] = useState<1 | 2 | 3 | 4 | 5 | 'all'>('all');
+  const [selectedProvince, setSelectedProvince] = useState<string | 'all'>('all');
+  const [selectedAdventure, setSelectedAdventure] = useState<VideoLearningAdventure | 'all'>('all');
   const [selectedStatus, setSelectedStatus] = useState<VideoStatus | 'all'>('all');
   const [selectedSourceType, setSelectedSourceType] = useState<VideoSourceType | 'all'>('all');
 
@@ -51,6 +58,8 @@ export const TeacherVideoDashboard: React.FC = () => {
   const [formTitleEn, setFormTitleEn] = useState('');
   const [formTitleVi, setFormTitleVi] = useState('');
   const [formGrade, setFormGrade] = useState<1 | 2 | 3 | 4 | 5>(4);
+  const [formProvinceCode, setFormProvinceCode] = useState<string>('HN');
+  const [formLearningAdventure, setFormLearningAdventure] = useState<VideoLearningAdventure>('heritage');
   const [formSourceType, setFormSourceType] = useState<VideoSourceType>('teacher_youtube');
   const [formChannel, setFormChannel] = useState('Ms. Thu Trang (VietDiscovery)');
   const [formTopic, setFormTopic] = useState('Heritage & Landmarks');
@@ -61,6 +70,17 @@ export const TeacherVideoDashboard: React.FC = () => {
   const [formObjectivesVi, setFormObjectivesVi] = useState('');
   const [formDuration, setFormDuration] = useState<number>(5);
   const [formStatus, setFormStatus] = useState<VideoStatus>('draft');
+
+  // 5-Step Interactive Pathway Form Fields
+  const [formListeningPhraseEn, setFormListeningPhraseEn] = useState('');
+  const [formListeningPhraseVi, setFormListeningPhraseVi] = useState('');
+  const [formSpeakingModelEn, setFormSpeakingModelEn] = useState('');
+  const [formSpeakingModelVi, setFormSpeakingModelVi] = useState('');
+  const [formSpeakingTipsVi, setFormSpeakingTipsVi] = useState('');
+  const [formApplyMissionEn, setFormApplyMissionEn] = useState('');
+  const [formApplyMissionVi, setFormApplyMissionVi] = useState('');
+  const [formSentenceFrames, setFormSentenceFrames] = useState('');
+
   const [formQuestions, setFormQuestions] = useState<VideoQuestion[]>([
     {
       id: 'q-new-1',
@@ -105,10 +125,17 @@ export const TeacherVideoDashboard: React.FC = () => {
     setParsedPreview(res);
   }, [formUrl]);
 
-  // Handle Quick Status Toggle (Draft <-> Approved)
+  // Handle Direct Status Setting (draft, approved, published, archived)
+  const handleSetStatus = async (videoId: string, newStatus: VideoStatus) => {
+    soundEffects.playClick();
+    await setVideoStatus(videoId, newStatus);
+    await loadTeacherVideos();
+  };
+
+  // Handle Quick Status Toggle
   const handleToggleStatus = async (videoId: string, currentStatus: VideoStatus) => {
     soundEffects.playClick();
-    const newStatus: VideoStatus = currentStatus === 'approved' ? 'draft' : 'approved';
+    const newStatus: VideoStatus = (currentStatus === 'published' || currentStatus === 'approved') ? 'draft' : 'published';
     await setVideoStatus(videoId, newStatus);
     await loadTeacherVideos();
   };
@@ -141,6 +168,8 @@ export const TeacherVideoDashboard: React.FC = () => {
     try {
       const objectivesEnArr = formObjectivesEn.split('\n').map(s => s.trim()).filter(Boolean);
       const objectivesViArr = formObjectivesVi.split('\n').map(s => s.trim()).filter(Boolean);
+      const matchedProvince = OFFICIAL_34_PROVINCES_DATA.find(p => p.code === formProvinceCode);
+      const sentenceFramesArr = formSentenceFrames.split('\n').map(s => s.trim()).filter(Boolean);
 
       const res = await addEducationalVideo({
         videoUrl: formUrl,
@@ -159,7 +188,31 @@ export const TeacherVideoDashboard: React.FC = () => {
         thumbnailUrl: parsed.thumbnailUrl,
         status: formStatus,
         isTeacherCreated: formSourceType === 'teacher_youtube',
-        questions: formQuestions.filter(q => q.questionEn.trim() && q.options.some(o => o.trim()))
+        questions: formQuestions.filter(q => q.questionEn.trim() && q.options.some(o => o.trim())),
+        provinceCode: formProvinceCode,
+        provinceName: matchedProvince?.name || 'Việt Nam',
+        learningAdventure: formLearningAdventure,
+        listeningTask: formListeningPhraseEn.trim() ? {
+          keyPhraseEn: formListeningPhraseEn.trim(),
+          keyPhraseVi: formListeningPhraseVi.trim() || formTitleVi,
+          vocabularyKeywords: [
+            { word: formTitleEn.split(' ')[0] || 'explore', ipa: '/ɪkˈsplɔːr/', meaningVi: 'khám phá' },
+            { word: matchedProvince?.name.split(' ').pop() || 'wonder', ipa: '/ˈwʌn.dər/', meaningVi: 'kỳ quan' }
+          ]
+        } : undefined,
+        speakingTask: formSpeakingModelEn.trim() ? {
+          modelSentenceEn: formSpeakingModelEn.trim(),
+          modelSentenceVi: formSpeakingModelVi.trim() || formTitleVi,
+          tipsVi: formSpeakingTipsVi.trim() || 'Phát âm to rõ và chú ý ngữ điệu tự nhiên.'
+        } : undefined,
+        applyTask: formApplyMissionEn.trim() ? {
+          missionPromptEn: formApplyMissionEn.trim(),
+          missionPromptVi: formApplyMissionVi.trim() || 'Chia sẻ về địa danh này.',
+          sentenceFrames: sentenceFramesArr.length > 0 ? sentenceFramesArr : [
+            `I want to visit ${matchedProvince?.name || 'this destination'}!`,
+            `The natural scenery and culture here are wonderful.`
+          ]
+        } : undefined
       });
 
       if (res.success) {
@@ -182,6 +235,8 @@ export const TeacherVideoDashboard: React.FC = () => {
     setFormTitleEn('');
     setFormTitleVi('');
     setFormGrade(4);
+    setFormProvinceCode('HN');
+    setFormLearningAdventure('heritage');
     setFormSourceType('teacher_youtube');
     setFormChannel('Ms. Thu Trang (VietDiscovery)');
     setFormTopic('Heritage & Landmarks');
@@ -192,6 +247,14 @@ export const TeacherVideoDashboard: React.FC = () => {
     setFormObjectivesVi('');
     setFormDuration(5);
     setFormStatus('draft');
+    setFormListeningPhraseEn('');
+    setFormListeningPhraseVi('');
+    setFormSpeakingModelEn('');
+    setFormSpeakingModelVi('');
+    setFormSpeakingTipsVi('');
+    setFormApplyMissionEn('');
+    setFormApplyMissionVi('');
+    setFormSentenceFrames('');
     setParsedPreview(null);
     setFormQuestions([
       {
@@ -245,6 +308,8 @@ export const TeacherVideoDashboard: React.FC = () => {
   // Filtered List
   const filteredVideos = videos.filter(v => {
     if (selectedGrade !== 'all' && v.grade !== selectedGrade) return false;
+    if (selectedProvince !== 'all' && v.provinceCode !== selectedProvince) return false;
+    if (selectedAdventure !== 'all' && v.learningAdventure !== selectedAdventure) return false;
     if (selectedStatus !== 'all' && v.status !== selectedStatus) return false;
     if (selectedSourceType !== 'all' && v.sourceType !== selectedSourceType) return false;
     if (searchQuery.trim()) {
@@ -252,14 +317,15 @@ export const TeacherVideoDashboard: React.FC = () => {
       return (
         v.titleEn.toLowerCase().includes(q) ||
         v.titleVi.toLowerCase().includes(q) ||
-        v.topic.toLowerCase().includes(q)
+        v.topic.toLowerCase().includes(q) ||
+        (v.provinceName && v.provinceName.toLowerCase().includes(q))
       );
     }
     return true;
   });
 
   const totalVideos = videos.length;
-  const approvedVideos = videos.filter(v => v.status === 'approved').length;
+  const approvedVideos = videos.filter(v => v.status === 'published' || v.status === 'approved').length;
   const draftVideos = videos.filter(v => v.status === 'draft').length;
   const teacherCreated = videos.filter(v => v.isTeacherCreated).length;
 
@@ -316,7 +382,7 @@ export const TeacherVideoDashboard: React.FC = () => {
       </div>
 
       {/* 3. Filter Bar */}
-      <div className="bg-white p-4 rounded-3xl border border-slate-200 shadow-xs grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="bg-white p-4 rounded-3xl border border-slate-200 shadow-xs grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3">
         {/* Search Input */}
         <div className="relative">
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
@@ -324,7 +390,7 @@ export const TeacherVideoDashboard: React.FC = () => {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Tìm theo tên video, chủ đề..."
+            placeholder="Tìm video, tỉnh thành..."
             className="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-800"
           />
         </div>
@@ -343,6 +409,35 @@ export const TeacherVideoDashboard: React.FC = () => {
           <option value="5">Lớp 5</option>
         </select>
 
+        {/* Province Filter */}
+        <select
+          value={selectedProvince}
+          onChange={(e) => setSelectedProvince(e.target.value)}
+          className="px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-800 bg-white"
+        >
+          <option value="all">📍 Tất cả 34 Tỉnh/Thành</option>
+          {OFFICIAL_34_PROVINCES_DATA.map(p => (
+            <option key={p.code} value={p.code}>
+              {p.name}
+            </option>
+          ))}
+        </select>
+
+        {/* Learning Adventure Filter */}
+        <select
+          value={selectedAdventure}
+          onChange={(e) => setSelectedAdventure(e.target.value as any)}
+          className="px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-800 bg-white"
+        >
+          <option value="all">🧭 Tất cả Hành Trình</option>
+          <option value="heritage">🏛️ Di sản Lịch sử</option>
+          <option value="nature">⛰️ Kỳ quan Thiên nhiên</option>
+          <option value="culture">🎭 Văn hóa & Lễ hội</option>
+          <option value="cuisine">🍲 Ẩm thực Đặc sắc</option>
+          <option value="ecotourism">🌿 Du lịch Sinh thái</option>
+          <option value="general">⭐ Khám phá Chung</option>
+        </select>
+
         {/* Status Filter */}
         <select
           value={selectedStatus}
@@ -350,9 +445,10 @@ export const TeacherVideoDashboard: React.FC = () => {
           className="px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-800 bg-white"
         >
           <option value="all">Tất cả Trạng thái</option>
-          <option value="approved">✅ Đã phê duyệt (Hiển thị học sinh)</option>
-          <option value="draft">⏳ Bản nháp (Đang kiểm duyệt)</option>
-          <option value="archived">📦 Đã lưu trữ</option>
+          <option value="published">🚀 Đã Xuất Bản (Live)</option>
+          <option value="approved">✅ Đã Phê Duyệt</option>
+          <option value="draft">⏳ Bản Nháp (Chờ duyệt)</option>
+          <option value="archived">📦 Đã Lưu Trữ</option>
         </select>
 
         {/* Source Type Filter */}
@@ -384,9 +480,10 @@ export const TeacherVideoDashboard: React.FC = () => {
               <thead className="bg-slate-50 border-b border-slate-200 text-[11px] font-black uppercase text-slate-500">
                 <tr>
                   <th className="py-3 px-4">Video & Ảnh thu nhỏ</th>
+                  <th className="py-3 px-3">Tỉnh / Thành</th>
                   <th className="py-3 px-3">Khối Lớp</th>
                   <th className="py-3 px-3">Nguồn Video</th>
-                  <th className="py-3 px-3">Trạng thái Phê duyệt</th>
+                  <th className="py-3 px-3">Trạng thái</th>
                   <th className="py-3 px-3">Câu hỏi đố</th>
                   <th className="py-3 px-4 text-right">Thao tác</th>
                 </tr>
@@ -418,6 +515,18 @@ export const TeacherVideoDashboard: React.FC = () => {
                       </div>
                     </td>
 
+                    {/* Province */}
+                    <td className="py-3 px-3">
+                      {vid.provinceName ? (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-sky-50 text-sky-800 font-bold text-[10.5px]">
+                          <MapPin className="w-3 h-3 text-sky-600" />
+                          <span className="truncate max-w-[120px]">{vid.provinceName}</span>
+                        </span>
+                      ) : (
+                        <span className="text-slate-400 text-[10px]">Toàn quốc</span>
+                      )}
+                    </td>
+
                     {/* Grade */}
                     <td className="py-3 px-3">
                       <span className="px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 font-bold text-[10.5px]">
@@ -442,29 +551,26 @@ export const TeacherVideoDashboard: React.FC = () => {
                       )}
                     </td>
 
-                    {/* Approval Status Toggle */}
+                    {/* Multi-Status Selector */}
                     <td className="py-3 px-3">
-                      <button
-                        onClick={() => handleToggleStatus(vid.id, vid.status)}
-                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10.5px] font-black cursor-pointer transition-colors shadow-2xs ${
-                          vid.status === 'approved'
-                            ? 'bg-emerald-100 text-emerald-900 hover:bg-emerald-200'
-                            : 'bg-amber-100 text-amber-900 hover:bg-amber-200'
+                      <select
+                        value={vid.status}
+                        onChange={(e) => handleSetStatus(vid.id, e.target.value as VideoStatus)}
+                        className={`px-2.5 py-1 rounded-xl text-[10.5px] font-black cursor-pointer border shadow-2xs ${
+                          vid.status === 'published'
+                            ? 'bg-emerald-50 text-emerald-900 border-emerald-300'
+                            : vid.status === 'approved'
+                            ? 'bg-sky-50 text-sky-900 border-sky-300'
+                            : vid.status === 'draft'
+                            ? 'bg-amber-50 text-amber-900 border-amber-300'
+                            : 'bg-slate-100 text-slate-700 border-slate-300'
                         }`}
-                        title="Bấm để chuyển trạng thái duyệt / nháp"
                       >
-                        {vid.status === 'approved' ? (
-                          <>
-                            <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
-                            <span>Đã Duyệt (Live)</span>
-                          </>
-                        ) : (
-                          <>
-                            <Clock className="w-3.5 h-3.5 text-amber-600" />
-                            <span>Bản nháp (Ẩn)</span>
-                          </>
-                        )}
-                      </button>
+                        <option value="published">🚀 Đã Xuất Bản</option>
+                        <option value="approved">✅ Đã Duyệt</option>
+                        <option value="draft">⏳ Bản Nháp</option>
+                        <option value="archived">📦 Lưu Trữ</option>
+                      </select>
                     </td>
 
                     {/* Questions count */}
@@ -631,7 +737,7 @@ export const TeacherVideoDashboard: React.FC = () => {
               </div>
 
               {/* 3. Classifications */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 <div>
                   <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1">
                     Khối Lớp *
@@ -651,6 +757,41 @@ export const TeacherVideoDashboard: React.FC = () => {
 
                 <div>
                   <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1">
+                    Tỉnh / Thành (34 Đơn vị) *
+                  </label>
+                  <select
+                    value={formProvinceCode}
+                    onChange={(e) => setFormProvinceCode(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold bg-white"
+                  >
+                    {OFFICIAL_34_PROVINCES_DATA.map(p => (
+                      <option key={p.code} value={p.code}>
+                        {p.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1">
+                    Hành trình Khám phá *
+                  </label>
+                  <select
+                    value={formLearningAdventure}
+                    onChange={(e) => setFormLearningAdventure(e.target.value as any)}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold bg-white"
+                  >
+                    <option value="heritage">🏛️ Di sản Lịch sử & Danh lam</option>
+                    <option value="nature">⛰️ Kỳ quan Thiên nhiên & Hang động</option>
+                    <option value="culture">🎭 Văn hóa & Lễ hội Dân gian</option>
+                    <option value="cuisine">🍲 Ẩm thực & Đặc sản Địa phương</option>
+                    <option value="ecotourism">🌿 Du lịch Sinh thái & Rừng biển</option>
+                    <option value="general">⭐ Khám phá Tổng hợp</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1">
                     Nguồn Video *
                   </label>
                   <select
@@ -662,20 +803,6 @@ export const TeacherVideoDashboard: React.FC = () => {
                     <option value="curated_youtube">📺 YouTube Giáo Dục Chọn Lọc</option>
                     <option value="ai_generated">🤖 AI Đồ Họa 3D Trực Quan</option>
                   </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1">
-                    Thời lượng (phút)
-                  </label>
-                  <input
-                    type="number"
-                    min={1}
-                    max={60}
-                    value={formDuration}
-                    onChange={(e) => setFormDuration(parseInt(e.target.value, 10) || 5)}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold"
-                  />
                 </div>
               </div>
 
@@ -766,12 +893,113 @@ export const TeacherVideoDashboard: React.FC = () => {
                 </div>
               </div>
 
+              {/* 5-Step Interactive Learning Pathway Builder */}
+              <div className="border-t border-slate-200 pt-4 space-y-4">
+                <div>
+                  <h4 className="text-sm font-black text-slate-900 font-heading flex items-center gap-2">
+                    <span className="p-1 rounded bg-emerald-100 text-emerald-800 text-[11px] font-black">5 STEPS</span>
+                    <span>Lộ trình Học Tập 5 Bước Tương Tác (WATCH • LISTEN • SPEAK • PLAY • APPLY)</span>
+                  </h4>
+                  <p className="text-[11px] text-slate-500">
+                    Cấu hình tác vụ Luyện Nghe, Luyện Nói và Nhiệm Vụ Khám Phá Địa Phương
+                  </p>
+                </div>
+
+                {/* Step 2: Listen */}
+                <div className="p-4 rounded-2xl bg-sky-50 border border-sky-200 space-y-3">
+                  <span className="text-xs font-black text-sky-900 uppercase">
+                    Bước 2: Luyện Nghe (Active Listening Task)
+                  </span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <input
+                      type="text"
+                      value={formListeningPhraseEn}
+                      onChange={(e) => setFormListeningPhraseEn(e.target.value)}
+                      placeholder="Key listening sentence in English..."
+                      className="w-full px-3 py-2 rounded-xl border border-sky-200 text-xs bg-white font-medium"
+                    />
+                    <input
+                      type="text"
+                      value={formListeningPhraseVi}
+                      onChange={(e) => setFormListeningPhraseVi(e.target.value)}
+                      placeholder="Dịch nghĩa câu luyện nghe tiếng Việt..."
+                      className="w-full px-3 py-2 rounded-xl border border-sky-200 text-xs bg-white font-medium"
+                    />
+                  </div>
+                </div>
+
+                {/* Step 3: Speak */}
+                <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 space-y-3">
+                  <span className="text-xs font-black text-amber-900 uppercase">
+                    Bước 3: Luyện Nói (Interactive Speaking Task)
+                  </span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <input
+                      type="text"
+                      value={formSpeakingModelEn}
+                      onChange={(e) => setFormSpeakingModelEn(e.target.value)}
+                      placeholder="Model speaking sentence in English..."
+                      className="w-full px-3 py-2 rounded-xl border border-amber-200 text-xs bg-white font-medium"
+                    />
+                    <input
+                      type="text"
+                      value={formSpeakingModelVi}
+                      onChange={(e) => setFormSpeakingModelVi(e.target.value)}
+                      placeholder="Dịch nghĩa câu luyện nói tiếng Việt..."
+                      className="w-full px-3 py-2 rounded-xl border border-amber-200 text-xs bg-white font-medium"
+                    />
+                  </div>
+                  <input
+                    type="text"
+                    value={formSpeakingTipsVi}
+                    onChange={(e) => setFormSpeakingTipsVi(e.target.value)}
+                    placeholder="Mẹo phát âm / hướng dẫn của giáo viên (VD: Nhấn trọng âm và nối âm tự nhiên)..."
+                    className="w-full px-3 py-2 rounded-xl border border-amber-200 text-xs bg-white"
+                  />
+                </div>
+
+                {/* Step 5: Apply */}
+                <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 space-y-3">
+                  <span className="text-xs font-black text-emerald-900 uppercase">
+                    Bước 5: Nhiệm Vụ Khám Phá Địa Phương (Province Explorer Mission)
+                  </span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <input
+                      type="text"
+                      value={formApplyMissionEn}
+                      onChange={(e) => setFormApplyMissionEn(e.target.value)}
+                      placeholder="Mission prompt in English..."
+                      className="w-full px-3 py-2 rounded-xl border border-emerald-200 text-xs bg-white font-medium"
+                    />
+                    <input
+                      type="text"
+                      value={formApplyMissionVi}
+                      onChange={(e) => setFormApplyMissionVi(e.target.value)}
+                      placeholder="Nội dung nhiệm vụ tiếng Việt..."
+                      className="w-full px-3 py-2 rounded-xl border border-emerald-200 text-xs bg-white font-medium"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-emerald-800 mb-1">
+                      Mẫu câu gợi ý (Sentence Frames - Mỗi câu một dòng)
+                    </label>
+                    <textarea
+                      rows={2}
+                      value={formSentenceFrames}
+                      onChange={(e) => setFormSentenceFrames(e.target.value)}
+                      placeholder="I want to visit...&#10;The natural scenery here is wonderful..."
+                      className="w-full p-2.5 rounded-xl border border-emerald-200 text-xs font-mono bg-white"
+                    />
+                  </div>
+                </div>
+              </div>
+
               {/* 7. Interactive Comprehension Questions Builder */}
               <div className="border-t border-slate-200 pt-4 space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <h4 className="text-sm font-black text-slate-900 font-heading">
-                      Câu hỏi Thử thách Nghe & Hiểu (Interactive Questions)
+                      Bước 4 (PLAY): Câu hỏi Thử thách Nghe & Hiểu (Interactive Questions)
                     </h4>
                     <p className="text-[11px] text-slate-500">
                       Tạo câu hỏi đố vui xuất hiện ngay sau khi học sinh xem video
@@ -884,7 +1112,9 @@ export const TeacherVideoDashboard: React.FC = () => {
                   className="px-3.5 py-2 rounded-xl border border-amber-300 text-xs font-black bg-white shadow-2xs"
                 >
                   <option value="draft">⏳ Lưu bản nháp (Draft - Chỉ Cô Trang thấy)</option>
-                  <option value="approved">✅ Phê duyệt phát hành (Approved - Mở cho học sinh)</option>
+                  <option value="approved">✅ Phê duyệt nội dung (Approved)</option>
+                  <option value="published">🚀 Xuất bản ngay (Published - Mở cho học sinh)</option>
+                  <option value="archived">📦 Lưu trữ (Archived)</option>
                 </select>
               </div>
 

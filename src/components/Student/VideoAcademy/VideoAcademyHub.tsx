@@ -13,10 +13,13 @@ import {
   PlayCircle,
   Video,
   Layers,
-  ArrowRight
+  ArrowRight,
+  MapPin,
+  Compass
 } from 'lucide-react';
-import { EducationalVideo, StudentVideoProgress, UserProfile, VideoDifficulty, VideoSourceType } from '../../../types';
+import { EducationalVideo, StudentVideoProgress, UserProfile, VideoDifficulty, VideoSourceType, VideoLearningAdventure } from '../../../types';
 import { getEducationalVideos, getStudentVideoProgressMap, saveStudentVideoProgress } from '../../../lib/videoAcademyService';
+import { OFFICIAL_34_PROVINCES_DATA } from '../../../data/administrativeData';
 import { VideoCard } from './VideoCard';
 import { VideoPlayerModal } from './VideoPlayerModal';
 import { soundEffects } from '../../../lib/soundEffects';
@@ -36,6 +39,8 @@ export const VideoAcademyHub: React.FC<VideoAcademyHubProps> = ({
     : 4;
 
   const [selectedGrade, setSelectedGrade] = useState<1 | 2 | 3 | 4 | 5 | 'all'>(userGradeNum as any);
+  const [selectedProvince, setSelectedProvince] = useState<string | 'all'>('all');
+  const [selectedAdventure, setSelectedAdventure] = useState<VideoLearningAdventure | 'all'>('all');
   const [selectedSourceType, setSelectedSourceType] = useState<VideoSourceType | 'all'>('all');
   const [selectedDifficulty, setSelectedDifficulty] = useState<VideoDifficulty | 'all'>('all');
   const [selectedTopic, setSelectedTopic] = useState<string>('all');
@@ -56,11 +61,13 @@ export const VideoAcademyHub: React.FC<VideoAcademyHubProps> = ({
       try {
         const loaded = await getEducationalVideos({
           grade: selectedGrade,
+          provinceCode: selectedProvince,
+          learningAdventure: selectedAdventure,
           sourceType: selectedSourceType,
           difficulty: selectedDifficulty,
           topic: selectedTopic,
           searchQuery
-        }, false); // isStaffViewer: false -> only approved videos for students!
+        }, false); // isStaffViewer: false -> only approved & published videos for students!
         setVideos(loaded);
         setProgressMap(getStudentVideoProgressMap());
       } catch (err) {
@@ -70,7 +77,7 @@ export const VideoAcademyHub: React.FC<VideoAcademyHubProps> = ({
       }
     }
     loadData();
-  }, [selectedGrade, selectedSourceType, selectedDifficulty, selectedTopic, searchQuery]);
+  }, [selectedGrade, selectedProvince, selectedAdventure, selectedSourceType, selectedDifficulty, selectedTopic, searchQuery]);
 
   const handleSaveProgress = async (progress: StudentVideoProgress) => {
     await saveStudentVideoProgress(progress);
@@ -184,7 +191,7 @@ export const VideoAcademyHub: React.FC<VideoAcademyHubProps> = ({
 
       {/* 3. MULTI-FACETED FILTER BAR */}
       <div className="bg-white p-4 rounded-3xl border border-slate-200 shadow-xs space-y-3">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           
           {/* Search Input */}
           <div className="relative">
@@ -193,10 +200,39 @@ export const VideoAcademyHub: React.FC<VideoAcademyHubProps> = ({
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Tìm video, địa danh, từ khóa..."
+              placeholder="Tìm video, địa danh, tỉnh thành..."
               className="w-full pl-9 pr-4 py-2.5 rounded-2xl border border-slate-200 text-xs sm:text-sm font-bold text-slate-800 placeholder:font-normal placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-rose-500"
             />
           </div>
+
+          {/* 34-Province Selector */}
+          <select
+            value={selectedProvince}
+            onChange={(e) => setSelectedProvince(e.target.value)}
+            className="w-full px-3.5 py-2.5 rounded-2xl border border-slate-200 text-xs sm:text-sm font-bold text-slate-800 bg-white focus:outline-hidden focus:ring-2 focus:ring-sky-500 cursor-pointer shadow-2xs"
+          >
+            <option value="all">📍 Tất cả 34 Tỉnh / Thành phố</option>
+            {OFFICIAL_34_PROVINCES_DATA.map(p => (
+              <option key={p.code} value={p.code}>
+                {p.name} ({p.region === 'North' ? 'Miền Bắc' : p.region === 'Central' ? 'Miền Trung' : 'Miền Nam'})
+              </option>
+            ))}
+          </select>
+
+          {/* Learning Adventure Filter */}
+          <select
+            value={selectedAdventure}
+            onChange={(e) => setSelectedAdventure(e.target.value as any)}
+            className="w-full px-3.5 py-2.5 rounded-2xl border border-slate-200 text-xs sm:text-sm font-bold text-slate-800 bg-white focus:outline-hidden focus:ring-2 focus:ring-emerald-500 cursor-pointer shadow-2xs"
+          >
+            <option value="all">🧭 Tất cả Hành Trình Khám Phá</option>
+            <option value="heritage">🏛️ Di sản Lịch sử & Danh lam</option>
+            <option value="nature">⛰️ Kỳ quan Thiên nhiên & Hang động</option>
+            <option value="culture">🎭 Văn hóa & Lễ hội Dân gian</option>
+            <option value="cuisine">🍲 Ẩm thực & Đặc sản Địa phương</option>
+            <option value="ecotourism">🌿 Du lịch Sinh thái & Rừng biển</option>
+            <option value="general">⭐ Khám phá Tổng hợp</option>
+          </select>
 
           {/* Source Type Filter */}
           <select

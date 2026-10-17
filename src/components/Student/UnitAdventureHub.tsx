@@ -98,9 +98,9 @@ export const UnitAdventureHub: React.FC<UnitAdventureHubProps> = ({
         { word: 'Dragon', icon: '🐉', vi: 'Con rồng', phonetic: '/ˈdræɡ.ən/', example: 'Ha Long means Descending Dragon.' },
         { word: 'Island', icon: '🏝️', vi: 'Hòn đảo', phonetic: '/ˈaɪ.lənd/', example: 'Vietnam has thousands of green limestone islands.' }
       ],
-      progressText: '100% Mastered',
-      progressPercent: 100,
-      isMastered: true
+      progressText: '0% - Ready to explore!',
+      progressPercent: 0,
+      isMastered: false
     },
     {
       unitNumber: 2,
@@ -159,9 +159,9 @@ export const UnitAdventureHub: React.FC<UnitAdventureHubProps> = ({
         { word: 'Beach', icon: '🏖️', vi: 'Bãi biển', phonetic: '/biːtʃ/', example: 'My Khe Beach has warm turquoise water and soft white sand.' },
         { word: 'Fire', icon: '🔥', vi: 'Ngọn lửa', phonetic: '/faɪər/', example: 'The golden dragon breathes brilliant flames into the sky.' }
       ],
-      progressText: '100% Mastered',
-      progressPercent: 100,
-      isMastered: true
+      progressText: '0% - Ready to explore!',
+      progressPercent: 0,
+      isMastered: false
     }
   ];
 
@@ -277,6 +277,22 @@ export const UnitAdventureHub: React.FC<UnitAdventureHubProps> = ({
         {currentUnits.map((unit, idx) => {
           const dest = getDestinationForUnit(unit);
           const isLeftCard = idx === 0;
+
+          // Compute dynamic progress strictly from genuine progressMap
+          const destProg = progressMap[unit.destId] || progressMap[dest.id];
+          const starsEarned = destProg?.starsEarned || 0;
+          const isMastered = Boolean(destProg?.completedSteps?.quiz && (destProg.quizScore >= 3 || starsEarned >= 20));
+          const completedStepsCount = destProg?.completedSteps ? Object.values(destProg.completedSteps).filter(Boolean).length : 0;
+          const progressPercent = isMastered 
+            ? 100 
+            : completedStepsCount > 0 
+              ? Math.min(100, Math.round((completedStepsCount / 5) * 100)) 
+              : 0;
+          const progressText = isMastered 
+            ? '100% Mastered' 
+            : progressPercent > 0 
+              ? `${progressPercent}% in progress` 
+              : '0% - Ready to explore!';
 
           return (
             <div
@@ -396,19 +412,22 @@ export const UnitAdventureHub: React.FC<UnitAdventureHubProps> = ({
                   <div className="flex items-center justify-between text-xs">
                     <span className="font-bold text-slate-500">Adventure Progress:</span>
                     <span className={`font-black flex items-center gap-1 ${
-                      unit.isMastered ? 'text-amber-600' : 'text-slate-500'
+                      isMastered ? 'text-amber-600' : 'text-slate-500'
                     }`}>
-                      <span>{unit.progressText}</span>
-                      {unit.isMastered && <span className="text-amber-500">⭐</span>}
+                      <span>{progressText}</span>
+                      {isMastered && <span className="text-amber-500">⭐</span>}
                     </span>
                   </div>
                   <div className="w-full h-3 rounded-full bg-slate-100 overflow-hidden shadow-inner p-0.5">
                     <div 
                       className={`h-full rounded-full transition-all duration-500 ${
-                        unit.isMastered 
-                          ? 'bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500 shadow-[0_0_10px_rgba(245,158,11,0.5)] w-full' 
-                          : 'bg-slate-200 w-0'
+                        isMastered 
+                          ? 'bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500 shadow-[0_0_10px_rgba(245,158,11,0.5)]' 
+                          : progressPercent > 0
+                          ? 'bg-gradient-to-r from-sky-400 to-blue-500'
+                          : 'bg-slate-200'
                       }`} 
+                      style={{ width: isMastered ? '100%' : `${progressPercent}%` }}
                     />
                   </div>
                 </div>

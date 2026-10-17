@@ -16,7 +16,7 @@ import {
   Award,
   Layers
 } from 'lucide-react';
-import { GradeBand } from '../../types';
+import { GradeBand, DestinationProgress } from '../../types';
 import { playEnglishSpeech } from '../../lib/speech';
 import { soundEffects } from '../../lib/soundEffects';
 
@@ -24,6 +24,8 @@ export interface LandmarkDragDropGameProps {
   gradeBand?: GradeBand;
   onEarnStars?: (stars: number) => void;
   onClose?: () => void;
+  savedProgress?: DestinationProgress;
+  onSaveGameProgress?: (gameId: string, progress: DestinationProgress) => void;
 }
 
 export type RegionZone = 'North' | 'Central' | 'South';
@@ -218,11 +220,41 @@ export const REGION_ZONES: RegionZoneConfig[] = [
 export const LandmarkDragDropGame: React.FC<LandmarkDragDropGameProps> = ({
   gradeBand = 'grade_3',
   onEarnStars,
-  onClose
+  onClose,
+  savedProgress,
+  onSaveGameProgress
 }) => {
+  // Derive restored items from savedProgress if present
+  const getRestoredState = () => {
+    let savedIds = (savedProgress?.completedSteps?.placedLandmarks || []) as string[];
+    // Robust fallback: if legacy database stripped placedLandmarks array but recorded completion
+    if ((!savedIds || savedIds.length === 0) && (savedProgress?.quizScore === SIX_LANDMARKS.length || (savedProgress?.starsEarned && savedProgress.starsEarned >= 195) || savedProgress?.completedSteps?.completed)) {
+      savedIds = SIX_LANDMARKS.map(l => l.id);
+    }
+    if (Array.isArray(savedIds) && savedIds.length > 0) {
+      const placed = SIX_LANDMARKS
+        .filter(lm => savedIds.includes(lm.id))
+        .map(lm => ({ landmark: lm, zone: lm.region }));
+      const unplaced = SIX_LANDMARKS.filter(lm => !savedIds.includes(lm.id));
+      const completed = Boolean(savedProgress?.completedSteps?.completed || unplaced.length === 0);
+      return {
+        placed,
+        unplaced,
+        stars: savedProgress?.starsEarned || 0,
+        completed
+      };
+    }
+    return {
+      placed: [],
+      unplaced: SIX_LANDMARKS,
+      stars: 0,
+      completed: false
+    };
+  };
+
   // Game state
-  const [unplacedLandmarks, setUnplacedLandmarks] = useState<DragLandmarkItem[]>(SIX_LANDMARKS);
-  const [placedLandmarks, setPlacedLandmarks] = useState<{ landmark: DragLandmarkItem; zone: RegionZone }[]>([]);
+  const [unplacedLandmarks, setUnplacedLandmarks] = useState<DragLandmarkItem[]>(() => getRestoredState().unplaced);
+  const [placedLandmarks, setPlacedLandmarks] = useState<{ landmark: DragLandmarkItem; zone: RegionZone }[]>(() => getRestoredState().placed);
   const [selectedLandmark, setSelectedLandmark] = useState<DragLandmarkItem | null>(null);
   
   // Drag over states
@@ -236,9 +268,29 @@ export const LandmarkDragDropGame: React.FC<LandmarkDragDropGameProps> = ({
   } | null>(null);
 
   // Score & Stars
-  const [starsEarned, setStarsEarned] = useState(0);
-  const [isCompleted, setIsCompleted] = useState(false);
+  const [starsEarned, setStarsEarned] = useState<number>(() => getRestoredState().stars);
+  const [isCompleted, setIsCompleted] = useState<boolean>(() => getRestoredState().completed);
   const [streak, setStreak] = useState(0);
+
+  // Synchronize state when savedProgress updates (e.g. cloud sync or session login load)
+  useEffect(() => {
+    let savedIds = (savedProgress?.completedSteps?.placedLandmarks || []) as string[];
+    if ((!savedIds || savedIds.length === 0) && (savedProgress?.quizScore === SIX_LANDMARKS.length || (savedProgress?.starsEarned && savedProgress.starsEarned >= 195) || savedProgress?.completedSteps?.completed)) {
+      savedIds = SIX_LANDMARKS.map(l => l.id);
+    }
+    if (Array.isArray(savedIds) && savedIds.length > 0) {
+      const restoredPlaced = SIX_LANDMARKS
+        .filter(lm => savedIds.includes(lm.id))
+        .map(lm => ({ landmark: lm, zone: lm.region }));
+      const restoredUnplaced = SIX_LANDMARKS.filter(lm => !savedIds.includes(lm.id));
+      setPlacedLandmarks(restoredPlaced);
+      setUnplacedLandmarks(restoredUnplaced);
+      setStarsEarned(prev => Math.max(prev, savedProgress?.starsEarned || 0));
+      if (restoredUnplaced.length === 0 || savedProgress?.completedSteps?.completed) {
+        setIsCompleted(true);
+      }
+    }
+  }, [savedProgress]);
 
   // Helper to pronounce landmark in natural English
   const handlePronounceLandmark = (lm: DragLandmarkItem, e: React.MouseEvent) => {
@@ -251,14 +303,30 @@ export const LandmarkDragDropGame: React.FC<LandmarkDragDropGameProps> = ({
     if (landmark.region === targetZone) {
       // 1. Correct Match!
       soundEffects.playSuccess();
+
+      // Replay Protection: Check if this landmark was already rewarded previously
+      const previouslySavedIds = (savedProgress?.completedSteps?.placedLandmarks || []) as string[];
+      const alreadyPlacedCurrently = placedLandmarks.some(p => p.landmark.id === landmark.id);
+      const isAlreadyRewarded = alreadyPlacedCurrently || previouslySavedIds.includes(landmark.id);
+
       const newStreak = streak + 1;
       setStreak(newStreak);
-      const starReward = 20 + Math.min(newStreak * 5, 20);
-      setStarsEarned(prev => prev + starReward);
-      onEarnStars?.(starReward);
+
+      let starReward = 0;
+      let newStarsEarned = starsEarned;
+
+      if (!isAlreadyRewarded) {
+        starReward = 20 + Math.min(newStreak * 5, 20);
+        newStarsEarned = starsEarned + starReward;
+        setStarsEarned(newStarsEarned);
+        onEarnStars?.(starReward);
+      }
 
       // Add to placed list & remove from unplaced
-      const newPlaced = [...placedLandmarks, { landmark, zone: targetZone }];
+      const newPlaced = [
+        ...placedLandmarks.filter(p => p.landmark.id !== landmark.id),
+        { landmark, zone: targetZone }
+      ];
       const newUnplaced = unplacedLandmarks.filter(item => item.id !== landmark.id);
       
       setPlacedLandmarks(newPlaced);
@@ -268,12 +336,14 @@ export const LandmarkDragDropGame: React.FC<LandmarkDragDropGameProps> = ({
       // Cheerful Feedback
       setFeedback({
         type: 'correct',
-        messageEn: `Correct! Great job! ${landmark.nameEn} belongs to ${targetZone}ern Vietnam!`,
-        messageVi: `Chính xác tuyệt vời! ${landmark.nameVi} thuộc ${targetZone === 'North' ? 'Miền Bắc' : targetZone === 'Central' ? 'Miền Trung' : 'Miền Nam'}!`
+        messageEn: `Correct! Great job! ${landmark.nameEn} belongs to ${targetZone}ern Vietnam!${isAlreadyRewarded ? ' (Practice Mode)' : ''}`,
+        messageVi: `Chính xác tuyệt vời! ${landmark.nameVi} thuộc ${targetZone === 'North' ? 'Miền Bắc' : targetZone === 'Central' ? 'Miền Trung' : 'Miền Nam'}!${isAlreadyRewarded ? ' (Chế độ luyện tập)' : ''}`
       });
 
+      const nextCompleted = newUnplaced.length === 0;
+
       // Check if complete
-      if (newUnplaced.length === 0) {
+      if (nextCompleted) {
         setIsCompleted(true);
         soundEffects.playComplete();
         confetti({
@@ -287,6 +357,28 @@ export const LandmarkDragDropGame: React.FC<LandmarkDragDropGameProps> = ({
           messageVi: 'Nhiệm vụ hoàn thành xuất sắc! Con là Nhà thám hiểm tài ba của dải đất hình chữ S! 🏆'
         });
       }
+
+      // Persist to Cloud & Local Storage via onSaveGameProgress callback
+      const placedIds = newPlaced.map(p => p.landmark.id);
+      const gameProgress: DestinationProgress = {
+        destinationId: 'game-landmark-drag-drop',
+        completedSteps: {
+          vocabulary: true,
+          reading: true,
+          listening: true,
+          speaking: true,
+          quiz: true,
+          placedLandmarks: placedIds,
+          completed: nextCompleted
+        },
+        quizScore: placedIds.length,
+        totalQuestions: SIX_LANDMARKS.length,
+        attempts: (savedProgress?.attempts || 0) + 1,
+        starsEarned: Math.max(savedProgress?.starsEarned || 0, newStarsEarned),
+        lastAttemptDate: 'Vừa xong'
+      };
+
+      onSaveGameProgress?.('game-landmark-drag-drop', gameProgress);
     } else {
       // 2. Incorrect Match
       soundEffects.playClick();
@@ -299,7 +391,7 @@ export const LandmarkDragDropGame: React.FC<LandmarkDragDropGameProps> = ({
     }
   };
 
-  // Reset Game
+  // Reset Game for Replay / Practice (preserves genuine accumulated stars)
   const handleResetGame = () => {
     soundEffects.playClick();
     setUnplacedLandmarks(SIX_LANDMARKS);

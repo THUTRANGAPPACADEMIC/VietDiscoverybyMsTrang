@@ -1,5 +1,5 @@
 import { supabase, isSupabaseConfigured, localStore } from './supabase';
-import { UserProfile, DestinationProgress, StudentRosterItem, StudentLoginResult, GradeLevel } from '../types';
+import { UserProfile, DestinationProgress, StudentRosterItem, StudentLoginResult, GradeLevel, GradeBand } from '../types';
 import { INITIAL_STUDENTS, INITIAL_CLASSES } from '../data/initialClasses';
 import { checkPinRateLimit, recordFailedPinAttempt, resetPinRateLimit } from './security';
 
@@ -15,22 +15,30 @@ export async function hashAccessCode(code: string): Promise<string> {
   return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
+// Strip zero-width chars and normalize spaces
+export function cleanNameString(str: string): string {
+  if (!str) return '';
+  return str
+    .replace(/[\u200B-\u200D\uFEFF\u00A0\u180E]/g, ' ')
+    .trim()
+    .replace(/\s+/g, ' ');
+}
+
 // Normalize Vietnamese name for flexible, tolerant matching
 export function normalizeVietnameseName(str: string): string {
-  return str
-    .trim()
+  return cleanNameString(str)
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
-    .replace(/đ/g, 'd')
+    .replace(/[đĐ]/g, 'd')
     .replace(/\s+/g, ' ');
 }
 
 // Resilient Vietnamese name comparison (handles accents, no accents, NFC/NFD, and case)
 export function isNameMatching(inputName: string, candidateName: string): boolean {
   if (!inputName || !candidateName) return false;
-  const cleanInput = inputName.trim().replace(/\s+/g, ' ');
-  const cleanCandidate = candidateName.trim().replace(/\s+/g, ' ');
+  const cleanInput = cleanNameString(inputName);
+  const cleanCandidate = cleanNameString(candidateName);
 
   // 1. Direct case-insensitive match
   if (cleanInput.toLowerCase() === cleanCandidate.toLowerCase()) return true;
@@ -39,7 +47,7 @@ export function isNameMatching(inputName: string, candidateName: string): boolea
   if (cleanInput.toLowerCase().normalize('NFC') === cleanCandidate.toLowerCase().normalize('NFC')) return true;
   if (cleanInput.toLowerCase().normalize('NFD') === cleanCandidate.toLowerCase().normalize('NFD')) return true;
 
-  // 3. Diacritic-stripped normalization (e.g. "Le Hoang Khoi" vs "Lê Hoàng Khôi")
+  // 3. Diacritic-stripped normalization (e.g. "Vo Anh Thu" vs "Võ Anh Thư")
   if (normalizeVietnameseName(cleanInput) === normalizeVietnameseName(cleanCandidate)) return true;
 
   return false;
@@ -124,53 +132,101 @@ export function isClassMatching(
   return false;
 }
 
-// Resilient Access Code matching (handles "VD56017", "VD5617", "56017", "STU-5617", and case-insensitivity)
+/**
+ * Resolves exact educational grade level and grade band from verified user data.
+ * Priority rules:
+ * 1. Verified gradeLevel from Supabase ("Grade 4" -> Grade 4 / grade_4, "Grade 5" -> Grade 5 / grade_5, "Grade 2" -> Grade 2 / grade_2)
+ * 2. Class code inspection:
+ *    - 4.1, 4.6 -> Grade 4 (grade_4)
+ *    - 5.2, 5.6 -> Grade 5 (grade_5)
+ *    - 2.2      -> Grade 2 (grade_2)
+ * 3. Class ID matching (1: 2.2, 2: 4.1, 3: 4.6, 4: 5.2, 5: 5.6)
+ */
+export function resolveStudentGrade(user?: UserProfile | null): {
+  gradeNum: 1 | 2 | 3 | 4 | 5;
+  gradeLevel: GradeLevel;
+  gradeBand: GradeBand;
+} {
+  if (!user) {
+    return { gradeNum: 4, gradeLevel: 'Grade 4', gradeBand: 'grade_4' };
+  }
+
+  // 1. Priority: check verified gradeLevel from Supabase
+  if (user.gradeLevel) {
+    const m = String(user.gradeLevel).match(/[1-5]/);
+    if (m) {
+      const num = parseInt(m[0], 10) as 1 | 2 | 3 | 4 | 5;
+      return {
+        gradeNum: num,
+        gradeLevel: `Grade ${num}` as GradeLevel,
+        gradeBand: `grade_${num}` as GradeBand
+      };
+    }
+  }
+
+  // 2. Class code / class name inspection
+  const rawClass = (user.classCode || user.className || '').trim().toLowerCase();
+  if (rawClass.includes('4.1') || rawClass.includes('4.6') || rawClass.startsWith('4')) {
+    return { gradeNum: 4, gradeLevel: 'Grade 4', gradeBand: 'grade_4' };
+  }
+  if (rawClass.includes('5.2') || rawClass.includes('5.6') || rawClass.startsWith('5')) {
+    return { gradeNum: 5, gradeLevel: 'Grade 5', gradeBand: 'grade_5' };
+  }
+  if (rawClass.includes('2.2') || rawClass.startsWith('2')) {
+    return { gradeNum: 2, gradeLevel: 'Grade 2', gradeBand: 'grade_2' };
+  }
+  if (rawClass.startsWith('1')) {
+    return { gradeNum: 1, gradeLevel: 'Grade 1', gradeBand: 'grade_1' };
+  }
+  if (rawClass.startsWith('3')) {
+    return { gradeNum: 3, gradeLevel: 'Grade 3', gradeBand: 'grade_3' };
+  }
+
+  // 3. Fallback based on database classId
+  if (user.classId === '2' || user.classId === '3') {
+    return { gradeNum: 4, gradeLevel: 'Grade 4', gradeBand: 'grade_4' };
+  }
+  if (user.classId === '4' || user.classId === '5') {
+    return { gradeNum: 5, gradeLevel: 'Grade 5', gradeBand: 'grade_5' };
+  }
+  if (user.classId === '1') {
+    return { gradeNum: 2, gradeLevel: 'Grade 2', gradeBand: 'grade_2' };
+  }
+
+  // 4. Fallback based on gradeBand if defined
+  if (user.gradeBand === 'grade_1') return { gradeNum: 1, gradeLevel: 'Grade 1', gradeBand: 'grade_1' };
+  if (user.gradeBand === 'grade_2') return { gradeNum: 2, gradeLevel: 'Grade 2', gradeBand: 'grade_2' };
+  if (user.gradeBand === 'grade_3') return { gradeNum: 3, gradeLevel: 'Grade 3', gradeBand: 'grade_3' };
+  if (user.gradeBand === 'grade_4') return { gradeNum: 4, gradeLevel: 'Grade 4', gradeBand: 'grade_4' };
+  if (user.gradeBand === 'grade_5') return { gradeNum: 5, gradeLevel: 'Grade 5', gradeBand: 'grade_5' };
+  if (user.gradeBand === 'grade_1_2') return { gradeNum: 2, gradeLevel: 'Grade 2', gradeBand: 'grade_2' };
+  if (user.gradeBand === 'grade_4_5') return { gradeNum: 4, gradeLevel: 'Grade 4', gradeBand: 'grade_4' };
+
+  return { gradeNum: 4, gradeLevel: 'Grade 4', gradeBand: 'grade_4' };
+}
+
+// Strict Student Access Code matching (exact match on real access code or student code)
 export function isAccessCodeMatching(
   inputCode: string,
   candidateAccessCode: string,
   candidateStudentCode?: string,
   candidateHash?: string,
-  inputHash?: string,
-  candidateId?: string | number
+  inputHash?: string
 ): boolean {
   if (!inputCode) return false;
   const cleanInput = inputCode.trim().toUpperCase();
   const cleanAccess = (candidateAccessCode || '').trim().toUpperCase();
   const cleanStudent = (candidateStudentCode || '').trim().toUpperCase();
-  const cleanId = candidateId !== undefined ? String(candidateId).trim().toUpperCase() : '';
 
-  // 1. Direct string match
-  if (cleanInput === cleanAccess || cleanInput === cleanStudent || (cleanId && cleanInput === cleanId)) return true;
+  // 1. Direct exact string match (case-insensitive)
+  if (cleanInput === cleanAccess || cleanInput === cleanStudent) return true;
 
-  // 2. Hash match
+  // 2. Exact cryptographic hash match
   if (inputHash && candidateHash && inputHash === candidateHash) return true;
-
-  // 3. Normalized without "VD" or "STU-" prefix
-  const stripInput = cleanInput.replace(/^(VD|STU-?)/i, '');
-  const stripAccess = cleanAccess.replace(/^(VD|STU-?)/i, '');
-  const stripStudent = cleanStudent.replace(/^(VD|STU-?)/i, '');
-  const stripId = cleanId.replace(/^(VD|STU-?)/i, '');
-
-  if (stripInput && (stripInput === stripAccess || stripInput === stripStudent || (stripId && stripInput === stripId))) return true;
-
-  // 4. Normalized numeric matching (e.g. "56017" vs "5617")
-  const parseCode = (str: string) => {
-    const digits = str.replace(/[^0-9]/g, '');
-    if (digits.length >= 3) {
-      const cls = digits.slice(0, 2);
-      const num = parseInt(digits.slice(2), 10);
-      return `${cls}-${num}`;
-    }
-    return digits;
-  };
-
-  const pInput = parseCode(cleanInput);
-  if (pInput && (pInput === parseCode(cleanAccess) || pInput === parseCode(cleanStudent) || (cleanId && pInput === parseCode(cleanId)))) {
-    return true;
-  }
 
   return false;
 }
+
 
 /**
  * Secure Server-Side Student Authentication
@@ -210,300 +266,113 @@ export async function authenticateStudent(
   const targetNumericClassId = getNumericClassId(cleanClassCode);
   const resolvedClassCode = getClassCodeFromId(cleanClassCode) || cleanClassCode;
 
-  // Track any database error to distinguish from "student not found"
-  let supabaseQueryError: { code?: string; message?: string } | null = null;
-
   // --------------------------------------------------------------------------
-  // 1. SUPABASE CLOUD AUTHENTICATION (Direct Table Queries & RPC)
+  // 1. SUPABASE CLOUD AUTHENTICATION VIA RPC (Zero Credential Leakage)
   // --------------------------------------------------------------------------
   if (isSupabaseConfigured() && supabase) {
     try {
-      // 1.1 First check RPC verify_student_login if available
-      try {
-        const { data: rpcData, error: rpcError } = await supabase.rpc('verify_student_login', {
-          p_full_name: cleanFullName,
-          p_class_code: cleanClassCode,
-          p_access_code: cleanAccessCode
-        });
+      const { data: rpcData, error: rpcError } = await supabase.rpc('verify_student_login', {
+        p_full_name: cleanFullName.normalize('NFC'),
+        p_class_code: cleanClassCode,
+        p_access_code: cleanAccessCode
+      });
 
-        if (!rpcError && rpcData) {
-          if (rpcData.success && rpcData.user) {
-            const localAvatar = localStore.get<string | null>('student_avatar_' + rpcData.user.id, null);
-            if (localAvatar) rpcData.user.avatar = localAvatar;
-            localStore.set('current_user', rpcData.user);
-            if (rpcData.progress) localStore.set('progress_map', rpcData.progress);
-            return {
-              success: true,
-              user: rpcData.user,
-              progress: rpcData.progress || {}
-            };
-          } else if (rpcData.errorMessage) {
-            return {
-              success: false,
-              errorMessage: rpcData.errorMessage,
-              isLocked: rpcData.isLocked || false,
-              remainingAttempts: rpcData.remainingAttempts
-            };
-          }
+      if (rpcError) {
+        console.warn('[Supabase Student RPC Error]:', rpcError.code, rpcError.message);
+
+        // Accurate and honest error messages based on database state
+        if (rpcError.code === 'PGRST202') {
+          return {
+            success: false,
+            errorMessage: 'Máy chủ Supabase chưa được cài đặt hàm xác thực verify_student_login. Vui lòng thông báo Cô Trang chạy file SQL migration.'
+          };
         }
-      } catch (rpcErr) {
-        // Fall through to direct table queries
-      }
 
-      // 1.2 Direct Supabase Table Query using verified schema:
-      // Table public."Classes": id (integer), class_name (text), grade (integer)
-      // Table public.students: id (integer), full_name (text), student_code (text), class_id (integer)
-      let resolvedClassId: number | null = targetNumericClassId;
-      let resolvedClassName = resolvedClassCode;
-      let resolvedGradeLevel = `Grade ${resolvedClassCode.split('.')[0] || '5'}`;
-      let resolvedGradeBand = resolvedClassCode.startsWith('2') ? 'grade_1_2' : (resolvedClassCode.startsWith('3') ? 'grade_3' : 'grade_4_5');
-
-      // Query "Classes" table
-      try {
-        const { data: classRows, error: classErr } = await supabase
-          .from('Classes')
-          .select('id, class_name, grade')
-          .or(`class_name.eq.${cleanClassCode},id.eq.${targetNumericClassId || 0}`);
-
-        if (!classErr && classRows && classRows.length > 0) {
-          resolvedClassId = classRows[0].id;
-          resolvedClassName = classRows[0].class_name || resolvedClassName;
-          if (classRows[0].grade) {
-            resolvedGradeLevel = `Grade ${classRows[0].grade}`;
-          }
-        }
-      } catch (err) {
-        // If "Classes" lookup failed, resolvedClassId defaults to targetNumericClassId (e.g. 5)
-      }
-
-      // Query students table in Supabase
-      if (resolvedClassId !== null) {
-        const { data: dbStudents, error: stuError } = await supabase
-          .from('students')
-          .select('*')
-          .eq('class_id', resolvedClassId);
-
-        if (stuError) {
-          supabaseQueryError = { code: stuError.code, message: stuError.message };
-          console.warn('[Supabase Student Query Error]:', stuError.code, stuError.message);
-        } else if (dbStudents && dbStudents.length > 0) {
-          // Find student in this class
-          const candidate = dbStudents.find(s => 
-            isNameMatching(cleanFullName, s.full_name || s.name)
-          );
-
-          if (candidate) {
-            const inputHashUpper = await hashAccessCode(cleanAccessCode.toUpperCase());
-            const isCodeValid = isAccessCodeMatching(
-              cleanAccessCode,
-              candidate.access_code || candidate.student_code || '',
-              candidate.student_code,
-              candidate.access_code_hash,
-              inputHashUpper,
-              candidate.id
-            );
-
-            if (isCodeValid) {
-              const savedAvatar = localStore.get<string | null>('student_avatar_' + candidate.id, null) || candidate.avatar || 'boy_little_explorer';
-              const authUser: UserProfile = {
-                id: String(candidate.id),
-                studentCode: candidate.student_code || `VD${resolvedClassName.replace('.', '')}${String(candidate.id).padStart(2, '0')}`,
-                fullName: candidate.full_name || candidate.name,
-                role: 'student',
-                classId: String(candidate.class_id),
-                className: `Class ${resolvedClassName}`,
-                classCode: resolvedClassName,
-                gradeLevel: resolvedGradeLevel as GradeLevel,
-                gradeBand: resolvedGradeBand as any,
-                stars: candidate.stars || candidate.total_stars || 200,
-                avatar: savedAvatar
-              };
-
-              localStore.set('current_user', authUser);
-              return {
-                success: true,
-                user: authUser,
-                progress: {}
-              };
-            } else {
-              return {
-                success: false,
-                errorMessage: 'Mã số truy cập chưa chính xác! Con hãy kiểm tra lại mã trên thẻ học sinh nhé.'
-              };
-            }
-          } else {
-            // Student not in selected class: check if student exists in another class
-            const { data: allDbStudents } = await supabase
-              .from('students')
-              .select('id, full_name, name, student_code, class_id')
-              .limit(500);
-
-            if (allDbStudents) {
-              const otherCandidate = allDbStudents.find(s => isNameMatching(cleanFullName, s.full_name || s.name));
-              if (otherCandidate) {
-                const otherClassCode = getClassCodeFromId(otherCandidate.class_id);
-                return {
-                  success: false,
-                  errorMessage: `Học sinh "${cleanFullName}" thuộc Lớp ${otherClassCode}. Bé hãy chọn đúng Lớp ${otherClassCode} nhé!`
-                };
-              }
-            }
-          }
-        }
-      }
-    } catch (err) {
-      supabaseQueryError = { message: String(err) };
-      console.warn('[Supabase Cloud Auth Exception]:', err);
-    }
-  }
-
-  // --------------------------------------------------------------------------
-  // 2. HIGH-AVAILABILITY LOCAL VERIFICATION (Preserving all 197 Verified Students)
-  // --------------------------------------------------------------------------
-  const storedStudents = localStore.get<StudentRosterItem[]>('students', INITIAL_STUDENTS);
-  const classes = localStore.get('classes', INITIAL_CLASSES);
-
-  // Sync baseline students into cache if cache is incomplete
-  let students = storedStudents || [];
-  const studentMap = new Map(students.map(s => [s.id, s]));
-  INITIAL_STUDENTS.forEach(initStu => {
-    if (!studentMap.has(initStu.id)) {
-      studentMap.set(initStu.id, initStu);
-    } else {
-      // Update with verified fields
-      const existing = studentMap.get(initStu.id)!;
-      existing.classId = initStu.classId;
-      existing.classCode = initStu.classCode;
-      existing.studentCode = initStu.studentCode;
-      existing.accessCode = initStu.accessCode || existing.accessCode;
-    }
-  });
-  students = Array.from(studentMap.values());
-  localStore.set('students', students);
-
-  // Find candidate in the selected class (using robust isClassMatching & isNameMatching)
-  let candidate = students.find(s => {
-    if (!isClassMatching(s.classCode, s.classId, cleanClassCode)) return false;
-    return isNameMatching(cleanFullName, s.name);
-  });
-
-  // Cross-class auto-resolution: if not found in selected class, search across all classes
-  if (!candidate) {
-    const matchingStudents = students.filter(s => isNameMatching(cleanFullName, s.name));
-    if (matchingStudents.length > 0) {
-      const inputHashUpper = await hashAccessCode(cleanAccessCode.toUpperCase());
-      // Check if any matching student has this access code
-      const matchingByCode = matchingStudents.find(s =>
-        isAccessCodeMatching(
-          cleanAccessCode,
-          s.accessCode || '',
-          s.studentCode,
-          s.accessCodeHash,
-          inputHashUpper,
-          s.id
-        )
-      );
-
-      if (matchingByCode) {
-        candidate = matchingByCode;
-      } else {
-        const primaryMatch = matchingStudents[0];
-        const assignedClassCode = getClassCodeFromId(primaryMatch.classId) || primaryMatch.classCode;
         return {
           success: false,
-          errorMessage: `Học sinh "${cleanFullName}" thuộc Lớp ${assignedClassCode}. Bé hãy chọn đúng Lớp ${assignedClassCode} nhé!`
+          errorMessage: `Không thể kết nối đến máy chủ xác thực (${rpcError.message || rpcError.code}). Vui lòng kiểm tra lại đường truyền mạng.`
         };
       }
-    }
-  }
 
-  if (!candidate) {
-    if (supabaseQueryError && supabaseQueryError.code === 'PGRST205') {
-      console.warn('[Database Setup Notice]: Supabase table public."Classes" or public.students requires anon SELECT grants in Supabase SQL editor.');
-    }
-    return {
-      success: false,
-      errorMessage: `Không tìm thấy học sinh "${cleanFullName}" trong Lớp ${cleanClassCode}. Con hãy kiểm tra lại họ tên hoặc chọn đúng lớp nhé!`
-    };
-  }
+      if (rpcData) {
+        if (rpcData.success && rpcData.user) {
+          // Normalize educational grade level & grade band from verified Supabase data
+          const resolvedGrade = resolveStudentGrade(rpcData.user);
+          rpcData.user.gradeLevel = resolvedGrade.gradeLevel;
+          rpcData.user.gradeBand = resolvedGrade.gradeBand;
 
-  // Rate limiting / lockout check
-  const { isLocked, remainingSeconds } = checkPinRateLimit(candidate.id);
-  if (isLocked) {
-    return {
-      success: false,
-      errorMessage: `Tài khoản tạm thời bị khóa do nhập sai nhiều lần. Vui lòng chờ ${remainingSeconds} giây nữa nhé!`,
-      isLocked: true,
-      remainingSeconds
-    };
-  }
+          // Store cryptographic session token (256-bit entropy)
+          if (rpcData.sessionToken) {
+            localStore.set('session_token', rpcData.sessionToken);
+          }
 
-  // Verify access code
-  const inputHashRaw = await hashAccessCode(cleanAccessCode);
-  const inputHashUpper = await hashAccessCode(cleanAccessCode.toUpperCase());
+          // Restore student custom avatar if locally chosen
+          const localAvatar = localStore.get<string | null>('student_avatar_' + rpcData.user.id, null);
+          if (localAvatar) {
+            rpcData.user.avatar = localAvatar;
+          }
 
-  const isMatch = isAccessCodeMatching(
-    cleanAccessCode,
-    candidate.accessCode || '',
-    candidate.studentCode,
-    candidate.accessCodeHash,
-    inputHashUpper,
-    candidate.id
-  ) || inputHashRaw === candidate.accessCodeHash || inputHashUpper === candidate.accessCodeHash;
+          localStore.set('current_user', rpcData.user);
 
-  if (!isMatch) {
-    const { isNowLocked, remainingAttempts, remainingSeconds: lockSec } = recordFailedPinAttempt(candidate.id);
-    if (isNowLocked) {
+          // Restore genuine saved progress from database (or empty if new)
+          const rawProgress = (rpcData.progress && typeof rpcData.progress === 'object') ? rpcData.progress : {};
+          const studentKey = `progress_map_${rpcData.user.id}`;
+          const cachedLocal = localStore.get<Record<string, DestinationProgress>>(studentKey, {});
+          const cleanProgress: Record<string, DestinationProgress> = { ...cachedLocal };
+          for (const [key, val] of Object.entries(rawProgress as Record<string, DestinationProgress>)) {
+            const localVal = cachedLocal[key];
+            const mergedPlacedLandmarks = (val.completedSteps?.placedLandmarks && val.completedSteps.placedLandmarks.length > 0)
+              ? val.completedSteps.placedLandmarks
+              : (localVal?.completedSteps?.placedLandmarks || []);
+            cleanProgress[key] = {
+              ...val,
+              starsEarned: Math.max(val.starsEarned || 0, localVal?.starsEarned || 0),
+              completedSteps: {
+                ...localVal?.completedSteps,
+                ...val.completedSteps,
+                placedLandmarks: mergedPlacedLandmarks
+              }
+            };
+          }
+          localStore.set('progress_map', cleanProgress);
+          localStore.set(studentKey, cleanProgress);
+
+          return {
+            success: true,
+            user: rpcData.user,
+            progress: cleanProgress
+          };
+        } else if (rpcData.errorMessage) {
+          return {
+            success: false,
+            errorMessage: rpcData.errorMessage,
+            isLocked: rpcData.isLocked || false,
+            remainingAttempts: rpcData.remainingAttempts
+          };
+        }
+      }
+
       return {
         success: false,
-        errorMessage: 'Con đã nhập sai mã 5 lần. Tài khoản tạm khóa trong 60 giây để bảo vệ!',
-        isLocked: true,
-        remainingSeconds: lockSec
+        errorMessage: 'Máy chủ không phản hồi kết quả xác thực. Vui lòng thử lại sau.'
+      };
+    } catch (err: any) {
+      console.warn('[Supabase Cloud Auth Exception]:', err);
+      return {
+        success: false,
+        errorMessage: `Lỗi kết nối máy chủ xác thực: ${err?.message || 'Không thể kết nối mạng'}.`
       };
     }
-    return {
-      success: false,
-      errorMessage: `Mã số truy cập chưa chính xác! Con còn ${remainingAttempts} lần thử.`,
-      isLocked: false,
-      remainingAttempts
-    };
   }
 
-  // SUCCESS! Reset failed attempts
-  resetPinRateLimit(candidate.id);
-
-  const matchedClass = classes.find(c => isClassMatching(c.code, c.id, candidate.classCode)) || {
-    id: String(candidate.classId),
-    name: candidate.className || `Class ${candidate.classCode}`,
-    code: candidate.classCode,
-    gradeLevel: (candidate.gradeLevel || 'Grade 5') as GradeLevel,
-    gradeBand: (candidate.gradeBand || 'grade_4_5') as any
-  };
-
-  const savedAvatar = localStore.get<string | null>('student_avatar_' + candidate.id, null) || candidate.avatar || 'boy_little_explorer';
-
-  const authenticatedUser: UserProfile = {
-    id: String(candidate.id),
-    studentCode: candidate.studentCode || candidate.id,
-    fullName: candidate.name,
-    role: 'student',
-    classId: String(matchedClass.id),
-    className: matchedClass.name,
-    classCode: matchedClass.code,
-    gradeLevel: matchedClass.gradeLevel,
-    gradeBand: matchedClass.gradeBand,
-    stars: candidate.totalStars || 200,
-    avatar: savedAvatar
-  };
-
-  // Hydrate saved progress
-  const progressMap = localStore.get<Record<string, DestinationProgress>>('progress_map', {});
-  localStore.set('current_user', authenticatedUser);
-
+  // --------------------------------------------------------------------------
+  // 2. OFFLINE ENVIRONMENT NOTICE (No Supabase Configured)
+  // --------------------------------------------------------------------------
+  // In production, Supabase contains all 182 real student records.
+  // When offline or unconfigured, notify the user instead of using fake demo accounts.
   return {
-    success: true,
-    user: authenticatedUser,
-    progress: progressMap
+    success: false,
+    errorMessage: 'Hệ thống chưa kết nối cơ sở dữ liệu Supabase. Vui lòng kiểm tra cấu hình mạng hoặc liên hệ Cô Trang.'
   };
 }
 
@@ -534,18 +403,13 @@ export async function syncStudentAvatar(studentId: string, avatarId: string): Pr
   // 4. Update Supabase if online
   if (isSupabaseConfigured() && supabase) {
     try {
-      // Try updating via RPC function first
-      const { error: rpcError } = await supabase.rpc('update_student_avatar', {
-        p_student_id: studentId,
-        p_avatar: avatarId
-      });
-
-      if (rpcError) {
-        // Fallback to direct table update by id or student_code
-        await supabase
-          .from('students')
-          .update({ avatar: avatarId })
-          .or(`id.eq.${studentId},student_code.eq.${studentId}`);
+      const sessionToken = localStore.get<string | null>('session_token', null);
+      if (sessionToken) {
+        // Authenticated Session Update
+        await supabase.rpc('update_student_avatar', {
+          p_session_token: sessionToken,
+          p_avatar: avatarId
+        });
       }
     } catch (err) {
       console.warn('Supabase cloud sync error for student avatar:', err);
@@ -554,71 +418,124 @@ export async function syncStudentAvatar(studentId: string, avatarId: string): Pr
 }
 
 /**
- * Save Student Learning Progress to Supabase Cloud & Local Cache
+ * Save Student Learning Progress to Supabase Cloud via Session-Authenticated RPC & Local Cache
  */
 export async function syncStudentProgress(
   studentId: string,
   destinationId: string,
   progress: DestinationProgress
-): Promise<void> {
-  // Update local storage first (instant responsiveness)
-  const currentMap = localStore.get<Record<string, DestinationProgress>>('progress_map', {});
+): Promise<{ success: boolean; isCloudSynced: boolean; serverTotalStars?: number }> {
+  // Update local storage first (instant responsiveness), scoped by studentId
+  const studentKey = studentId ? `progress_map_${studentId}` : 'progress_map';
+  const currentMap = localStore.get<Record<string, DestinationProgress>>(studentKey, {});
   const updatedMap = {
     ...currentMap,
     [destinationId]: progress
   };
+  localStore.set(studentKey, updatedMap);
   localStore.set('progress_map', updatedMap);
 
-  // Sync to Supabase if online
+  let isCloudSynced = false;
+  let serverTotalStars: number | undefined;
+
+  // Sync to Supabase using Authenticated Session RPC
   if (isSupabaseConfigured() && supabase) {
     try {
-      await supabase.from('student_progress').upsert({
-        student_id: studentId,
-        destination_id: destinationId,
-        completed_steps: progress.completedSteps,
-        quiz_score: progress.quizScore,
-        total_questions: progress.totalQuestions,
-        attempts: progress.attempts,
-        stars_earned: progress.starsEarned,
-        last_attempt_at: new Date().toISOString()
-      }, { onConflict: 'student_id,destination_id' });
+      const sessionToken = localStore.get<string | null>('session_token', null);
+      if (sessionToken) {
+        // Authenticated Session Update via RPC (Server-side anti-cheat and validation)
+        const { data, error } = await supabase.rpc('save_student_progress', {
+          p_session_token: sessionToken,
+          p_destination_id: destinationId,
+          p_completed_steps: progress.completedSteps,
+          p_quiz_score: progress.quizScore,
+          p_total_questions: progress.totalQuestions,
+          p_attempts: progress.attempts,
+          p_stars_earned: progress.starsEarned
+        });
+        if (!error && data?.success) {
+          isCloudSynced = true;
+          if (typeof data.totalStars === 'number') {
+            serverTotalStars = data.totalStars;
+          }
+        }
+      } else {
+        console.warn('[Security]: Không có phiên học sinh (sessionToken). Tiến trình học tập được lưu tại bộ nhớ máy.');
+      }
     } catch (err) {
       console.warn('Cloud sync error for student progress:', err);
     }
   }
+
+  return { success: true, isCloudSynced, serverTotalStars };
 }
 
 /**
- * Fetch Student Learning Progress from Cloud
+ * Secure Student Logout - Invalidate Session Server-Side & Clear Local Storage
  */
-export async function loadStudentProgress(studentId: string): Promise<Record<string, DestinationProgress>> {
+export async function logoutStudent(studentId?: string): Promise<void> {
+  const sessionToken = localStore.get<string | null>('session_token', null);
+  if (sessionToken && isSupabaseConfigured() && supabase) {
+    try {
+      await supabase.rpc('logout_student', { p_session_token: sessionToken });
+    } catch (err) {
+      // Session revocation error ignored on local logout
+    }
+  }
+  localStore.remove('session_token');
+  localStore.remove('current_user');
+  localStore.remove('progress_map');
+  if (studentId) {
+    localStore.remove(`progress_map_${studentId}`);
+  }
+}
+
+/**
+ * Fetch Student Learning Progress via Authenticated Session Token
+ */
+export async function loadStudentProgress(studentId: string): Promise<{ data: Record<string, DestinationProgress>; isCloudSynced: boolean }> {
+  const studentKey = studentId ? `progress_map_${studentId}` : 'progress_map';
   if (isSupabaseConfigured() && supabase) {
     try {
-      const { data, error } = await supabase
-        .from('student_progress')
-        .select('*')
-        .eq('student_id', studentId);
-
-      if (!error && data && data.length > 0) {
-        const cloudMap: Record<string, DestinationProgress> = {};
-        data.forEach(item => {
-          cloudMap[item.destination_id] = {
-            destinationId: item.destination_id,
-            completedSteps: item.completed_steps || { vocabulary: false, reading: false, listening: false, speaking: false, quiz: false },
-            quizScore: item.quiz_score || 0,
-            totalQuestions: item.total_questions || 4,
-            attempts: item.attempts || 1,
-            starsEarned: item.stars_earned || 0,
-            lastAttemptDate: item.last_attempt_at ? new Date(item.last_attempt_at).toLocaleDateString('vi-VN') : 'Gần đây'
-          };
+      const sessionToken = localStore.get<string | null>('session_token', null);
+      if (sessionToken) {
+        const { data, error } = await supabase.rpc('get_student_progress', {
+          p_session_token: sessionToken
         });
-        localStore.set('progress_map', cloudMap);
-        return cloudMap;
+
+        if (!error && data && typeof data === 'object') {
+          const progressData = data as Record<string, DestinationProgress>;
+          const cachedLocal = localStore.get<Record<string, DestinationProgress>>(studentKey, {});
+          const merged: Record<string, DestinationProgress> = { ...cachedLocal };
+          for (const [key, val] of Object.entries(progressData)) {
+            const localVal = cachedLocal[key];
+            const mergedPlacedLandmarks = (val.completedSteps?.placedLandmarks && val.completedSteps.placedLandmarks.length > 0)
+              ? val.completedSteps.placedLandmarks
+              : (localVal?.completedSteps?.placedLandmarks || []);
+            merged[key] = {
+              ...val,
+              starsEarned: Math.max(val.starsEarned || 0, localVal?.starsEarned || 0),
+              completedSteps: {
+                ...localVal?.completedSteps,
+                ...val.completedSteps,
+                placedLandmarks: mergedPlacedLandmarks
+              }
+            };
+          }
+          localStore.set(studentKey, merged);
+          localStore.set('progress_map', merged);
+          return { data: merged, isCloudSynced: true };
+        }
       }
     } catch (err) {
-      console.warn('Failed to load cloud progress:', err);
+      console.warn('Failed to load cloud progress via session token:', err);
     }
   }
 
-  return localStore.get<Record<string, DestinationProgress>>('progress_map', {});
+  const fallback = localStore.get<Record<string, DestinationProgress>>(
+    studentKey,
+    localStore.get<Record<string, DestinationProgress>>('progress_map', {})
+  );
+  return { data: fallback, isCloudSynced: false };
 }
+

@@ -38,10 +38,11 @@ export const StudentProgressView: React.FC<StudentProgressViewProps> = ({
   onOpenAvatarModal
 }) => {
   const completedEntries = Object.entries(progressMap);
-  const totalCompleted = completedEntries.filter(([_, p]) => p.completedSteps?.quiz || p.quizScore > 0).length;
+  const destinationEntries = completedEntries.filter(([destId]) => destinations.some(d => d.id === destId));
+  const totalCompleted = destinationEntries.filter(([_, p]) => p.completedSteps?.quiz || p.quizScore > 0).length;
   
-  const avgScore = completedEntries.length > 0
-    ? Math.round(completedEntries.reduce((acc, [_, p]) => acc + (p.quizScore || 0), 0) / completedEntries.length)
+  const avgScore = destinationEntries.length > 0
+    ? Math.round(destinationEntries.reduce((acc, [_, p]) => acc + (p.quizScore || 0), 0) / destinationEntries.length)
     : 0;
 
   // ============================================================================

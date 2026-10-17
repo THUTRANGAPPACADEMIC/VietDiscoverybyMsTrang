@@ -1,5 +1,6 @@
-import React, { useState, Suspense } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { Destination, DestinationProgress, UserProfile, GradeBand, Region } from '../../types';
+import { resolveStudentGrade } from '../../lib/studentAuth';
 import { DestinationList } from './DestinationList';
 import { LearningPassport } from './LearningPassport';
 import { StudentProgressView } from './StudentProgressView';
@@ -75,6 +76,7 @@ interface LearningHubProps {
   previewGradeBand?: GradeBand; // for teacher previewing
   onUpdateProgress: (destId: string, score: number, starsEarned: number) => void;
   onEarnStars?: (stars: number) => void;
+  onSaveGameProgress?: (gameId: string, progress: DestinationProgress) => void;
   onSelectTab?: (tab: 'explore' | 'games' | 'videos' | 'passport' | 'progress') => void;
   onNavigateGrade?: (gradeNum: GradeNumber) => void;
 }
@@ -90,6 +92,7 @@ export const LearningHub: React.FC<LearningHubProps> = ({
   previewGradeBand,
   onUpdateProgress,
   onEarnStars,
+  onSaveGameProgress,
   onSelectTab,
   onNavigateGrade
 }) => {
@@ -113,8 +116,26 @@ export const LearningHub: React.FC<LearningHubProps> = ({
 
   // Active grade band: allows student/teacher to switch on-the-fly between Grade 1 to 5
   const [activeGradeBand, setActiveGradeBand] = useState<GradeBand>(() => {
-    return previewGradeBand || user?.gradeBand || 'grade_3';
+    if (previewGradeBand) return previewGradeBand;
+    return resolveStudentGrade(user).gradeBand;
   });
+
+  // Reactive synchronization: update activeGradeBand if teacher preview or student user changes
+  useEffect(() => {
+    if (previewGradeBand) {
+      setActiveGradeBand(previewGradeBand);
+    } else if (user) {
+      setActiveGradeBand(resolveStudentGrade(user).gradeBand);
+    }
+  }, [previewGradeBand, user?.id, user?.gradeLevel, user?.classCode]);
+
+  const currentGradeNum: 1 | 2 | 3 | 4 | 5 = 
+    activeGradeBand === 'grade_1' ? 1 :
+    activeGradeBand === 'grade_2' ? 2 :
+    activeGradeBand === 'grade_3' ? 3 :
+    activeGradeBand === 'grade_4' ? 4 :
+    activeGradeBand === 'grade_5' ? 5 :
+    resolveStudentGrade(user).gradeNum;
 
   // Sub-view on Explore tab: 'all' (both map & unit cards), 'map' (focused map), 'units' (focused unit cards)
   const [exploreViewMode, setExploreViewMode] = useState<'both' | 'map' | 'units'>('both');
@@ -439,12 +460,7 @@ export const LearningHub: React.FC<LearningHubProps> = ({
 
           {/* 1. SELECT LEARNING PATHWAY (5 GRADE CARDS) - INTERACTIVE & NAVIGABLE */}
           <GradePathwaySelection
-            activeGradeNum={
-              activeGradeBand === 'grade_1' ? 1 :
-              activeGradeBand === 'grade_2' ? 2 :
-              activeGradeBand === 'grade_3' ? 3 :
-              activeGradeBand === 'grade_4' ? 4 : 5
-            }
+            activeGradeNum={currentGradeNum}
             onSelectGrade={(g) => {
               setActiveGradeBand(`grade_${g}` as GradeBand);
               if (onNavigateGrade) {
@@ -461,12 +477,7 @@ export const LearningHub: React.FC<LearningHubProps> = ({
                 soundEffects.playClick();
                 setCurriculumDisplayMode(mode);
               }}
-              activeGradeNum={
-                activeGradeBand === 'grade_1' ? 1 :
-                activeGradeBand === 'grade_2' ? 2 :
-                activeGradeBand === 'grade_3' ? 3 :
-                activeGradeBand === 'grade_4' ? 4 : 5
-              }
+              activeGradeNum={currentGradeNum}
               activeGradeBand={activeGradeBand}
             />
           </div>
@@ -973,6 +984,8 @@ export const LearningHub: React.FC<LearningHubProps> = ({
             destinations={destinations}
             gradeBand={activeGradeBand}
             onEarnStars={onEarnStars || (() => {})}
+            progressMap={progressMap}
+            onSaveGameProgress={onSaveGameProgress}
           />
         </Suspense>
       )}
@@ -1072,6 +1085,8 @@ export const LearningHub: React.FC<LearningHubProps> = ({
                 gradeBand={activeGradeBand}
                 onEarnStars={onEarnStars}
                 onClose={() => setIsLandmarkGameModalOpen(false)}
+                savedProgress={progressMap?.['game-landmark-drag-drop']}
+                onSaveGameProgress={onSaveGameProgress}
               />
             </Suspense>
           </div>

@@ -10,18 +10,25 @@ dotenv.split('\n').forEach(line => {
 const { createClient } = require('@supabase/supabase-js');
 const client = createClient(env.VITE_SUPABASE_URL, env.VITE_SUPABASE_ANON_KEY);
 async function run() {
-  const tClasses = await client.from('classes').select('*');
-  console.log('classes error:', tClasses.error);
-  console.log('classes data count:', tClasses.data ? tClasses.data.length : null);
-  if (tClasses.data) console.log('classes:', tClasses.data);
+  const tClasses = await client.from('Classes').select('*');
+  console.log('Classes (capital) error:', tClasses.error);
+  console.log('Classes data count:', tClasses.data ? tClasses.data.length : null);
+  if (tClasses.data) console.log('Classes:', tClasses.data);
 
-  const tProfiles = await client.from('profiles').select('*');
-  console.log('profiles error:', tProfiles.error);
-  console.log('profiles count:', tProfiles.data ? tProfiles.data.length : null);
-  if (tProfiles.data) console.log('profiles:', tProfiles.data);
+  const tStudents = await client.from('students').select('*');
+  console.log('students error:', tStudents.error);
+  console.log('students count:', tStudents.data ? tStudents.data.length : null);
 
-  const tMaterials = await client.from('learning_materials').select('*');
-  console.log('learning_materials error:', tMaterials.error);
-  console.log('learning_materials count:', tMaterials.data ? tMaterials.data.length : null);
+  const tProgress = await client.from('student_progress').select('*');
+  console.log('student_progress error:', tProgress.error);
+  console.log('student_progress count:', tProgress.data ? tProgress.data.length : null);
+
+  const rpcCheck = await client.rpc('verify_student_login', {
+    p_full_name: 'test',
+    p_class_code: '4.1',
+    p_access_code: 'test'
+  });
+  console.log('verify_student_login rpc error:', rpcCheck.error);
+  console.log('verify_student_login rpc data:', rpcCheck.data);
 }
 run();

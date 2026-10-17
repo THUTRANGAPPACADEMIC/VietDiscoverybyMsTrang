@@ -36,6 +36,47 @@ export const INITIAL_VIDEOS: EducationalVideo[] = [
     allowEmbedding: true,
     createdAt: '2026-10-01',
     updatedAt: '2026-10-15',
+        provinceCode: 'HN',
+    provinceName: 'Thủ đô Hà Nội',
+    learningAdventure: 'nature',
+    listeningTask: {
+      "keyPhraseEn": "The rice field in Vietnam is green and beautiful.",
+      "keyPhraseVi": "Cánh đồng lúa ở Việt Nam tươi tốt và rất đẹp.",
+      "vocabularyKeywords": [
+            {
+                  "word": "green",
+                  "ipa": "/ɡriːn/",
+                  "meaningVi": "màu xanh lá"
+            },
+            {
+                  "word": "buffalo",
+                  "ipa": "/ˈbʌf.ə.ləʊ/",
+                  "meaningVi": "con trâu"
+            },
+            {
+                  "word": "field",
+                  "ipa": "/fiːld/",
+                  "meaningVi": "cánh đồng"
+            }
+      ]
+},
+    speakingTask: {
+      "modelSentenceEn": "I see a friendly water buffalo in the green field.",
+      "modelSentenceVi": "Em nhìn thấy một chú trâu hiền lành trên cánh đồng xanh.",
+      "targetPhonemes": [
+            "/ɡriːn/",
+            "/ˈbʌf.ə.ləʊ/"
+      ],
+      "tipsEn": "Smile and pronounce the long vowel sound in \"green\" /ɡriːn/!"
+},
+    applyTask: {
+      "missionPromptEn": "Tell Captain Trang what colorful animals and plants you can see in Hanoi countryside!",
+      "missionPromptVi": "Hãy kể cho Cô Trang nghe em thấy những con vật và cây cối sắc màu nào ở vùng ngoại thành Hà Nội!",
+      "sentenceFrames": [
+            "In the morning, I see a green field.",
+            "The water buffalo is very friendly."
+      ]
+},
     questions: [
       {
         id: 'q-g1-01-1',
@@ -91,6 +132,47 @@ export const INITIAL_VIDEOS: EducationalVideo[] = [
     allowEmbedding: true,
     createdAt: '2026-10-02',
     updatedAt: '2026-10-15',
+        provinceCode: 'CT',
+    provinceName: 'Thành phố Cần Thơ',
+    learningAdventure: 'culture',
+    listeningTask: {
+      "keyPhraseEn": "Hello! Good morning, teachers and friends!",
+      "keyPhraseVi": "Xin chào! Chào buổi sáng thầy cô và các bạn!",
+      "vocabularyKeywords": [
+            {
+                  "word": "hello",
+                  "ipa": "/həˈləʊ/",
+                  "meaningVi": "xin chào"
+            },
+            {
+                  "word": "morning",
+                  "ipa": "/ˈmɔː.nɪŋ/",
+                  "meaningVi": "buổi sáng"
+            },
+            {
+                  "word": "friend",
+                  "ipa": "/frend/",
+                  "meaningVi": "người bạn"
+            }
+      ]
+},
+    speakingTask: {
+      "modelSentenceEn": "Good morning! Welcome to Can Tho river city!",
+      "modelSentenceVi": "Chào buổi sáng! Chào mừng bạn đến với thành phố sông nước Cần Thơ!",
+      "targetPhonemes": [
+            "/həˈləʊ/",
+            "/ˈmɔː.nɪŋ/"
+      ],
+      "tipsEn": "Keep a cheerful smile when saying \"Good morning\"!"
+},
+    applyTask: {
+      "missionPromptEn": "Practice saying hello politely to a friend arriving at Can Tho pier!",
+      "missionPromptVi": "Hãy thực hành chào hỏi lễ phép khi đón một người bạn đến bến thuyền Cần Thơ!",
+      "sentenceFrames": [
+            "Hello! My name is Minh.",
+            "Welcome to Can Tho!"
+      ]
+},
     questions: [
       {
         id: 'q-g1-02-1',
@@ -136,6 +218,47 @@ export const INITIAL_VIDEOS: EducationalVideo[] = [
     allowEmbedding: true,
     createdAt: '2026-10-05',
     updatedAt: '2026-10-15',
+        provinceCode: 'HP',
+    provinceName: 'Thành phố Hải Phòng',
+    learningAdventure: 'nature',
+    listeningTask: {
+      "keyPhraseEn": "One, two, three red boats sailing in Hai Phong port.",
+      "keyPhraseVi": "Một, hai, ba con thuyền đỏ đang ra khơi tại cảng Hải Phòng.",
+      "vocabularyKeywords": [
+            {
+                  "word": "boat",
+                  "ipa": "/bəʊt/",
+                  "meaningVi": "con thuyền"
+            },
+            {
+                  "word": "port",
+                  "ipa": "/pɔːt/",
+                  "meaningVi": "cảng biển"
+            },
+            {
+                  "word": "sea",
+                  "ipa": "/siː/",
+                  "meaningVi": "biển cả"
+            }
+      ]
+},
+    speakingTask: {
+      "modelSentenceEn": "I count five big ships in the blue harbor.",
+      "modelSentenceVi": "Em đếm được năm con tàu lớn trong vịnh cảng xanh biếc.",
+      "targetPhonemes": [
+            "/faɪv/",
+            "/ʃɪp/"
+      ],
+      "tipsEn": "Count clearly from one to five with steady rhythm!"
+},
+    applyTask: {
+      "missionPromptEn": "Count the red poinciana flowers and boats along Hai Phong coastline!",
+      "missionPromptVi": "Đếm những bông hoa phượng đỏ rực rỡ và những con thuyền bên bờ biển Hải Phòng!",
+      "sentenceFrames": [
+            "I see three red flowers.",
+            "I see four big boats."
+      ]
+},
     questions: [
       {
         id: 'q-g1-03-1',
@@ -185,6 +308,47 @@ export const INITIAL_VIDEOS: EducationalVideo[] = [
     allowEmbedding: true,
     createdAt: '2026-10-03',
     updatedAt: '2026-10-15',
+        provinceCode: 'DN',
+    provinceName: 'Thành phố Đà Nẵng',
+    learningAdventure: 'nature',
+    listeningTask: {
+      "keyPhraseEn": "My family travels to My Khe Beach in Da Nang.",
+      "keyPhraseVi": "Gia đình em đi du lịch đến bãi biển Mỹ Khê ở Đà Nẵng.",
+      "vocabularyKeywords": [
+            {
+                  "word": "family",
+                  "ipa": "/ˈfæm.əl.i/",
+                  "meaningVi": "gia đình"
+            },
+            {
+                  "word": "beach",
+                  "ipa": "/biːtʃ/",
+                  "meaningVi": "bãi biển"
+            },
+            {
+                  "word": "bridge",
+                  "ipa": "/brɪdʒ/",
+                  "meaningVi": "cây cầu"
+            }
+      ]
+},
+    speakingTask: {
+      "modelSentenceEn": "We love walking on the golden sand in Da Nang.",
+      "modelSentenceVi": "Chúng em thích đi dạo trên bãi cát vàng ở Đà Nẵng.",
+      "targetPhonemes": [
+            "/biːtʃ/",
+            "/sænd/"
+      ],
+      "tipsEn": "Pronounce the clear ending /tʃ/ sound in \"beach\"!"
+},
+    applyTask: {
+      "missionPromptEn": "Introduce your favorite spot in Da Nang to an English explorer companion!",
+      "missionPromptVi": "Giới thiệu địa điểm em yêu thích nhất ở Đà Nẵng cho người bạn đồng hành!",
+      "sentenceFrames": [
+            "This is the famous Dragon Bridge.",
+            "My family swims in the crystal blue sea."
+      ]
+},
     questions: [
       {
         id: 'q-g2-01-1',
@@ -244,6 +408,47 @@ export const INITIAL_VIDEOS: EducationalVideo[] = [
     allowEmbedding: true,
     createdAt: '2026-10-04',
     updatedAt: '2026-10-15',
+        provinceCode: 'LD',
+    provinceName: 'Tỉnh Lâm Đồng',
+    learningAdventure: 'nature',
+    listeningTask: {
+      "keyPhraseEn": "Gentle horses and dairy cows graze on Da Lat pine hills.",
+      "keyPhraseVi": "Những chú ngựa hiền lành và bò sữa gặm cỏ trên đồi thông Đà Lạt.",
+      "vocabularyKeywords": [
+            {
+                  "word": "horse",
+                  "ipa": "/hɔːs/",
+                  "meaningVi": "con ngựa"
+            },
+            {
+                  "word": "pine",
+                  "ipa": "/paɪn/",
+                  "meaningVi": "cây thông"
+            },
+            {
+                  "word": "hill",
+                  "ipa": "/hɪl/",
+                  "meaningVi": "ngọn đồi"
+            }
+      ]
+},
+    speakingTask: {
+      "modelSentenceEn": "The horses gallop happily across the cool green meadows.",
+      "modelSentenceVi": "Những chú ngựa phi vui vẻ qua những đồng cỏ xanh mát lạnh.",
+      "targetPhonemes": [
+            "/hɔːs/",
+            "/kuːl/"
+      ],
+      "tipsEn": "Keep the gentle airflow sound on \"horses\"!"
+},
+    applyTask: {
+      "missionPromptEn": "Describe the cool pine forests and friendly animals of Lam Dong province!",
+      "missionPromptVi": "Miêu tả rừng thông mát rượi và các loài vật đáng yêu của tỉnh Lâm Đồng!",
+      "sentenceFrames": [
+            "Da Lat has many tall pine trees.",
+            "The air is cool and fresh."
+      ]
+},
     questions: [
       {
         id: 'q-g2-02-1',
@@ -289,6 +494,47 @@ export const INITIAL_VIDEOS: EducationalVideo[] = [
     allowEmbedding: true,
     createdAt: '2026-10-06',
     updatedAt: '2026-10-15',
+        provinceCode: 'HCM',
+    provinceName: 'Thành phố Hồ Chí Minh',
+    learningAdventure: 'cuisine',
+    listeningTask: {
+      "keyPhraseEn": "Vietnamese pho and banh mi are popular breakfast choices.",
+      "keyPhraseVi": "Phở và bánh mì Việt Nam là những món ăn sáng được yêu thích hàng đầu.",
+      "vocabularyKeywords": [
+            {
+                  "word": "breakfast",
+                  "ipa": "/ˈbrek.fəst/",
+                  "meaningVi": "bữa sáng"
+            },
+            {
+                  "word": "delicious",
+                  "ipa": "/dɪˈlɪʃ.əs/",
+                  "meaningVi": "thơm ngon"
+            },
+            {
+                  "word": "bread",
+                  "ipa": "/bred/",
+                  "meaningVi": "bánh mì"
+            }
+      ]
+},
+    speakingTask: {
+      "modelSentenceEn": "I enjoy a warm bowl of beef pho with fresh herbs.",
+      "modelSentenceVi": "Em thưởng thức một tô phở bò nóng hổi cùng rau thơm tươi.",
+      "targetPhonemes": [
+            "/dɪˈlɪʃ.əs/",
+            "/biːf/"
+      ],
+      "tipsEn": "Emphasize the smooth rhythm in \"delicious\" /dɪˈlɪʃ.əs/!"
+},
+    applyTask: {
+      "missionPromptEn": "Recommend a tasty Vietnamese specialty from Ho Chi Minh City to a visitor!",
+      "missionPromptVi": "Gợi ý một món ăn đặc sản TP. Hồ Chí Minh thơm ngon cho du khách!",
+      "sentenceFrames": [
+            "You should try crispy banh mi.",
+            "It has fresh herbs and savory meat."
+      ]
+},
     questions: [
       {
         id: 'q-g2-03-1',
@@ -338,6 +584,47 @@ export const INITIAL_VIDEOS: EducationalVideo[] = [
     allowEmbedding: true,
     createdAt: '2026-10-05',
     updatedAt: '2026-10-15',
+        provinceCode: 'HUE',
+    provinceName: 'Thành phố Huế',
+    learningAdventure: 'heritage',
+    listeningTask: {
+      "keyPhraseEn": "The Imperial Citadel of Hue stands beside the poetic Perfume River.",
+      "keyPhraseVi": "Kinh thành Huế uy nghiêm tọa lạc bên dòng sông Hương thơ mộng.",
+      "vocabularyKeywords": [
+            {
+                  "word": "citadel",
+                  "ipa": "/ˈsɪt.ə.del/",
+                  "meaningVi": "kinh thành"
+            },
+            {
+                  "word": "palace",
+                  "ipa": "/ˈpæl.ɪs/",
+                  "meaningVi": "cung điện"
+            },
+            {
+                  "word": "historic",
+                  "ipa": "/hɪˈstɒr.ɪk/",
+                  "meaningVi": "mang tính lịch sử"
+            }
+      ]
+},
+    speakingTask: {
+      "modelSentenceEn": "Hue is recognized as a world cultural heritage city.",
+      "modelSentenceVi": "Huế được công nhận là thành phố di sản văn hóa thế giới.",
+      "targetPhonemes": [
+            "/ˈher.ɪ.tɪdʒ/",
+            "/ˈkʌl.tʃər.əl/"
+      ],
+      "tipsEn": "Clear articulation on \"heritage\" /ˈher.ɪ.tɪdʒ/ with stress on the first syllable!"
+},
+    applyTask: {
+      "missionPromptEn": "Act as a young Hue tourist guide introducing the ancient gates of Ngo Mon!",
+      "missionPromptVi": "Đóng vai hướng dẫn viên nhí xứ Huế giới thiệu cổng Ngọ Môn cổ kính!",
+      "sentenceFrames": [
+            "Welcome to the ancient Citadel of Hue.",
+            "This palace has over two hundred years of history."
+      ]
+},
     questions: [
       {
         id: 'q-g3-01-1',
@@ -397,6 +684,47 @@ export const INITIAL_VIDEOS: EducationalVideo[] = [
     allowEmbedding: true,
     createdAt: '2026-10-07',
     updatedAt: '2026-10-15',
+        provinceCode: 'CT',
+    provinceName: 'Thành phố Cần Thơ',
+    learningAdventure: 'culture',
+    listeningTask: {
+      "keyPhraseEn": "Local farmers sell sweet tropical fruits from colorful wooden boats.",
+      "keyPhraseVi": "Bà con nông dân buôn bán trái cây nhiệt đới từ những con thuyền gỗ rực rỡ.",
+      "vocabularyKeywords": [
+            {
+                  "word": "market",
+                  "ipa": "/ˈmɑː.kɪt/",
+                  "meaningVi": "chợ"
+            },
+            {
+                  "word": "tropical",
+                  "ipa": "/ˈtrɒp.ɪ.kəl/",
+                  "meaningVi": "nhiệt đới"
+            },
+            {
+                  "word": "floating",
+                  "ipa": "/ˈfləʊ.tɪŋ/",
+                  "meaningVi": "nổi trên mặt nước"
+            }
+      ]
+},
+    speakingTask: {
+      "modelSentenceEn": "Cai Rang floating market wakes up early in the morning mist.",
+      "modelSentenceVi": "Chợ nổi Cái Răng thức giấc từ sáng sớm trong làn sương sớm mai.",
+      "targetPhonemes": [
+            "/ˈfləʊ.tɪŋ/",
+            "/ˈmɑː.kɪt/"
+      ],
+      "tipsEn": "Connect \"wakes up early\" smoothly without awkward pauses!"
+},
+    applyTask: {
+      "missionPromptEn": "Invite foreign tourists to taste fresh mangoes and dragon fruit on the Mekong Delta!",
+      "missionPromptVi": "Mời du khách quốc tế nếm thử xoài cát và thanh long tươi trên vùng đồng bằng sông Cửu Long!",
+      "sentenceFrames": [
+            "You can visit Cai Rang floating market by boat.",
+            "The tropical fruits are very sweet and juicy."
+      ]
+},
     questions: [
       {
         id: 'q-g3-02-1',
@@ -442,6 +770,47 @@ export const INITIAL_VIDEOS: EducationalVideo[] = [
     allowEmbedding: true,
     createdAt: '2026-10-08',
     updatedAt: '2026-10-15',
+        provinceCode: 'HN',
+    provinceName: 'Thủ đô Hà Nội',
+    learningAdventure: 'nature',
+    listeningTask: {
+      "keyPhraseEn": "Northern Vietnam has four distinct seasons: spring, summer, autumn, and winter.",
+      "keyPhraseVi": "Miền Bắc Việt Nam có bốn mùa rõ rệt: xuân, hạ, thu và đông.",
+      "vocabularyKeywords": [
+            {
+                  "word": "season",
+                  "ipa": "/ˈsiː.zən/",
+                  "meaningVi": "mùa trong năm"
+            },
+            {
+                  "word": "autumn",
+                  "ipa": "/ˈɔː.təm/",
+                  "meaningVi": "mùa thu"
+            },
+            {
+                  "word": "weather",
+                  "ipa": "/ˈweð.ər/",
+                  "meaningVi": "thời tiết"
+            }
+      ]
+},
+    speakingTask: {
+      "modelSentenceEn": "Autumn in Hanoi is cool with sweet milk flower fragrance.",
+      "modelSentenceVi": "Mùa thu Hà Nội se mát với hương hoa sữa ngọt ngào.",
+      "targetPhonemes": [
+            "/ˈɔː.təm/",
+            "/ˈweð.ər/"
+      ],
+      "tipsEn": "Silent \"n\" at the end of \"autumn\" /ˈɔː.təm/!"
+},
+    applyTask: {
+      "missionPromptEn": "Explain to a friend what clothes to wear when visiting Hanoi in autumn or winter!",
+      "missionPromptVi": "Giải thích cho bạn bè biết nên mặc trang phục gì khi đến Hà Nội vào mùa thu hoặc mùa đông!",
+      "sentenceFrames": [
+            "In autumn, the weather is pleasant and cool.",
+            "You should wear a light jacket when walking around the lake."
+      ]
+},
     questions: [
       {
         id: 'q-g3-03-1',
@@ -491,6 +860,47 @@ export const INITIAL_VIDEOS: EducationalVideo[] = [
     allowEmbedding: true,
     createdAt: '2026-10-07',
     updatedAt: '2026-10-15',
+        provinceCode: 'QN',
+    provinceName: 'Tỉnh Quảng Ninh',
+    learningAdventure: 'heritage',
+    listeningTask: {
+      "keyPhraseEn": "Thousands of towering limestone pillars rise from emerald green waters.",
+      "keyPhraseVi": "Hàng ngàn cột đá vôi sừng sững vươn lên từ làn nước xanh ngọc bích.",
+      "vocabularyKeywords": [
+            {
+                  "word": "limestone",
+                  "ipa": "/ˈlaɪm.stəʊn/",
+                  "meaningVi": "đá vôi"
+            },
+            {
+                  "word": "pillar",
+                  "ipa": "/ˈpɪl.ər/",
+                  "meaningVi": "cột trụ"
+            },
+            {
+                  "word": "emerald",
+                  "ipa": "/ˈem.ər.əld/",
+                  "meaningVi": "màu ngọc bích"
+            }
+      ]
+},
+    speakingTask: {
+      "modelSentenceEn": "Ha Long Bay is a magnificent UNESCO World Natural Heritage site.",
+      "modelSentenceVi": "Vịnh Hạ Long là di sản thiên nhiên thế giới kỳ vĩ được UNESCO công nhận.",
+      "targetPhonemes": [
+            "/mæɡˈnɪf.ɪ.sənt/",
+            "/ˈher.ɪ.tɪdʒ/"
+      ],
+      "tipsEn": "Practice stress on the second syllable of \"magnificent\" /mæɡˈnɪf.ɪ.sənt/!"
+},
+    applyTask: {
+      "missionPromptEn": "Write a postcard describing a kayak trip through Luon Cave in Ha Long Bay!",
+      "missionPromptVi": "Viết bưu thiếp miêu tả chuyến chèo thuyền kayak qua Hang Luồn ở Vịnh Hạ Long!",
+      "sentenceFrames": [
+            "I am kayaking between giant limestone islands.",
+            "The emerald water is peaceful and clear."
+      ]
+},
     questions: [
       {
         id: 'q-g4-01-1',
@@ -554,6 +964,47 @@ export const INITIAL_VIDEOS: EducationalVideo[] = [
     allowEmbedding: true,
     createdAt: '2026-10-09',
     updatedAt: '2026-10-15',
+        provinceCode: 'QB',
+    provinceName: 'Tỉnh Quảng Bình',
+    learningAdventure: 'nature',
+    listeningTask: {
+      "keyPhraseEn": "Son Doong is the largest natural cave passage discovered on Earth.",
+      "keyPhraseVi": "Sơn Đoòng là hang động tự nhiên lớn nhất từng được phát hiện trên Trái Đất.",
+      "vocabularyKeywords": [
+            {
+                  "word": "cave",
+                  "ipa": "/keɪv/",
+                  "meaningVi": "hang động"
+            },
+            {
+                  "word": "passage",
+                  "ipa": "/ˈpæs.ɪdʒ/",
+                  "meaningVi": "lối đi/khoang hang"
+            },
+            {
+                  "word": "stalactite",
+                  "ipa": "/ˈstæl.ək.taɪt/",
+                  "meaningVi": "nhũ đá"
+            }
+      ]
+},
+    speakingTask: {
+      "modelSentenceEn": "Deep underground rivers created these gigantic limestone caverns.",
+      "modelSentenceVi": "Những dòng sông ngầm sâu đã kiến tạo nên các khoang hang đá vôi khổng lồ.",
+      "targetPhonemes": [
+            "/ˌʌn.dəˈɡraʊnd/",
+            "/dʒaɪˈɡæn.tɪk/"
+      ],
+      "tipsEn": "Pronounce \"gigantic\" with a soft initial \"g\" /dʒaɪˈɡæn.tɪk/!"
+},
+    applyTask: {
+      "missionPromptEn": "Describe the mysterious subterranean jungle inside Son Doong cave to foreign explorers!",
+      "missionPromptVi": "Miêu tả khu rừng nguyên sinh bí ẩn bên trong lòng hang Sơn Đoòng cho các nhà thám hiểm quốc tế!",
+      "sentenceFrames": [
+            "Son Doong cave has its own underground cloud system.",
+            "Green trees and monkeys live inside the huge sinkhole."
+      ]
+},
     questions: [
       {
         id: 'q-g4-02-1',
@@ -599,6 +1050,47 @@ export const INITIAL_VIDEOS: EducationalVideo[] = [
     allowEmbedding: true,
     createdAt: '2026-10-10',
     updatedAt: '2026-10-15',
+        provinceCode: 'DN',
+    provinceName: 'Thành phố Đà Nẵng',
+    learningAdventure: 'culture',
+    listeningTask: {
+      "keyPhraseEn": "Colorful silk lanterns illuminate the ancient streets of Hoi An at night.",
+      "keyPhraseVi": "Những chiếc đèn lồng lụa sắc màu thắp sáng các con phố cổ Hội An về đêm.",
+      "vocabularyKeywords": [
+            {
+                  "word": "lantern",
+                  "ipa": "/ˈlæn.tən/",
+                  "meaningVi": "đèn lồng"
+            },
+            {
+                  "word": "ancient",
+                  "ipa": "/ˈeɪn.ʃənt/",
+                  "meaningVi": "cổ kính"
+            },
+            {
+                  "word": "illuminate",
+                  "ipa": "/ɪˈluː.mɪ.neɪt/",
+                  "meaningVi": "chiếu sáng"
+            }
+      ]
+},
+    speakingTask: {
+      "modelSentenceEn": "Visitors float peaceful paper lanterns down the Hoai River.",
+      "modelSentenceVi": "Du khách thả những ngọn đèn hoa đăng êm đềm xuôi dòng sông Hoài.",
+      "targetPhonemes": [
+            "/ˈlæn.tən/",
+            "/ˈpiːs.fəl/"
+      ],
+      "tipsEn": "Soft ending sound on \"lanterns\" /ˈlæn.tənz/!"
+},
+    applyTask: {
+      "missionPromptEn": "Share a story about releasing a wish lantern on a full moon night in Hoi An!",
+      "missionPromptVi": "Kể lại câu chuyện thả đèn hoa đăng gửi gắm ước mơ vào đêm rằm phố cổ Hội An!",
+      "sentenceFrames": [
+            "The ancient town sparkles with silk lanterns.",
+            "I made a wish as my lantern floated down the river."
+      ]
+},
     questions: [
       {
         id: 'q-g4-03-1',
@@ -648,6 +1140,47 @@ export const INITIAL_VIDEOS: EducationalVideo[] = [
     allowEmbedding: true,
     createdAt: '2026-10-09',
     updatedAt: '2026-10-15',
+        provinceCode: 'NB',
+    provinceName: 'Tỉnh Ninh Bình',
+    learningAdventure: 'ecotourism',
+    listeningTask: {
+      "keyPhraseEn": "Cuc Phuong is Vietnam oldest national park, protecting rare wildlife species.",
+      "keyPhraseVi": "Cúc Phương là vườn quốc gia đầu tiên của Việt Nam, bảo tồn các loài động vật hoang dã quý hiếm.",
+      "vocabularyKeywords": [
+            {
+                  "word": "wildlife",
+                  "ipa": "/ˈwaɪld.laɪf/",
+                  "meaningVi": "động vật hoang dã"
+            },
+            {
+                  "word": "protect",
+                  "ipa": "/prəˈtekt/",
+                  "meaningVi": "bảo vệ"
+            },
+            {
+                  "word": "species",
+                  "ipa": "/ˈspiː.ʃiːz/",
+                  "meaningVi": "loài sinh vật"
+            }
+      ]
+},
+    speakingTask: {
+      "modelSentenceEn": "We must protect ancient rainforests to preserve Earth biodiversity.",
+      "modelSentenceVi": "Chúng ta phải bảo vệ những cánh rừng mưa cổ thụ để giữ gìn đa dạng sinh học của Trái Đất.",
+      "targetPhonemes": [
+            "/ˌbaɪ.əʊ.daɪˈvɜː.sə.ti/",
+            "/prəˈzɜːv/"
+      ],
+      "tipsEn": "Carefully articulate all syllables in \"biodiversity\" /ˌbaɪ.əʊ.daɪˈvɜː.sə.ti/!"
+},
+    applyTask: {
+      "missionPromptEn": "Present an eco-action pledge in English for saving endangered langurs in Vietnam!",
+      "missionPromptVi": "Trình bày lời cam kết hành động xanh bằng tiếng Anh để bảo vệ loài voọc quý hiếm tại Việt Nam!",
+      "sentenceFrames": [
+            "Protecting nature is our responsibility.",
+            "We should stop plastic pollution in national parks."
+      ]
+},
     questions: [
       {
         id: 'q-g5-01-1',
@@ -703,6 +1236,47 @@ export const INITIAL_VIDEOS: EducationalVideo[] = [
     allowEmbedding: true,
     createdAt: '2026-10-11',
     updatedAt: '2026-10-15',
+        provinceCode: 'HCM',
+    provinceName: 'Thành phố Hồ Chí Minh',
+    learningAdventure: 'heritage',
+    listeningTask: {
+      "keyPhraseEn": "Ho Chi Minh City blends historic colonial architecture with futuristic skyscrapers.",
+      "keyPhraseVi": "TP. Hồ Chí Minh hòa quyện kiến trúc lịch sử với những tòa nhà chọc trời hiện đại.",
+      "vocabularyKeywords": [
+            {
+                  "word": "skyscraper",
+                  "ipa": "/ˈskaɪˌskreɪ.pər/",
+                  "meaningVi": "tòa nhà chọc trời"
+            },
+            {
+                  "word": "dynamic",
+                  "ipa": "/daɪˈnæm.ɪk/",
+                  "meaningVi": "năng động"
+            },
+            {
+                  "word": "blend",
+                  "ipa": "/blend/",
+                  "meaningVi": "hòa quyện"
+            }
+      ]
+},
+    speakingTask: {
+      "modelSentenceEn": "Landmark 81 towers proudly as an emblem of modern Vietnamese progress.",
+      "modelSentenceVi": "Tòa nhà Landmark 81 vươn cao kiêu hãnh như biểu tượng phát triển hiện đại của Việt Nam.",
+      "targetPhonemes": [
+            "/ˈskaɪˌskreɪ.pər/",
+            "/ˈem.bləm/"
+      ],
+      "tipsEn": "Confident intonation matching the pride of a modern city!"
+},
+    applyTask: {
+      "missionPromptEn": "Guide a delegation of foreign students through modern Ho Chi Minh City!",
+      "missionPromptVi": "Hướng dẫn một đoàn học sinh quốc tế tham quan thành phố Hồ Chí Minh hiện đại!",
+      "sentenceFrames": [
+            "This is the bustling financial center of southern Vietnam.",
+            "You can visit historic museums and modern towers."
+      ]
+},
     questions: [
       {
         id: 'q-g5-02-1',
@@ -752,6 +1326,47 @@ export const INITIAL_VIDEOS: EducationalVideo[] = [
     allowEmbedding: true,
     createdAt: '2026-10-12',
     updatedAt: '2026-10-15',
+        provinceCode: 'HN',
+    provinceName: 'Thủ đô Hà Nội',
+    learningAdventure: 'culture',
+    listeningTask: {
+      "keyPhraseEn": "Vietnamese children proudly share cultural traditions with friends worldwide.",
+      "keyPhraseVi": "Thiếu nhi Việt Nam tự hào giới thiệu những truyền thống văn hóa với bạn bè khắp năm châu.",
+      "vocabularyKeywords": [
+            {
+                  "word": "ambassador",
+                  "ipa": "/æmˈbæs.ə.dər/",
+                  "meaningVi": "đại sứ"
+            },
+            {
+                  "word": "tradition",
+                  "ipa": "/trəˈdɪʃ.ən/",
+                  "meaningVi": "truyền thống"
+            },
+            {
+                  "word": "global",
+                  "ipa": "/ˈɡləʊ.bəl/",
+                  "meaningVi": "toàn cầu"
+            }
+      ]
+},
+    speakingTask: {
+      "modelSentenceEn": "I am proud to be a young Vietnamese ambassador sharing peace and friendship.",
+      "modelSentenceVi": "Em tự hào là một đại sứ nhí Việt Nam lan tỏa hòa bình và tình hữu nghị.",
+      "targetPhonemes": [
+            "/æmˈbæs.ə.dər/",
+            "/ˈfrɛnd.ʃɪp/"
+      ],
+      "tipsEn": "Speak with clear projection and heartfelt enthusiasm!"
+},
+    applyTask: {
+      "missionPromptEn": "Deliver your graduation speech in English pledging to introduce Vietnam beauty to the world!",
+      "missionPromptVi": "Trình bày bài phát biểu tốt nghiệp cấp tiểu học bằng tiếng Anh cam kết giới thiệu vẻ đẹp Việt Nam ra thế giới!",
+      "sentenceFrames": [
+            "Vietnam is a country of rich history and friendly people.",
+            "Learning English helps us connect with global friends."
+      ]
+},
     questions: [
       {
         id: 'q-g5-03-1',

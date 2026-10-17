@@ -128,13 +128,19 @@ export async function getEducationalVideos(
           descriptionVi: item.description_vi || item.descriptionVi || '',
           durationMinutes: item.duration_minutes || item.durationMinutes || 5,
           thumbnailUrl: item.thumbnail_url || item.thumbnailUrl || '',
-          status: item.status || 'approved',
+          status: item.status || 'published',
           isTeacherCreated: item.is_teacher_created ?? item.isTeacherCreated ?? false,
           allowEmbedding: item.allow_embedding ?? item.allowEmbedding ?? true,
           notes: item.notes,
           createdAt: item.created_at || item.createdAt || new Date().toISOString(),
           updatedAt: item.updated_at || item.updatedAt || new Date().toISOString(),
-          questions: item.questions || []
+          questions: item.questions || [],
+          provinceCode: item.province_code || item.provinceCode,
+          provinceName: item.province_name || item.provinceName,
+          learningAdventure: item.learning_adventure || item.learningAdventure,
+          listeningTask: item.listening_task || item.listeningTask,
+          speakingTask: item.speaking_task || item.speakingTask,
+          applyTask: item.apply_task || item.applyTask
         }));
 
         // Cache cloud videos locally
@@ -155,16 +161,25 @@ export async function getEducationalVideos(
     }
   }
 
-  // 3. Filter for student view: ONLY show approved videos!
+  // 3. Filter for student view: ONLY show approved or published videos!
   let filtered = allVideos;
   if (!isStaffViewer) {
-    filtered = filtered.filter(v => v.status === 'approved');
+    filtered = filtered.filter(v => v.status === 'published' || v.status === 'approved');
   }
 
   // 4. Apply optional filters
   if (options) {
     if (options.grade && options.grade !== 'all') {
       filtered = filtered.filter(v => v.grade === options.grade);
+    }
+    if (options.provinceCode && options.provinceCode !== 'all') {
+      filtered = filtered.filter(v => v.provinceCode === options.provinceCode);
+    }
+    if (options.learningAdventure && options.learningAdventure !== 'all') {
+      filtered = filtered.filter(v => v.learningAdventure === options.learningAdventure);
+    }
+    if (options.status && options.status !== 'all') {
+      filtered = filtered.filter(v => v.status === options.status);
     }
     if (options.sourceType && options.sourceType !== 'all') {
       filtered = filtered.filter(v => v.sourceType === options.sourceType);
@@ -184,6 +199,7 @@ export async function getEducationalVideos(
         v.titleEn.toLowerCase().includes(q) ||
         v.titleVi.toLowerCase().includes(q) ||
         v.topic.toLowerCase().includes(q) ||
+        (v.provinceName && v.provinceName.toLowerCase().includes(q)) ||
         v.descriptionEn.toLowerCase().includes(q) ||
         v.descriptionVi.toLowerCase().includes(q)
       );
@@ -237,7 +253,13 @@ export async function addEducationalVideo(
     notes: videoInput.notes,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-    questions: videoInput.questions || []
+    questions: videoInput.questions || [],
+    provinceCode: videoInput.provinceCode,
+    provinceName: videoInput.provinceName,
+    learningAdventure: videoInput.learningAdventure,
+    listeningTask: videoInput.listeningTask,
+    speakingTask: videoInput.speakingTask,
+    applyTask: videoInput.applyTask
   };
 
   // 1. Update Local Storage Cache
@@ -271,7 +293,13 @@ export async function addEducationalVideo(
         is_teacher_created: newVideo.isTeacherCreated,
         allow_embedding: newVideo.allowEmbedding,
         notes: newVideo.notes,
-        questions: newVideo.questions
+        questions: newVideo.questions,
+        province_code: newVideo.provinceCode,
+        province_name: newVideo.provinceName,
+        learning_adventure: newVideo.learningAdventure,
+        listening_task: newVideo.listeningTask,
+        speaking_task: newVideo.speakingTask,
+        apply_task: newVideo.applyTask
       });
     } catch (err) {
       console.warn('[VideoAcademy] Supabase insert warning (cached locally):', err);
@@ -318,6 +346,12 @@ export async function updateEducationalVideo(video: EducationalVideo): Promise<b
           allow_embedding: video.allowEmbedding,
           notes: video.notes,
           questions: video.questions,
+          province_code: video.provinceCode,
+          province_name: video.provinceName,
+          learning_adventure: video.learningAdventure,
+          listening_task: video.listeningTask,
+          speaking_task: video.speakingTask,
+          apply_task: video.applyTask,
           updated_at: new Date().toISOString()
         })
         .eq('id', video.id);
@@ -351,9 +385,9 @@ export async function deleteEducationalVideo(videoId: string): Promise<boolean> 
 }
 
 /**
- * Approve or toggle status of a video
+ * Set video status (draft, approved, published, archived)
  */
-export async function setVideoStatus(videoId: string, status: 'approved' | 'draft' | 'archived'): Promise<boolean> {
+export async function setVideoStatus(videoId: string, status: 'draft' | 'approved' | 'published' | 'archived'): Promise<boolean> {
   const currentList = localStore.get<EducationalVideo[]>(STORAGE_KEY_VIDEOS, INITIAL_VIDEOS);
   const target = currentList.find(v => v.id === videoId);
   if (!target) return false;

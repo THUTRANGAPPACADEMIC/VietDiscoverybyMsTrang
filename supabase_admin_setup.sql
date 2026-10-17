@@ -12,6 +12,10 @@ alter table public.profiles drop constraint if exists profiles_role_check;
 alter table public.profiles add constraint profiles_role_check
   check (role in ('teacher', 'admin', 'super_admin'));
 
+-- Ensure both display_name and full_name are available for schema compatibility
+alter table public.profiles add column if not exists display_name text;
+alter table public.profiles add column if not exists full_name text;
+
 -- Ensure avatar default is friendly
 alter table public.profiles alter column avatar set default 'fa-chalkboard-user';
 
@@ -73,10 +77,11 @@ begin
 
   -- 2. If found, link user ID to super_admin in public.profiles
   if v_teacher_uid is not null then
-    insert into public.profiles (id, full_name, role, avatar)
-    values (v_teacher_uid, 'Cô Trần Thị Thu Trang', 'super_admin', 'fa-crown')
+    insert into public.profiles (id, display_name, full_name, role, avatar)
+    values (v_teacher_uid, 'Cô Trần Thị Thu Trang', 'Cô Trần Thị Thu Trang', 'super_admin', 'fa-crown')
     on conflict (id) do update
     set role = 'super_admin',
+        display_name = 'Cô Trần Thị Thu Trang',
         full_name = 'Cô Trần Thị Thu Trang',
         avatar = 'fa-crown';
 
@@ -106,9 +111,19 @@ drop policy if exists "Profiles read own profile" on public.profiles;
 create policy "Profiles read own profile" on public.profiles
   for select using (auth.uid() = id or public.is_super_admin());
 
+drop policy if exists "Users can insert own profile" on public.profiles;
+create policy "Users can insert own profile" on public.profiles
+  for insert with check (auth.uid() = id);
+
+drop policy if exists "Users can update own profile" on public.profiles;
+create policy "Users can update own profile" on public.profiles
+  for update using (auth.uid() = id);
+
 drop policy if exists "Super Admin manage profiles" on public.profiles;
 create policy "Super Admin manage profiles" on public.profiles
   for all using (public.is_super_admin());
+
+grant select, insert, update on table public.profiles to authenticated, anon;
 
 -- CLASSES POLICIES:
 -- 1. Public can read class list (id, name, code, grade_level) to populate login dropdowns

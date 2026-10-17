@@ -21,7 +21,7 @@ import {
   Flame,
   VolumeX
 } from 'lucide-react';
-import { GradeBand, Destination } from '../../types';
+import { GradeBand, Destination, DestinationProgress } from '../../types';
 import { playEnglishSpeech, playSpeech, stopSpeech } from '../../lib/speech';
 import { AdventureLoadingFallback } from './AdventureLoadingFallback';
 
@@ -39,6 +39,8 @@ interface AdventureGamesProps {
   gradeBand?: GradeBand;
   onEarnStars: (stars: number) => void;
   destinations: Destination[];
+  progressMap?: Record<string, DestinationProgress>;
+  onSaveGameProgress?: (gameId: string, progress: DestinationProgress) => void;
 }
 
 type GameMode = 'map-drop' | '34-provinces-game' | 'province-match' | 'photo-mystery' | 'audio-explorer' | 'vocab-scramble';
@@ -396,7 +398,9 @@ const AUDIO_EXPLORER_QUESTIONS: AudioMysteryItem[] = [
 export const AdventureGames: React.FC<AdventureGamesProps> = ({
   gradeBand = 'grade_3',
   onEarnStars,
-  destinations
+  destinations,
+  progressMap,
+  onSaveGameProgress
 }) => {
   const [activeGame, setActiveGame] = useState<GameMode>('map-drop');
   const [selectedGradeBand, setSelectedGradeBand] = useState<GradeBand>(gradeBand);
@@ -407,6 +411,12 @@ export const AdventureGames: React.FC<AdventureGamesProps> = ({
   useEffect(() => {
     setSelectedGradeBand(gradeBand);
   }, [gradeBand]);
+
+  // Calculate genuine cumulative game stars from saved progress
+  const savedGameStars = Object.entries(progressMap || {})
+    .filter(([k]) => k.startsWith('game-'))
+    .reduce((acc, [, p]) => acc + (p.starsEarned || 0), 0);
+  const totalDisplayGameStars = Math.max(savedGameStars, starsEarnedThisSession);
 
   // Handle common star reward
   const awardGameStars = (amount: number, bonusStreak = true) => {
@@ -840,10 +850,10 @@ export const AdventureGames: React.FC<AdventureGamesProps> = ({
             ))}
           </div>
 
-          {/* Session Stars */}
+          {/* Game Stars Total */}
           <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-2xl bg-amber-400/90 text-amber-950 font-extrabold text-xs shadow-xs">
             <Star className="w-4 h-4 fill-amber-950 text-amber-950" />
-            <span>+{starsEarnedThisSession} Sao đã tích lũy</span>
+            <span>+{totalDisplayGameStars} Sao trò chơi</span>
           </div>
 
           {/* Streak Indicator */}
@@ -895,7 +905,12 @@ export const AdventureGames: React.FC<AdventureGamesProps> = ({
         <Suspense fallback={<AdventureLoadingFallback message="Preparing Landmark Map Drop..." subMessage="Đang tải trò chơi thả địa danh..." />}>
           <LandmarkDragDropGame
             gradeBand={selectedGradeBand}
-            onEarnStars={awardGameStars}
+            onEarnStars={(stars) => {
+              setStarsEarnedThisSession(prev => prev + stars);
+              onEarnStars(stars);
+            }}
+            savedProgress={progressMap?.['game-landmark-drag-drop']}
+            onSaveGameProgress={onSaveGameProgress}
           />
         </Suspense>
       )}

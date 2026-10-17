@@ -17,7 +17,7 @@ export const LearningPassport: React.FC<LearningPassportProps> = ({
   totalStars,
   onOpenLesson
 }) => {
-  const completedCount = Object.values(progressMap).filter(p => p.completedSteps.quiz).length;
+  const completedCount = destinations.filter(d => progressMap[d.id]?.completedSteps?.quiz).length;
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto">

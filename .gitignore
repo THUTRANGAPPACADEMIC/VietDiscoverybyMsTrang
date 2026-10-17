@@ -13,11 +13,13 @@ build/
 
 # Local Environment Variables & Secrets (CRITICAL FOR SECURITY)
 .env
+.env*
+*.env
+*.bak
 .env*.local
 .env.development
 .env.production
 .env.staging
-*.env
 # Ensure template is preserved for onboarding
 !.env.example
 
@@ -83,5 +85,16 @@ __pycache__/
 
 # Scratch scripts
 scratch/
+pages_sgk*.json
+download_sgk_pages.cjs
+scratch_check_books.cjs
+scratch_html4.html
+scratch_pages/
+scripts/capture_teacher_progress_final.cjs
+scripts/capture_teacher_progress_view.cjs
+scripts/inspect_supabase_test.cjs
+scripts/sanitize_mock_students.cjs
+scripts/test_teacher_progress_service.cjs
+scripts/verify_ai_review_feature.cjs
 
 

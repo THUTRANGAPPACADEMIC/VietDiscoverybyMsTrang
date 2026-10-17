@@ -33,12 +33,13 @@ interface HeaderProps {
   setActiveSection: (section: 'student' | 'teacher' | 'admin') => void;
   activeStudentTab: 'explore' | 'games' | 'videos' | 'passport' | 'progress';
   setActiveStudentTab: (tab: 'explore' | 'games' | 'videos' | 'passport' | 'progress') => void;
-  activeTeacherTab: 'curriculum' | 'materials' | 'videos' | 'classes' | 'progress' | 'assessment' | 'ai';
-  setActiveTeacherTab: (tab: 'curriculum' | 'materials' | 'videos' | 'classes' | 'progress' | 'assessment' | 'ai') => void;
+  activeTeacherTab: 'approval' | 'curriculum' | 'materials' | 'videos' | 'classes' | 'progress' | 'assessment' | 'ai';
+  setActiveTeacherTab: (tab: 'approval' | 'curriculum' | 'materials' | 'videos' | 'classes' | 'progress' | 'assessment' | 'ai') => void;
   previewGradeBand?: GradeBand;
   onOpenStudentAuth: () => void;
   onLogout: () => void;
   totalStars: number;
+  isCloudSynced?: boolean;
   onOpenCreatorModal?: () => void;
   onOpenAvatarModal?: () => void;
 }
@@ -56,10 +57,11 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenStudentAuth,
   onLogout,
   totalStars,
+  isCloudSynced = false,
   onOpenCreatorModal,
   onOpenAvatarModal
 }) => {
-  const isOnline = isSupabaseConfigured();
+  const isOnline = isCloudSynced || isSupabaseConfigured();
   const [soundOn, setSoundOn] = React.useState(() => soundEffects.isSoundEnabled());
 
   React.useEffect(() => {
@@ -211,13 +213,17 @@ export const Header: React.FC<HeaderProps> = ({
                 <span className="text-amber-800 font-bold hidden sm:inline">Stars</span>
               </div>
 
-              {/* Cloud Synced Badge */}
+              {/* Cloud Synced vs Local Mode Badge */}
               <div 
-                title={isOnline ? "Supabase Cloud DB Connected" : "Local Database Mode"}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-100/95 border border-emerald-300 text-emerald-800 shadow-xs font-black text-xs"
+                title={isCloudSynced ? "Supabase Cloud DB Connected & Synced (Đã đồng bộ máy chủ)" : "Local Database Mode (Chế độ lưu trên máy)"}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border shadow-xs font-black text-xs transition-colors ${
+                  isCloudSynced
+                    ? 'bg-emerald-100/95 border-emerald-300 text-emerald-800'
+                    : 'bg-slate-100/95 border-slate-300 text-slate-700'
+                }`}
               >
-                <Cloud className="w-4 h-4 fill-emerald-500 text-emerald-600" />
-                <span className="hidden sm:inline">Cloud Synced</span>
+                <Cloud className={`w-4 h-4 ${isCloudSynced ? 'fill-emerald-500 text-emerald-600' : 'fill-slate-400 text-slate-500'}`} />
+                <span className="hidden sm:inline">{isCloudSynced ? 'Cloud Synced' : 'Local Mode'}</span>
               </div>
 
               {/* Student Profile Pill with 3D Avatar */}
@@ -298,8 +304,8 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
 
-      {/* 3. MAIN NAVIGATION BAR (When on Games, Passport, Progress, or Staff views) */}
-      {(currentRole !== 'student' || activeSection !== 'student' || activeStudentTab !== 'explore') && (
+      {/* 3. MAIN NAVIGATION BAR */}
+      {user && (
         <div className="bg-gradient-to-r from-amber-50/70 via-white/95 to-sky-50/70 backdrop-blur-md border-b-2 border-amber-200/60 py-2.5 px-3 sm:px-6 shadow-xs relative z-20">
           <div className="max-w-7xl mx-auto">
           
@@ -307,7 +313,7 @@ export const Header: React.FC<HeaderProps> = ({
           {currentRole !== 'student' && (
             <div className="flex items-center gap-2 mb-2 pb-2 border-b border-slate-100 overflow-x-auto">
               <span className="text-[11px] font-black uppercase text-slate-400 tracking-wider shrink-0">Staff Portal:</span>
-              {currentRole === 'admin' && (
+              {(currentRole === 'admin' || currentRole === 'super_admin') && (
                 <button
                   onClick={() => {
                     soundEffects.playClick();
@@ -474,6 +480,21 @@ export const Header: React.FC<HeaderProps> = ({
           ) : activeSection === 'teacher' ? (
             /* Teacher Sub-tabs */
             <div className="flex items-center gap-2 overflow-x-auto py-1">
+              <button
+                onClick={() => {
+                  soundEffects.playClick();
+                  setActiveTeacherTab('approval');
+                }}
+                className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-black flex items-center gap-1.5 whitespace-nowrap transition-all cursor-pointer ${
+                  activeTeacherTab === 'approval'
+                    ? 'bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-700 text-white shadow-md shadow-emerald-200 ring-2 ring-emerald-300'
+                    : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-300'
+                }`}
+              >
+                <ShieldCheck className="w-4 h-4 text-emerald-500" />
+                <span>Phê duyệt nội dung (Mới)</span>
+              </button>
+
               <button
                 onClick={() => {
                   soundEffects.playClick();

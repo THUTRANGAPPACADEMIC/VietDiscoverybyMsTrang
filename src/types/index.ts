@@ -131,6 +131,9 @@ export interface DestinationProgress {
     listening: boolean;
     speaking: boolean;
     quiz: boolean;
+    placedLandmarks?: string[];
+    completed?: boolean;
+    [key: string]: any;
   };
   quizScore: number;
   totalQuestions: number;

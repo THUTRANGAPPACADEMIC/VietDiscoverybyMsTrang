@@ -22,6 +22,9 @@ const TeachingStudio = React.lazy(() =>
 const AdminConsole = React.lazy(() => 
   import('./components/Admin/AdminConsole').then(m => ({ default: m.AdminConsole }))
 );
+import { ContentApprovalCenter } from './components/Teacher/ContentApprovalCenter';
+import { HaLongAdventurePreview } from './components/Student/HaLongAdventurePreview';
+import { VoiceUpgradePreview } from './components/Student/VoiceUpgradePreview';
 
 import { 
   UserProfile, 
@@ -35,24 +38,58 @@ import {
 import { DESTINATIONS } from './data/destinations';
 import { INITIAL_CLASSES, INITIAL_STUDENTS, INITIAL_MATERIALS } from './data/initialClasses';
 import { localStore, supabase, isSupabaseConfigured } from './lib/supabase';
-import { syncStudentProgress, loadStudentProgress } from './lib/studentAuth';
+import { syncStudentProgress, loadStudentProgress, resolveStudentGrade, logoutStudent } from './lib/studentAuth';
+import { 
+  parseAuthUrl, 
+  exchangeAuthCode, 
+  setAuthSession, 
+  cleanAuthUrlParams, 
+  resolveStaffProfile 
+} from './lib/staffAuth';
+import { TeacherAcceptInviteModal } from './components/TeacherAcceptInviteModal';
 import { MAP_METADATA } from './data/administrativeData';
 import { Lock, ShieldCheck, Sparkles, School } from 'lucide-react';
 
 export const App: React.FC = () => {
   // Current logged in user (null by default if no authenticated session exists in storage)
   const [user, setUser] = useState<UserProfile | null>(() => {
-    return localStore.get<UserProfile | null>('current_user', null);
+    const cached = localStore.get<UserProfile | null>('current_user', null);
+    if (cached && cached.role === 'student') {
+      const resolved = resolveStudentGrade(cached);
+      return {
+        ...cached,
+        gradeLevel: resolved.gradeLevel,
+        gradeBand: resolved.gradeBand
+      };
+    }
+    return cached;
   });
 
   // Modals
   const [isStaffAuthOpen, setIsStaffAuthOpen] = useState(false);
   const [isCreatorModalOpen, setIsCreatorModalOpen] = useState(false);
 
+  // Teacher Invitation / Password Setup Modal
+  const [inviteModalState, setInviteModalState] = useState<{
+    isOpen: boolean;
+    mode: 'setup' | 'error' | 'success';
+    userEmail?: string;
+    errorTitle?: string;
+    errorMessage?: string;
+  }>({
+    isOpen: false,
+    mode: 'setup'
+  });
+
   // View sections: 'student' | 'teacher' | 'admin'
-  const [activeSection, setActiveSection] = useState<'student' | 'teacher' | 'admin'>('student');
+  const [activeSection, setActiveSection] = useState<'student' | 'teacher' | 'admin'>(() => {
+    const cached = localStore.get<UserProfile | null>('current_user', null);
+    if (cached && cached.role === 'teacher') return 'teacher';
+    if (cached && (cached.role === 'admin' || cached.role === 'super_admin')) return 'admin';
+    return 'student';
+  });
   const [activeStudentTab, setActiveStudentTab] = useState<'explore' | 'games' | 'videos' | 'passport' | 'progress'>('explore');
-  const [activeTeacherTab, setActiveTeacherTab] = useState<'curriculum' | 'materials' | 'videos' | 'classes' | 'progress' | 'assessment' | 'ai'>('curriculum');
+  const [activeTeacherTab, setActiveTeacherTab] = useState<'approval' | 'curriculum' | 'materials' | 'videos' | 'classes' | 'progress' | 'assessment' | 'ai'>('approval');
 
   // Teacher / Admin student experience previewer override
   const [previewGradeBand, setPreviewGradeBand] = useState<GradeBand | undefined>(undefined);
@@ -87,19 +124,28 @@ export const App: React.FC = () => {
     ? (parseInt(gradeRouteMatch[1], 10) as GradeNumber) 
     : null;
 
+  // Check if currently on isolated preview route for Content Approval Center
+  const isApprovalPreviewRoute = currentPath === '/preview-approval' || currentPath === '/preview/approval-center';
+
+  // Check if currently on isolated preview route for Ha Long Bay Adventure trial lesson
+  const isHaLongPreviewRoute = currentPath === '/preview-halong-adventure' || currentPath === '/preview/halong-adventure';
+
+  // Check if currently on isolated preview route for Premium AI Voice Upgrade
+  const isVoicePreviewRoute = currentPath === '/preview-voice' || currentPath === '/preview/voice' || currentPath === '/preview/voice-demo';
+
   // Persistence States
   const [progressMap, setProgressMap] = useState<Record<string, DestinationProgress>>(() => {
-    return localStore.get<Record<string, DestinationProgress>>('progress_map', {
-      halong: {
-        destinationId: 'halong',
-        completedSteps: { vocabulary: true, reading: true, listening: true, speaking: true, quiz: true },
-        quizScore: 100,
-        totalQuestions: 4,
-        attempts: 1,
-        starsEarned: 50,
-        lastAttemptDate: 'Yesterday'
-      }
-    });
+    const cachedUser = localStore.get<UserProfile | null>('current_user', null);
+    const storageKey = cachedUser?.id ? `progress_map_${cachedUser.id}` : 'progress_map';
+    const cached = localStore.get<Record<string, DestinationProgress>>(storageKey, localStore.get<Record<string, DestinationProgress>>('progress_map', {}));
+    // Purge legacy mock data if present in local storage
+    if (cached && cached.halong && cached.halong.starsEarned === 50 && cached.halong.lastAttemptDate === 'Yesterday') {
+      const { halong, ...rest } = cached;
+      localStore.set(storageKey, rest);
+      localStore.set('progress_map', rest);
+      return rest;
+    }
+    return cached || {};
   });
 
   const [classes, setClasses] = useState<ClassRoom[]>(() => {
@@ -118,10 +164,16 @@ export const App: React.FC = () => {
     const merged = INITIAL_STUDENTS.map(stu => {
       const existing = cachedMap.get(stu.id);
       if (existing) {
+        // Purge legacy mock stars (200, 220, 170) if not backed by verified learning
+        const isLegacyMock = (existing.totalStars === 200 || existing.totalStars === 220 || existing.totalStars === 170) && 
+          (existing.completedDestinations === 4 || existing.completedDestinations === 3 || existing.completedDestinations === 0);
         return {
           ...stu,
           avatar: existing.avatar || stu.avatar,
-          totalStars: existing.totalStars ?? stu.totalStars,
+          totalStars: isLegacyMock ? 0 : (existing.totalStars ?? stu.totalStars),
+          completedDestinations: isLegacyMock ? 0 : (existing.completedDestinations ?? stu.completedDestinations),
+          averageScore: isLegacyMock ? 0 : (existing.averageScore ?? stu.averageScore),
+          lastActive: isLegacyMock ? 'Chưa có hoạt động' : (existing.lastActive || stu.lastActive),
           accessCode: stu.accessCode || existing.accessCode,
           accessCodeHash: stu.accessCodeHash || existing.accessCodeHash,
         };
@@ -142,9 +194,15 @@ export const App: React.FC = () => {
     return localStore.get<MaterialItem[]>('materials', INITIAL_MATERIALS);
   });
 
-  // Calculate dynamic total stars
-  const earnedStars = Object.values(progressMap).reduce((acc, p) => acc + (p.starsEarned || 0), 0);
-  const totalStars = (user?.stars || 0) + earnedStars;
+  // Dynamic total stars: for students, single source of truth is user.stars, backed by verified progressMap
+  // Using Math.max prevents any double-counting while ensuring immediate UI update when stars are earned
+  const progressStars = Object.values(progressMap).reduce((acc, p) => acc + (p.starsEarned || 0), 0);
+  const totalStars = user ? Math.max(user.stars ?? 0, progressStars) : progressStars;
+
+  // Cloud synchronization status (only true when verified cloud sync succeeded)
+  const [isCloudSynced, setIsCloudSynced] = useState<boolean>(() => {
+    return Boolean(localStore.get<string | null>('session_token', null));
+  });
 
   // Strict Route Guard: prevent student role from ever accessing teacher or admin screens
   useEffect(() => {
@@ -176,37 +234,240 @@ export const App: React.FC = () => {
     }
   }, [user]);
 
+  // Listen for Supabase invitation tokens, PKCE codes, recovery hashes, or auth errors
+  useEffect(() => {
+    const client = supabase;
+    if (!isSupabaseConfigured() || !client) return;
+
+    let isMounted = true;
+
+    const processAuthTokens = async () => {
+      const urlState = parseAuthUrl();
+
+      // Case 1: Error in URL (e.g. otp_expired, access_denied)
+      if (urlState.hasError) {
+        if (!isMounted) return;
+        setInviteModalState({
+          isOpen: true,
+          mode: 'error',
+          errorTitle: urlState.errorTitle,
+          errorMessage: urlState.errorMessage
+        });
+        cleanAuthUrlParams();
+        return;
+      }
+
+      // Case 2: PKCE code exchange
+      if (urlState.code) {
+        const res = await exchangeAuthCode(urlState.code);
+        if (!isMounted) return;
+        cleanAuthUrlParams();
+        if (res.success && res.session?.user) {
+          setInviteModalState({
+            isOpen: true,
+            mode: 'setup',
+            userEmail: res.session.user.email
+          });
+        } else {
+          setInviteModalState({
+            isOpen: true,
+            mode: 'error',
+            errorTitle: 'Mã xác thực không hợp lệ',
+            errorMessage: res.error || 'Mã xác thực từ email đã hết hạn hoặc không hợp lệ.'
+          });
+        }
+        return;
+      }
+
+      // Case 3: Implicit tokens in hash
+      if (urlState.accessToken && urlState.refreshToken) {
+        const res = await setAuthSession(urlState.accessToken, urlState.refreshToken);
+        if (!isMounted) return;
+        cleanAuthUrlParams();
+        if (res.success && res.session?.user) {
+          setInviteModalState({
+            isOpen: true,
+            mode: 'setup',
+            userEmail: res.session.user.email
+          });
+        }
+        return;
+      }
+
+      // Case 4: Dedicated /accept-invitation or /auth/callback route
+      if (urlState.isInvite || urlState.isRecovery || currentPath === '/accept-invitation' || currentPath === '/auth/callback') {
+        const { data: { session } } = await client.auth.getSession();
+        if (!isMounted) return;
+        if (session?.user) {
+          setInviteModalState({
+            isOpen: true,
+            mode: 'setup',
+            userEmail: session.user.email
+          });
+          cleanAuthUrlParams();
+        }
+      }
+    };
+
+    processAuthTokens();
+
+    // Listen for auth state events (e.g. PASSWORD_RECOVERY, SIGNED_IN)
+    const { data: { subscription } } = client.auth.onAuthStateChange(async (event, session) => {
+      if (!isMounted) return;
+
+      if (event === 'PASSWORD_RECOVERY') {
+        if (session?.user) {
+          setInviteModalState({
+            isOpen: true,
+            mode: 'setup',
+            userEmail: session.user.email
+          });
+        }
+      } else if (event === 'SIGNED_IN' && session?.user) {
+        const urlState = parseAuthUrl();
+        if (urlState.isInvite || urlState.isRecovery || currentPath === '/accept-invitation' || currentPath === '/auth/callback') {
+          setInviteModalState({
+            isOpen: true,
+            mode: 'setup',
+            userEmail: session.user.email
+          });
+          cleanAuthUrlParams();
+        }
+      }
+    });
+
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
+  }, [currentPath]);
+
   // Automatically restore saved progress from cloud/local storage on student login
   useEffect(() => {
     if (user?.id && user.role === 'student') {
-      loadStudentProgress(user.id).then(cloudProgress => {
-        if (cloudProgress && Object.keys(cloudProgress).length > 0) {
-          setProgressMap(prev => ({ ...prev, ...cloudProgress }));
+      loadStudentProgress(user.id).then(({ data: cloudProgress, isCloudSynced: synced }) => {
+        if (cloudProgress && typeof cloudProgress === 'object') {
+          setProgressMap(cloudProgress);
         }
+        setIsCloudSynced(synced);
+
+        // Calculate genuine stars earned from verified destination progress
+        const verifiedProgressStars = Object.values(cloudProgress || {}).reduce(
+          (acc, p) => acc + (p.starsEarned || 0), 
+          0
+        );
+
+        // Sanitize and reconcile user.stars if it was corrupted or double-counted previously in localStorage
+        setUser(prev => {
+          if (!prev) return null;
+          const targetStars = verifiedProgressStars > 0 ? verifiedProgressStars : (prev.stars || 0);
+          if (prev.stars !== targetStars) {
+            const updated = { ...prev, stars: targetStars };
+            localStore.set('current_user', updated);
+            return updated;
+          }
+          return prev;
+        });
       });
+    } else {
+      setIsCloudSynced(false);
     }
   }, [user?.id]);
 
   // Update progress handler with automatic cloud synchronization
   const handleUpdateProgress = async (destId: string, score: number, starsEarned: number) => {
+    const existing = progressMap[destId];
+    const finalStars = Math.max(existing?.starsEarned || 0, starsEarned);
     const updatedEntry: DestinationProgress = {
       destinationId: destId,
       completedSteps: { vocabulary: true, reading: true, listening: true, speaking: true, quiz: true },
       quizScore: score,
       totalQuestions: 4,
-      attempts: (progressMap[destId]?.attempts || 0) + 1,
-      starsEarned: (progressMap[destId]?.starsEarned || 0) + starsEarned,
+      attempts: (existing?.attempts || 0) + 1,
+      starsEarned: finalStars,
       lastAttemptDate: 'Vừa xong'
     };
 
-    setProgressMap(prev => ({
-      ...prev,
+    const nextProgressMap = {
+      ...progressMap,
       [destId]: updatedEntry
-    }));
+    };
+    setProgressMap(nextProgressMap);
 
     // Auto-save to Supabase & local cache
     if (user?.id) {
-      await syncStudentProgress(user.id, destId, updatedEntry);
+      const studentKey = `progress_map_${user.id}`;
+      localStore.set(studentKey, nextProgressMap);
+      localStore.set('progress_map', nextProgressMap);
+
+      const nextTotalStars = Object.values(nextProgressMap).reduce((acc, p) => acc + (p.starsEarned || 0), 0);
+      setUser(prev => {
+        if (!prev) return null;
+        const updated = { ...prev, stars: Math.max(prev.stars || 0, nextTotalStars) };
+        localStore.set('current_user', updated);
+        return updated;
+      });
+
+      const { isCloudSynced: synced, serverTotalStars } = await syncStudentProgress(user.id, destId, updatedEntry);
+      setIsCloudSynced(synced);
+      if (synced && typeof serverTotalStars === 'number') {
+        setUser(prev => {
+          if (!prev) return null;
+          const updated = { ...prev, stars: Math.max(serverTotalStars, nextTotalStars) };
+          localStore.set('current_user', updated);
+          return updated;
+        });
+      }
+    }
+  };
+
+  // Game progress handler with cloud synchronization & state persistence
+  const handleSaveGameProgress = async (gameId: string, progress: DestinationProgress) => {
+    const existing = progressMap[gameId];
+    // Replay protection: preserve greatest stars earned
+    const finalStars = Math.max(existing?.starsEarned || 0, progress.starsEarned || 0);
+    const updatedEntry: DestinationProgress = {
+      ...progress,
+      starsEarned: finalStars
+    };
+
+    const nextProgressMap = {
+      ...progressMap,
+      [gameId]: updatedEntry
+    };
+    setProgressMap(nextProgressMap);
+
+    // Save to student-scoped cache & global cache
+    if (user?.id) {
+      const studentKey = `progress_map_${user.id}`;
+      localStore.set(studentKey, nextProgressMap);
+      localStore.set('progress_map', nextProgressMap);
+
+      // Reconcile total verified stars across all activities
+      const totalVerifiedStars = Object.values(nextProgressMap).reduce(
+        (acc, p) => acc + (p.starsEarned || 0),
+        0
+      );
+      setUser(prev => {
+        if (!prev) return null;
+        const newStars = Math.max(prev.stars || 0, totalVerifiedStars);
+        const updated = { ...prev, stars: newStars };
+        localStore.set('current_user', updated);
+        return updated;
+      });
+
+      // Synchronize with Supabase Cloud via Session RPC
+      const { isCloudSynced: synced, serverTotalStars } = await syncStudentProgress(user.id, gameId, updatedEntry);
+      setIsCloudSynced(synced);
+      if (synced && typeof serverTotalStars === 'number') {
+        setUser(prev => {
+          if (!prev) return null;
+          const targetStars = Math.max(serverTotalStars, totalVerifiedStars);
+          const updated = { ...prev, stars: targetStars };
+          localStore.set('current_user', updated);
+          return updated;
+        });
+      }
     }
   };
 
@@ -255,24 +516,140 @@ export const App: React.FC = () => {
     if (isSupabaseConfigured() && supabase) {
       await supabase.auth.signOut();
     }
+    const currentId = user?.id;
+    await logoutStudent(currentId);
     localStore.remove('current_user');
+    localStore.remove('session_token');
+    localStore.remove('progress_map');
+    if (currentId) {
+      localStore.remove(`progress_map_${currentId}`);
+      for (let g = 1; g <= 5; g++) {
+        localStore.remove(`grade_progress_${currentId}_g${g}`);
+        localStore.remove(`grade_badges_${currentId}_g${g}`);
+        localStore.remove(`grade_game_attempts_${currentId}_g${g}`);
+      }
+    }
+    for (let g = 1; g <= 5; g++) {
+      localStore.remove(`grade_progress_guest_g${g}`);
+      localStore.remove(`grade_badges_guest_g${g}`);
+      localStore.remove(`grade_game_attempts_guest_g${g}`);
+    }
+    setProgressMap({});
     setUser(null);
+    setIsCloudSynced(false);
     setPreviewGradeBand(undefined);
     setActiveSection('student');
   };
 
-  // Filter classes & students based on teacher role (teachers only see their assigned classes)
-  const accessibleClasses = user?.role === 'admin'
+  // Filter classes & students based on teacher role (teachers only see their assigned classes; admin & super_admin see all)
+  const isSuperOrAdmin = user?.role === 'admin' || user?.role === 'super_admin';
+  const accessibleClasses = isSuperOrAdmin
     ? classes
     : user?.role === 'teacher'
     ? classes.filter(c => c.teacherId === 'teacher-trang' || c.teacherName.includes('Trang'))
     : [];
 
-  const accessibleStudents = user?.role === 'admin'
+  const accessibleStudents = isSuperOrAdmin
     ? students
     : user?.role === 'teacher'
     ? students.filter(s => accessibleClasses.some(c => c.id === s.classId))
     : [];
+
+  // Dedicated Read-Only UI Preview Route for Content Approval Center (Protected: Local Dev or Staff only)
+  if (isApprovalPreviewRoute && (import.meta.env.DEV || (user && user.role !== 'student'))) {
+    return (
+      <div 
+        className="min-h-screen max-w-full overflow-x-hidden flex flex-col text-slate-900 font-sans selection:bg-rose-100 selection:text-rose-900 pb-16 relative"
+        style={{
+          backgroundColor: '#dbeafe',
+          backgroundImage: `
+            radial-gradient(circle at 15% 15%, rgba(255, 255, 255, 0.85) 0%, transparent 28%),
+            radial-gradient(circle at 85% 12%, rgba(255, 255, 255, 0.75) 0%, transparent 32%),
+            radial-gradient(circle at 50% 60%, rgba(224, 242, 254, 0.6) 0%, transparent 55%),
+            linear-gradient(180deg, #bae6fd 0%, #e0f2fe 35%, #ecfdf5 100%)
+          `
+        }}
+      >
+        {/* Top Preview Bar */}
+        <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-amber-300 shadow-sm py-3 px-4 sm:px-6">
+          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl p-1.5 rounded-xl bg-amber-100 border border-amber-300">🛡️</span>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs uppercase font-black text-amber-900 tracking-wider">
+                    Chế độ Xem Trước Giao Diện (UI Preview Only)
+                  </span>
+                  <span className="px-2 py-0.2 bg-emerald-100 text-emerald-800 rounded-full text-[10px] font-extrabold border border-emerald-300">
+                    Không cần đăng nhập
+                  </span>
+                </div>
+                <div className="text-sm font-black text-slate-800">
+                  Trung tâm Phê duyệt & Kiểm soát Chất lượng Nội dung — VietDiscovery by Ms. Trang
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => navigateTo('/')}
+              className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold border border-slate-300 flex items-center gap-1.5 cursor-pointer transition-colors shrink-0"
+            >
+              <span>← Quay lại Trang Chủ / Đăng Nhập</span>
+            </button>
+          </div>
+        </header>
+
+        {/* Content Approval Center Component */}
+        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <ContentApprovalCenter />
+        </main>
+      </div>
+    );
+  }
+
+  // Dedicated Read-Only UI Preview Route for Ha Long Bay Adventure trial lesson (Protected: Local Dev or Staff only)
+  if (isHaLongPreviewRoute && (import.meta.env.DEV || (user && user.role !== 'student'))) {
+    return (
+      <div 
+        className="min-h-screen max-w-full overflow-x-hidden flex flex-col text-slate-900 font-sans selection:bg-rose-100 selection:text-rose-900 pb-16 relative"
+        style={{
+          backgroundColor: '#dbeafe',
+          backgroundImage: `
+            radial-gradient(circle at 15% 15%, rgba(255, 255, 255, 0.85) 0%, transparent 28%),
+            radial-gradient(circle at 85% 12%, rgba(255, 255, 255, 0.75) 0%, transparent 32%),
+            radial-gradient(circle at 50% 60%, rgba(224, 242, 254, 0.6) 0%, transparent 55%),
+            linear-gradient(180deg, #bae6fd 0%, #e0f2fe 35%, #ecfdf5 100%)
+          `
+        }}
+      >
+        <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <HaLongAdventurePreview onBackToHome={() => navigateTo('/')} />
+        </main>
+      </div>
+    );
+  }
+
+  // Dedicated Read-Only UI Preview Route for Premium AI Voice Upgrade (Protected: Local Dev or Staff only)
+  if (isVoicePreviewRoute && (import.meta.env.DEV || (user && user.role !== 'student'))) {
+    return (
+      <div 
+        className="min-h-screen max-w-full overflow-x-hidden flex flex-col text-slate-900 font-sans selection:bg-rose-100 selection:text-rose-900 pb-16 relative"
+        style={{
+          backgroundColor: '#dbeafe',
+          backgroundImage: `
+            radial-gradient(circle at 15% 15%, rgba(255, 255, 255, 0.85) 0%, transparent 28%),
+            radial-gradient(circle at 85% 12%, rgba(255, 255, 255, 0.75) 0%, transparent 32%),
+            radial-gradient(circle at 50% 60%, rgba(224, 242, 254, 0.6) 0%, transparent 55%),
+            linear-gradient(180deg, #bae6fd 0%, #e0f2fe 35%, #ecfdf5 100%)
+          `
+        }}
+      >
+        <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <VoiceUpgradePreview onBackToHome={() => navigateTo('/')} />
+        </main>
+      </div>
+    );
+  }
 
   // When no authenticated session exists, display full-screen 3D adventure login landing page
   if (!user) {
@@ -280,10 +657,19 @@ export const App: React.FC = () => {
       <div className="min-h-screen w-full relative">
         <StudentLandingLoginPage
           onLoginSuccess={(studentUser, progress) => {
-            setUser(studentUser);
-            if (progress && Object.keys(progress).length > 0) {
-              setProgressMap(prev => ({ ...prev, ...progress }));
-            }
+            const resolved = resolveStudentGrade(studentUser);
+            const normalizedUser: UserProfile = {
+              ...studentUser,
+              gradeLevel: resolved.gradeLevel,
+              gradeBand: resolved.gradeBand
+            };
+            setUser(normalizedUser);
+            const cleanProgress = (progress && typeof progress === 'object') ? progress : {};
+            setProgressMap(cleanProgress);
+            const studentKey = studentUser.id ? `progress_map_${studentUser.id}` : 'progress_map';
+            localStore.set(studentKey, cleanProgress);
+            localStore.set('progress_map', cleanProgress);
+            setIsCloudSynced(Boolean(localStore.get<string | null>('session_token', null)));
             setPreviewGradeBand(undefined);
             setActiveSection('student');
           }}
@@ -295,13 +681,37 @@ export const App: React.FC = () => {
         <StaffAuthModal
           isOpen={isStaffAuthOpen}
           onClose={() => setIsStaffAuthOpen(false)}
+          onOpenPreview={() => navigateTo('/preview-approval')}
           onStaffLoginSuccess={(staffUser) => {
             setUser(staffUser);
-            if (staffUser.role === 'admin') {
+            if (staffUser.role === 'admin' || staffUser.role === 'super_admin') {
               setActiveSection('admin');
             } else {
               setActiveSection('teacher');
             }
+          }}
+        />
+
+        {/* Teacher Invitation Acceptance & Initial Password Setup Modal */}
+        <TeacherAcceptInviteModal
+          isOpen={inviteModalState.isOpen}
+          mode={inviteModalState.mode}
+          userEmail={inviteModalState.userEmail}
+          errorTitle={inviteModalState.errorTitle}
+          errorMessage={inviteModalState.errorMessage}
+          onClose={() => setInviteModalState(prev => ({ ...prev, isOpen: false }))}
+          onOpenStaffLogin={() => setIsStaffAuthOpen(true)}
+          onSuccess={(staffUser) => {
+            setInviteModalState(prev => ({ ...prev, mode: 'success' }));
+            setTimeout(() => {
+              setUser(staffUser);
+              setInviteModalState(prev => ({ ...prev, isOpen: false }));
+              if (staffUser.role === 'admin' || staffUser.role === 'super_admin') {
+                setActiveSection('admin');
+              } else {
+                setActiveSection('teacher');
+              }
+            }, 1200);
           }}
         />
 
@@ -350,6 +760,7 @@ export const App: React.FC = () => {
         onOpenStudentAuth={handleLogout}
         onLogout={handleLogout}
         totalStars={totalStars}
+        isCloudSynced={isCloudSynced}
         onOpenCreatorModal={() => setIsCreatorModalOpen(true)}
       />
 
@@ -362,16 +773,10 @@ export const App: React.FC = () => {
               <GradeDashboard
                 gradeNum={activeGradeNum}
                 user={user}
+                progressMap={progressMap}
                 onNavigateHome={() => navigateTo('/')}
                 onNavigateGrade={(g) => navigateTo(`/grade/${g}`)}
-                onEarnStars={(stars) => {
-                  if (user) {
-                    setUser({
-                      ...user,
-                      stars: (user.stars || 0) + stars
-                    });
-                  }
-                }}
+                onUpdateProgress={handleUpdateProgress}
               />
             ) : (
               <LearningHub
@@ -382,13 +787,19 @@ export const App: React.FC = () => {
                 totalStars={totalStars}
                 previewGradeBand={previewGradeBand}
                 onUpdateProgress={handleUpdateProgress}
+                onSaveGameProgress={handleSaveGameProgress}
                 onSelectTab={setActiveStudentTab}
                 onNavigateGrade={(g) => navigateTo(`/grade/${g}`)}
                 onEarnStars={(stars) => {
-                  if (user) {
-                    setUser({
-                      ...user,
-                      stars: (user.stars || 0) + stars
+                  if (user && stars > 0) {
+                    setUser(prev => {
+                      if (!prev) return null;
+                      const updated = {
+                        ...prev,
+                        stars: (prev.stars || 0) + stars
+                      };
+                      localStore.set('current_user', updated);
+                      return updated;
                     });
                   }
                 }}
@@ -400,6 +811,7 @@ export const App: React.FC = () => {
           {activeSection === 'teacher' && user && user.role !== 'student' && (
             <TeachingStudio
               activeTab={activeTeacherTab}
+              onSelectTab={setActiveTeacherTab}
               classes={accessibleClasses}
               students={accessibleStudents}
               materials={materials}
@@ -418,8 +830,8 @@ export const App: React.FC = () => {
             />
           )}
 
-          {/* ADMIN CONSOLE (Strictly Protected for Admins) */}
-          {activeSection === 'admin' && user && user.role === 'admin' && (
+          {/* ADMIN CONSOLE (Strictly Protected for Admins and Super Admin) */}
+          {activeSection === 'admin' && user && (user.role === 'admin' || user.role === 'super_admin') && (
             <AdminConsole
               classes={classes}
               students={students}
@@ -459,11 +871,34 @@ export const App: React.FC = () => {
         onClose={() => setIsStaffAuthOpen(false)}
         onStaffLoginSuccess={(staffUser) => {
           setUser(staffUser);
-          if (staffUser.role === 'admin') {
+          if (staffUser.role === 'admin' || staffUser.role === 'super_admin') {
             setActiveSection('admin');
           } else {
             setActiveSection('teacher');
           }
+        }}
+      />
+
+      {/* Teacher Invitation Acceptance & Initial Password Setup Modal */}
+      <TeacherAcceptInviteModal
+        isOpen={inviteModalState.isOpen}
+        mode={inviteModalState.mode}
+        userEmail={inviteModalState.userEmail}
+        errorTitle={inviteModalState.errorTitle}
+        errorMessage={inviteModalState.errorMessage}
+        onClose={() => setInviteModalState(prev => ({ ...prev, isOpen: false }))}
+        onOpenStaffLogin={() => setIsStaffAuthOpen(true)}
+        onSuccess={(staffUser) => {
+          setInviteModalState(prev => ({ ...prev, mode: 'success' }));
+          setTimeout(() => {
+            setUser(staffUser);
+            setInviteModalState(prev => ({ ...prev, isOpen: false }));
+            if (staffUser.role === 'admin' || staffUser.role === 'super_admin') {
+              setActiveSection('admin');
+            } else {
+              setActiveSection('teacher');
+            }
+          }, 1200);
         }}
       />
 

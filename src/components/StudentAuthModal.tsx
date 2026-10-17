@@ -102,14 +102,6 @@ export const StudentAuthModal: React.FC<StudentAuthModalProps> = ({
     }
   };
 
-  // Quick fill helper for teacher / demo review
-  const handleQuickDemoFill = (demoName: string, demoClass: string, demoCode: string) => {
-    setFullName(demoName);
-    setSelectedClassCode(demoClass);
-    setAccessCode(demoCode);
-    setErrorMsg('');
-  };
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
       <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl border border-slate-100 relative max-h-[92vh] overflow-y-auto">
@@ -250,67 +242,11 @@ export const StudentAuthModal: React.FC<StudentAuthModalProps> = ({
           </button>
         </form>
 
-        {/* Quick Demo Helper for Teacher / Judges Review */}
-        <div className="mt-5 pt-4 border-t border-slate-100">
-          <div className="text-[11px] font-bold text-slate-600 mb-2 flex items-center justify-between">
-            <span>✨ Chọn mẫu kiểm thử nhanh (Demo Fast-Fill):</span>
-            <span className="text-[10px] text-indigo-600 font-semibold">5 Khối Lớp</span>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 text-left">
-            <button
-              type="button"
-              onClick={() => handleQuickDemoFill('Bùi Gia Huy', '2.2', 'VD2201')}
-              className="p-2 rounded-xl bg-slate-50 hover:bg-rose-50 border border-slate-200 hover:border-rose-300 text-[10.5px] text-slate-700 transition-all text-left"
-            >
-              <div className="font-bold text-slate-900">Bùi Gia Huy</div>
-              <div className="text-[9.5px] text-rose-600">Class 2.2 • VD2201</div>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleQuickDemoFill('Nguyễn Minh Khôi', '4.1', 'VD4101')}
-              className="p-2 rounded-xl bg-slate-50 hover:bg-rose-50 border border-slate-200 hover:border-rose-300 text-[10.5px] text-slate-700 transition-all text-left"
-            >
-              <div className="font-bold text-slate-900">Nguyễn Minh Khôi</div>
-              <div className="text-[9.5px] text-indigo-600">Class 4.1 • VD4101</div>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleQuickDemoFill('Hoàng Tuấn Kiệt', '4.6', 'VD4601')}
-              className="p-2 rounded-xl bg-slate-50 hover:bg-rose-50 border border-slate-200 hover:border-rose-300 text-[10.5px] text-slate-700 transition-all text-left"
-            >
-              <div className="font-bold text-slate-900">Hoàng Tuấn Kiệt</div>
-              <div className="text-[9.5px] text-indigo-600">Class 4.6 • VD4601</div>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleQuickDemoFill('Võ Minh Quân', '5.2', 'VD5201')}
-              className="p-2 rounded-xl bg-slate-50 hover:bg-rose-50 border border-slate-200 hover:border-rose-300 text-[10.5px] text-slate-700 transition-all text-left"
-            >
-              <div className="font-bold text-slate-900">Võ Minh Quân</div>
-              <div className="text-[9.5px] text-emerald-600">Class 5.2 • VD5201</div>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleQuickDemoFill('Phạm Đức Anh', '5.6', 'VD5601')}
-              className="p-2 rounded-xl bg-slate-50 hover:bg-rose-50 border border-slate-200 hover:border-rose-300 text-[10.5px] text-slate-700 transition-all text-left"
-            >
-              <div className="font-bold text-slate-900">Phạm Đức Anh</div>
-              <div className="text-[9.5px] text-emerald-600">Class 5.6 • VD5601</div>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleQuickDemoFill('Lê Hoàng Khôi', '5.6', 'VD56017')}
-              className="p-2 rounded-xl bg-rose-50/70 hover:bg-rose-100/70 border border-rose-200 hover:border-rose-400 text-[10.5px] text-slate-700 transition-all text-left"
-            >
-              <div className="font-bold text-rose-900">Lê Hoàng Khôi ⭐</div>
-              <div className="text-[9.5px] text-rose-600 font-bold">Class 5.6 • VD56017</div>
-            </button>
-          </div>
+        {/* Security & Student Guide Note */}
+        <div className="mt-3.5 text-center">
+          <p className="text-[11px] text-slate-400 font-medium">
+            Bảo mật theo danh sách học sinh • VietDiscovery by Ms. Trang
+          </p>
         </div>
 
       </div>

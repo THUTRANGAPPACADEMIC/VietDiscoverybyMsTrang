@@ -19,9 +19,13 @@ import { LearningAssessment } from './LearningAssessment';
 import { AIAssistant } from './AIAssistant';
 import { TeacherContentStudio } from './TeacherContentStudio';
 import { TeacherVideoDashboard } from './TeacherVideoDashboard';
+import { ContentApprovalCenter } from './ContentApprovalCenter';
+
+export type TeacherStudioTab = 'approval' | 'curriculum' | 'materials' | 'classes' | 'progress' | 'assessment' | 'ai' | 'videos';
 
 interface TeachingStudioProps {
-  activeTab: 'curriculum' | 'materials' | 'classes' | 'progress' | 'assessment' | 'ai' | 'videos';
+  activeTab: TeacherStudioTab;
+  onSelectTab?: (tab: TeacherStudioTab) => void;
   classes: ClassRoom[];
   students: StudentRosterItem[];
   materials: MaterialItem[];
@@ -49,7 +53,8 @@ export const TeachingStudio: React.FC<TeachingStudioProps> = ({
   onTogglePublish,
   onAwardBonusStars,
   onPreviewGradeBand,
-  onUploadRoster
+  onUploadRoster,
+  onSelectTab
 }) => {
   const totalStudents = students.length;
 
@@ -94,6 +99,33 @@ export const TeachingStudio: React.FC<TeachingStudioProps> = ({
         </div>
       </div>
 
+      {/* QUICK ACCESS BANNER: Content Approval Center */}
+      {onSelectTab && activeTab !== 'approval' && (
+        <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-700 text-white p-4 rounded-3xl shadow-sm border border-emerald-400/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <span className="text-2xl p-2 rounded-2xl bg-white/20">🛡️</span>
+            <div>
+              <div className="text-xs font-black uppercase tracking-wider text-emerald-200 flex items-center gap-1.5">
+                <span>Bản Xem Trước Thiết Kế Mới</span>
+                <span className="px-2 py-0.2 bg-amber-400 text-amber-950 rounded-full text-[10px] font-extrabold">LOCAL PREVIEW</span>
+              </div>
+              <div className="text-sm font-black text-white">
+                Trung tâm Phê duyệt & Kiểm soát Chất lượng Nội dung (Content Approval Center)
+              </div>
+              <div className="text-[11px] text-emerald-100">
+                Xem danh sách bài học, câu hỏi, trò chơi; kiểm tra nguồn tham khảo và xuất sổ nhật ký minh chứng dự thi.
+              </div>
+            </div>
+          </div>
+          <button
+            onClick={() => onSelectTab('approval')}
+            className="px-4 py-2 rounded-2xl bg-white text-emerald-900 hover:bg-emerald-50 text-xs font-black shadow-md cursor-pointer transition-all shrink-0 hover:scale-102"
+          >
+            Mở Trung Tâm Phê Duyệt →
+          </button>
+        </div>
+      )}
+
       {/* Grade-differentiated Student Experience Preview Switcher */}
       {onPreviewGradeBand && (
         <div className="bg-white p-4 rounded-3xl border border-amber-200 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
@@ -132,6 +164,11 @@ export const TeachingStudio: React.FC<TeachingStudioProps> = ({
             </button>
           </div>
         </div>
+      )}
+
+      {/* Tab NEW: Content Approval Center (Trung tâm Phê duyệt & Kiểm soát Chất lượng) */}
+      {activeTab === 'approval' && (
+        <ContentApprovalCenter />
       )}
 
       {/* Tab 0: Teacher Content Studio (Giáo trình độc quyền) */}

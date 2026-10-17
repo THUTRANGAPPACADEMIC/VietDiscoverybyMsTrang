@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import confetti from 'canvas-confetti';
 import { 
   ArrowLeft, 
@@ -47,14 +47,16 @@ const GradeLessonModal = React.lazy(() =>
 );
 import { soundEffects } from '../../lib/soundEffects';
 import { playEnglishSpeech } from '../../lib/speech';
-import { UserProfile } from '../../types';
+import { UserProfile, DestinationProgress } from '../../types';
 
 interface GradeDashboardProps {
   gradeNum: GradeNumber;
   user: UserProfile | null;
+  progressMap?: Record<string, DestinationProgress>;
   onNavigateHome: () => void;
   onNavigateGrade: (grade: GradeNumber) => void;
-  onEarnStars: (stars: number) => void;
+  onUpdateProgress?: (destId: string, score: number, starsEarned: number) => Promise<void>;
+  onEarnStars?: (stars: number) => void;
 }
 
 type DashboardSection = 'journey' | 'lessons' | 'games' | 'challenges' | 'badges';
@@ -62,8 +64,10 @@ type DashboardSection = 'journey' | 'lessons' | 'games' | 'challenges' | 'badges
 export const GradeDashboard: React.FC<GradeDashboardProps> = ({
   gradeNum,
   user,
+  progressMap = {},
   onNavigateHome,
   onNavigateGrade,
+  onUpdateProgress,
   onEarnStars
 }) => {
   const config = GRADE_CONFIGS[gradeNum] || GRADE_CONFIGS[1];
@@ -97,7 +101,7 @@ export const GradeDashboard: React.FC<GradeDashboardProps> = ({
     studentId,
     gradeNum,
     completedLessons: [],
-    completedStations: [1],
+    completedStations: [],
     gamesPlayedCount: 0,
     totalStarsEarned: 0,
     averageAccuracyPercent: 0,
@@ -116,78 +120,133 @@ export const GradeDashboard: React.FC<GradeDashboardProps> = ({
     });
   }, [studentId, gradeNum]);
 
+  // Synchronize Grade progress strictly with Supabase progressMap for authenticated student
+  const effectiveProgress = useMemo<StudentGradeProgressRecord>(() => {
+    // When progressMap is available and user is an authenticated student, derive strictly from Supabase
+    if (user && user.role === 'student' && progressMap) {
+      const completedLessons = lessons
+        .filter(l => {
+          const p = progressMap[l.id];
+          return Boolean(p && (p.completedSteps?.quiz || (p.starsEarned && p.starsEarned > 0)));
+        })
+        .map(l => l.id);
+
+      const completedStations: number[] = [];
+      if (completedLessons.length >= 1) completedStations.push(1);
+      if (completedLessons.length >= 2) completedStations.push(2);
+      if (completedLessons.length >= 3) completedStations.push(3);
+      if (completedLessons.length >= 4) completedStations.push(4);
+      if (completedLessons.length >= 5) completedStations.push(5);
+
+      const lessonStars = lessons.reduce((acc, l) => acc + (progressMap[l.id]?.starsEarned || 0), 0);
+      const gameKeys = Object.keys(progressMap).filter(k => k.startsWith(`g${gradeNum}_game_`));
+      const gameStars = gameKeys.reduce((acc, k) => acc + (progressMap[k]?.starsEarned || 0), 0);
+      const totalStarsEarned = lessonStars + gameStars;
+
+      const unlockedBadgeIds: string[] = [];
+      if (completedLessons.length >= 1 && badges[0]) {
+        unlockedBadgeIds.push(badges[0].id);
+      }
+      if (gameKeys.length >= 1 && badges[1]) {
+        unlockedBadgeIds.push(badges[1].id);
+      }
+      if (totalStarsEarned >= 100 && badges[4]) {
+        unlockedBadgeIds.push(badges[4].id);
+      }
+
+      return {
+        studentId,
+        gradeNum,
+        completedLessons,
+        completedStations,
+        gamesPlayedCount: gameKeys.length,
+        totalStarsEarned,
+        averageAccuracyPercent: 100,
+        unlockedBadgeIds,
+        lastActiveAt: new Date().toISOString()
+      };
+    }
+
+    // Fallback to local progress record (guest or unauthenticated mode)
+    return gradeProgress;
+  }, [lessons, badges, progressMap, studentId, gradeNum, user, gradeProgress]);
+
   // Handle lesson start
   const handleOpenLesson = (lesson: PathwayLesson) => {
     soundEffects.playClick();
     setActiveLesson(lesson);
   };
 
-  // Handle lesson completion
+  // Handle lesson completion with authenticated Supabase RPC synchronization
   const handleCompleteLesson = async (lessonId: string, starsWon: number) => {
-    const updated = await completeGradeLesson(studentId, gradeNum, lessonId, starsWon, classCode);
-    setGradeProgress(updated);
-    onEarnStars(starsWon);
-
-    // Check if first lesson badge unlocked
-    if (updated.completedLessons.length >= 1) {
-      const firstBadge = badges[0];
-      if (firstBadge && !updated.unlockedBadgeIds.includes(firstBadge.id)) {
-        handleUnlockBadge(firstBadge);
-      }
+    // 1. Sync directly to Supabase via authenticated RPC save_student_progress
+    if (onUpdateProgress) {
+      await onUpdateProgress(lessonId, 4, starsWon);
+    } else if (onEarnStars) {
+      onEarnStars(starsWon);
     }
-  };
 
-  // Handle game recording
-  const handleRecordGame = async (gameType: GameEngineType, score: number, maxScore: number, stars: number) => {
-    const attempt = {
-      studentId,
-      gradeNum,
-      gameType,
-      score,
-      maxScore,
-      starsEarned: stars,
-      completedAt: new Date().toISOString()
-    };
-
-    const updated = await recordGameAttempt(attempt, classCode);
-    setGradeProgress(updated);
-
-    // Auto-check badges
-    if (updated.gamesPlayedCount >= 1 && badges[1] && !updated.unlockedBadgeIds.includes(badges[1].id)) {
-      handleUnlockBadge(badges[1]);
-    }
-    if (updated.totalStarsEarned >= 100 && badges[4] && !updated.unlockedBadgeIds.includes(badges[4].id)) {
-      handleUnlockBadge(badges[4]);
-    }
-  };
-
-  // Handle badge unlock
-  const handleUnlockBadge = async (badge: GradeBadge) => {
-    const { unlocked, progress: updated } = await unlockGradeBadge(
-      studentId, 
-      gradeNum, 
-      badge.id, 
-      badge.starsValue, 
-      classCode
-    );
-
-    if (unlocked) {
+    // 2. Local fallback update for guest / offline mode
+    if (!user || user.role !== 'student') {
+      const updated = await completeGradeLesson(studentId, gradeNum, lessonId, starsWon, classCode);
       setGradeProgress(updated);
-      onEarnStars(badge.starsValue);
+    }
+
+    // 3. Celebratory animations & sounds
+    soundEffects.playStarFanfare();
+    confetti({
+      particleCount: 80,
+      spread: 90,
+      origin: { y: 0.6 }
+    });
+
+    // 4. Milestone badge celebration (honorary achievement, zero duplicate star inflation)
+    if (badges[0]) {
       soundEffects.playBadgeUnlocked();
-      setSelectedBadge(badge);
-      confetti({
-        particleCount: 70,
-        spread: 80,
-        origin: { y: 0.6 }
-      });
+      setSelectedBadge(badges[0]);
     }
   };
 
-  // Calculate completion percentage
-  const totalJourneyStations = config.learningJourney.length;
-  const stationsCompletedCount = gradeProgress.completedStations.length;
-  const progressPercent = Math.min(100, Math.round((stationsCompletedCount / totalJourneyStations) * 100));
+  // Handle game recording with Supabase synchronization
+  const handleRecordGame = async (gameType: GameEngineType, score: number, maxScore: number, stars: number) => {
+    if (stars > 0 && onUpdateProgress) {
+      const gameDestId = `g${gradeNum}_game_${gameType}`;
+      await onUpdateProgress(gameDestId, score, stars);
+    }
+
+    if (!user || user.role !== 'student') {
+      const attempt = {
+        studentId,
+        gradeNum,
+        gameType,
+        score,
+        maxScore,
+        starsEarned: stars,
+        completedAt: new Date().toISOString()
+      };
+      const updated = await recordGameAttempt(attempt, classCode);
+      setGradeProgress(updated);
+    }
+  };
+
+  // Handle badge modal view
+  const handleUnlockBadge = async (badge: GradeBadge) => {
+    soundEffects.playBadgeUnlocked();
+    setSelectedBadge(badge);
+    confetti({
+      particleCount: 70,
+      spread: 80,
+      origin: { y: 0.6 }
+    });
+  };
+
+  // Calculate completion percentage based on the 5-station journey roadmap
+  // (e.g. 0 stations done = 0%, 1 of 5 stations done = 20%, 5 of 5 stations done = 100%)
+  const totalJourneyStations = config.learningJourney.length; // 5
+  const stationsCompletedCount = effectiveProgress.completedStations.length;
+  const progressPercent = totalJourneyStations > 0
+    ? Math.min(100, Math.round((stationsCompletedCount / totalJourneyStations) * 100))
+    : 0;
 
   return (
     <div className="space-y-6 pb-20 sm:pb-12 animate-fade-in">
@@ -358,10 +417,10 @@ export const GradeDashboard: React.FC<GradeDashboardProps> = ({
             <div className="flex items-center justify-between text-xs font-black text-amber-600 pt-1">
               <span className="flex items-center gap-1">
                 <Star className="w-3.5 h-3.5 fill-amber-400" />
-                <span>{gradeProgress.totalStarsEarned} Stars</span>
+                <span>{effectiveProgress.totalStarsEarned} Stars</span>
               </span>
               <span className="text-slate-600">
-                {gradeProgress.completedLessons.length} Lessons done
+                {effectiveProgress.completedLessons.length} Lessons done
               </span>
             </div>
           </div>
@@ -376,7 +435,7 @@ export const GradeDashboard: React.FC<GradeDashboardProps> = ({
           { id: 'lessons', label: 'Lessons (Bài Học Chuẩn)', icon: '📖', count: `${lessons.length}` },
           { id: 'games', label: 'Interactive Games (7 Trò Chơi)', icon: '🎮', count: '7' },
           { id: 'challenges', label: 'Challenges (Nhiệm Vụ)', icon: '🎯', count: `${challenges.length}` },
-          { id: 'badges', label: 'Achievement Badges (Huy Hiệu)', icon: '🏆', count: `${gradeProgress.unlockedBadgeIds.length}/${badges.length}` }
+          { id: 'badges', label: 'Achievement Badges (Huy Hiệu)', icon: '🏆', count: `${effectiveProgress.unlockedBadgeIds.length}/${badges.length}` }
         ].map(tab => {
           const isActive = activeSection === tab.id;
 
@@ -429,8 +488,8 @@ export const GradeDashboard: React.FC<GradeDashboardProps> = ({
               {/* Journey Stepper Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5 relative">
                 {config.learningJourney.map((station, idx) => {
-                  const isCompleted = gradeProgress.completedStations.includes(station.stationNumber);
-                  const isCurrent = !isCompleted && (idx === 0 || gradeProgress.completedStations.includes(station.stationNumber - 1));
+                  const isCompleted = effectiveProgress.completedStations.includes(station.stationNumber);
+                  const isCurrent = !isCompleted && (idx === 0 || effectiveProgress.completedStations.includes(station.stationNumber - 1));
                   const isLocked = !isCompleted && !isCurrent;
 
                   return (
@@ -489,7 +548,7 @@ export const GradeDashboard: React.FC<GradeDashboardProps> = ({
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {lessons.map(lesson => {
-                const isLessonDone = gradeProgress.completedLessons.includes(lesson.id);
+                const isLessonDone = effectiveProgress.completedLessons.includes(lesson.id);
 
                 return (
                   <div
@@ -576,7 +635,7 @@ export const GradeDashboard: React.FC<GradeDashboardProps> = ({
               gradeNum={gradeNum}
               studentId={studentId}
               onRecordGame={handleRecordGame}
-              onEarnStars={onEarnStars}
+              onEarnStars={onEarnStars || (() => {})}
             />
           </React.Suspense>
         )}
@@ -646,13 +705,13 @@ export const GradeDashboard: React.FC<GradeDashboardProps> = ({
                 </p>
               </div>
               <div className="px-3 py-1 rounded-full bg-amber-100 text-amber-900 font-black text-xs">
-                {gradeProgress.unlockedBadgeIds.length} / {badges.length} Unlocked
+                {effectiveProgress.unlockedBadgeIds.length} / {badges.length} Unlocked
               </div>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3.5">
               {badges.map(b => {
-                const isUnlocked = gradeProgress.unlockedBadgeIds.includes(b.id);
+                const isUnlocked = effectiveProgress.unlockedBadgeIds.includes(b.id);
 
                 return (
                   <button

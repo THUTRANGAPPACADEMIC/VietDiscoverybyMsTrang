@@ -53,7 +53,7 @@ export async function loadGradeProgress(
     studentId,
     gradeNum,
     completedLessons: [],
-    completedStations: [1], // Station 1 unlocked by default
+    completedStations: [], // Clean start: 0 stations completed until lessons/stars are earned
     gamesPlayedCount: 0,
     totalStarsEarned: 0,
     averageAccuracyPercent: 0,
@@ -64,6 +64,14 @@ export async function loadGradeProgress(
   // 1. Try local cache first for instant responsiveness
   const cached = localStore.get<StudentGradeProgressRecord | null>(getStorageKey(studentId, gradeNum), null);
   let result = cached || defaultRecord;
+
+  // Sanitize legacy mock cache where completedStations was erroneously initialized to [1] with 0 completed lessons
+  if (result.completedLessons.length === 0 && result.gamesPlayedCount === 0 && result.totalStarsEarned === 0) {
+    if (result.completedStations.length === 1 && result.completedStations[0] === 1) {
+      result = { ...result, completedStations: [] };
+      localStore.set(getStorageKey(studentId, gradeNum), result);
+    }
+  }
 
   // 2. Try Supabase cloud sync if configured
   if (isSupabaseConfigured() && supabase && studentId && studentId !== 'guest') {
@@ -81,7 +89,7 @@ export async function loadGradeProgress(
           gradeNum: data.grade_num as GradeNumber,
           classCode: data.class_code,
           completedLessons: data.completed_lessons || [],
-          completedStations: data.completed_stations || [1],
+          completedStations: data.completed_stations || [],
           gamesPlayedCount: data.games_played_count || 0,
           totalStarsEarned: data.total_stars_earned || 0,
           averageAccuracyPercent: data.average_accuracy || 0,
