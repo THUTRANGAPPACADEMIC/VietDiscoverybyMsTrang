@@ -55,7 +55,7 @@ interface GradeDashboardProps {
   progressMap?: Record<string, DestinationProgress>;
   onNavigateHome: () => void;
   onNavigateGrade: (grade: GradeNumber) => void;
-  onUpdateProgress?: (destId: string, score: number, starsEarned: number) => Promise<void>;
+  onUpdateProgress?: (destId: string, score?: number, starsEarned?: number, stepUpdates?: any) => Promise<void>;
   onEarnStars?: (stars: number) => void;
 }
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Volume2, 
   Mic, 
@@ -47,7 +47,7 @@ export const RealisticVisualVocabularyCard: React.FC<VisualVocabularyItemProps> 
 }) => {
   // Retrieve verified educational photograph from Registry
   const visualMeta = getVocabularyVisual(word, category, imageUrl);
-  const activeImage = imageUrl || visualMeta.imageUrl;
+  const activeImage = visualMeta.isPlaceholder ? '' : (visualMeta.imageUrl || imageUrl || '');
   const activeAttribution = imageAttribution || visualMeta.attributionText;
   const activeUkIpa = britishPhonetic || visualMeta.ukIpa || phonetic || '';
   const activeUsIpa = phonetic || visualMeta.usIpa || '';
@@ -61,6 +61,14 @@ export const RealisticVisualVocabularyCard: React.FC<VisualVocabularyItemProps> 
   const [imgError, setImgError] = useState<boolean>(false);
   const [showAttribution, setShowAttribution] = useState<boolean>(false);
 
+  // Sync state when word changes (e.g. in carousel)
+  useEffect(() => {
+    setImgSrc(activeImage);
+    setImgError(false);
+  }, [activeImage]);
+
+  const isPlaceholder = visualMeta.isPlaceholder || imgError || !imgSrc;
+
   // Audio accent mode (British English default as required)
   const [accent, setAccent] = useState<'UK' | 'US'>('UK');
   const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
@@ -71,6 +79,7 @@ export const RealisticVisualVocabularyCard: React.FC<VisualVocabularyItemProps> 
   const [userAudioUrl, setUserAudioUrl] = useState<string | null>(null);
   const [hasCompletedSpeaking, setHasCompletedSpeaking] = useState<boolean>(false);
   const [recordError, setRecordError] = useState<string | null>(null);
+  const [recordStartTime, setRecordStartTime] = useState<number>(0);
 
   // Pastel theme mapping
   const themeClasses = {
@@ -153,15 +162,24 @@ export const RealisticVisualVocabularyCard: React.FC<VisualVocabularyItemProps> 
       soundEffects.playClick();
       try {
         await recorder.start();
+        setRecordStartTime(Date.now());
         setIsRecording(true);
       } catch (err: any) {
         setRecordError('Vui lòng cho phép truy cập micro để luyện nói!');
       }
     } else {
       try {
+        const durationSeconds = (Date.now() - recordStartTime) / 1000;
         const audioUrl = await recorder.stop();
         setIsRecording(false);
         setUserAudioUrl(audioUrl);
+
+        // Enforce genuine speech: require at least 1.0s of recording
+        if (durationSeconds < 1.0) {
+          setRecordError('Bé hãy đọc to từ vựng và giữ ghi âm ít nhất 1 giây nhé! 🎙️');
+          return;
+        }
+
         soundEffects.playCorrect();
         if (!hasCompletedSpeaking) {
           setHasCompletedSpeaking(true);
@@ -191,43 +209,61 @@ export const RealisticVisualVocabularyCard: React.FC<VisualVocabularyItemProps> 
   return (
     <div className={`group rounded-3xl overflow-hidden border-2 shadow-md hover:shadow-xl transition-all duration-300 flex flex-col justify-between ${themeClasses.cardBg} ${themeClasses.border}`}>
       
-      {/* 1. IMAGE-FIRST HERO SECTION (REALISTIC PHOTOGRAPH) */}
+      {/* 1. IMAGE-FIRST HERO SECTION (REALISTIC PHOTOGRAPH OR NEUTRAL EDUCATIONAL PLACEHOLDER) */}
       <div className="relative aspect-video sm:aspect-4/3 w-full overflow-hidden bg-slate-900">
-        <img
-          src={imgSrc}
-          alt={word}
-          loading="lazy"
-          onError={() => {
-            if (!imgError) {
-              setImgError(true);
-              // Fallback to verified local landmark photo if CDN URL fails
-              setImgSrc('/destinations/hue_citadel.jpg');
-            }
-          }}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-        />
+        {isPlaceholder ? (
+          <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 p-6 text-center select-none">
+            <div className="w-14 h-14 rounded-2xl bg-white/80 dark:bg-slate-700/80 shadow-sm border border-slate-200/60 dark:border-slate-600/60 flex items-center justify-center text-3xl mb-2">
+              🖼️
+            </div>
+            <span className="text-sm font-bold text-slate-700 dark:text-slate-200">
+              Image coming soon
+            </span>
+            <span className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-0.5">
+              Ảnh đang cập nhật
+            </span>
+            <span className="mt-2 px-2.5 py-0.5 rounded-full bg-slate-200/80 dark:bg-slate-700 text-[10px] font-semibold text-slate-600 dark:text-slate-300 capitalize">
+              {visualMeta.category || 'Vocabulary'}
+            </span>
+          </div>
+        ) : (
+          <>
+            <img
+              src={imgSrc}
+              alt={word}
+              loading="lazy"
+              onError={() => {
+                setImgError(true);
+              }}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+            />
+            {/* Subtle Dark Gradient Overlay for Contrast on Real Photo */}
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-black/20 pointer-events-none" />
+          </>
+        )}
 
-        {/* Subtle Dark Gradient Overlay for Contrast */}
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-black/20 pointer-events-none" />
+        {/* Category Pill Tag - ONLY when real photo is verified and active */}
+        {!isPlaceholder && (
+          <div className="absolute top-3 left-3 flex items-center gap-1.5">
+            <span className="px-2.5 py-1 rounded-full bg-white/90 backdrop-blur-md text-slate-800 font-extrabold text-[11px] shadow-sm uppercase tracking-wider flex items-center gap-1">
+              <span>📷</span>
+              <span>Real Photo</span>
+            </span>
+          </div>
+        )}
 
-        {/* Category Pill Tag */}
-        <div className="absolute top-3 left-3 flex items-center gap-1.5">
-          <span className="px-2.5 py-1 rounded-full bg-white/90 backdrop-blur-md text-slate-800 font-extrabold text-[11px] shadow-sm uppercase tracking-wider flex items-center gap-1">
-            <span>📷</span>
-            <span>Real Photo</span>
-          </span>
-        </div>
-
-        {/* Image Attribution Button */}
-        <div className="absolute top-3 right-3">
-          <button
-            onClick={() => setShowAttribution(!showAttribution)}
-            title="Image Attribution & License"
-            className="w-7 h-7 rounded-full bg-black/50 hover:bg-black/80 backdrop-blur-md text-white/90 flex items-center justify-center transition-colors cursor-pointer text-xs"
-          >
-            <Info className="w-3.5 h-3.5" />
-          </button>
-        </div>
+        {/* Image Attribution Button - ONLY when real photo is active */}
+        {!isPlaceholder && (
+          <div className="absolute top-3 right-3">
+            <button
+              onClick={() => setShowAttribution(!showAttribution)}
+              title="Image Attribution & License"
+              className="w-7 h-7 rounded-full bg-black/50 hover:bg-black/80 backdrop-blur-md text-white/90 flex items-center justify-center transition-colors cursor-pointer text-xs"
+            >
+              <Info className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        )}
 
         {/* Attribution Popover */}
         {showAttribution && (

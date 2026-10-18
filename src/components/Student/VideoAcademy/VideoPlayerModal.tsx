@@ -14,6 +14,8 @@ import {
   Volume2, 
   Mic, 
   MicOff,
+  Square,
+  AlertCircle,
   RotateCcw,
   MapPin,
   Compass,
@@ -30,6 +32,13 @@ import { VideoQuizSection } from './VideoQuizSection';
 import { soundEffects } from '../../../lib/soundEffects';
 import { backgroundMusic } from '../../../lib/backgroundMusic';
 import { playEnglishSpeech } from '../../../lib/speech';
+import { 
+  SpeakingAssessmentSession, 
+  SpeechEvaluationResult, 
+  isSpeechRecognitionAvailable 
+} from '../../../lib/speechRecognition';
+import { SmartYouTubeClipPlayer } from '../../Common/SmartYouTubeClipPlayer';
+import { extractYouTubeId } from '../../../lib/youtubeClipHelper';
 
 export type VideoLearningStep = 'watch' | 'listen' | 'speak' | 'play' | 'apply' | 'overview';
 
@@ -65,8 +74,11 @@ export const VideoPlayerModal: React.FC<VideoPlayerModalProps> = ({
   // Step 3 (Speak) States
   const [isModelSpeaking, setIsModelSpeaking] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
-  const [recordingSeconds, setRecordingSeconds] = useState(3);
-  const [speechSuccess, setSpeechSuccess] = useState(false);
+  const [recordingSeconds, setRecordingSeconds] = useState(7);
+  const [liveVolume, setLiveVolume] = useState(0);
+  const [speakingResult, setSpeakingResult] = useState<SpeechEvaluationResult | null>(null);
+  const [hasAwardedSpeakingStars, setHasAwardedSpeakingStars] = useState(false);
+  const [activeSession, setActiveSession] = useState<SpeakingAssessmentSession | null>(null);
 
   // Step 5 (Apply) States
   const [selectedSentenceFrame, setSelectedSentenceFrame] = useState<number | null>(null);
@@ -82,10 +94,14 @@ export const VideoPlayerModal: React.FC<VideoPlayerModalProps> = ({
       setIsAudioPlaying(false);
       setIsModelSpeaking(false);
       setIsRecording(false);
-      setSpeechSuccess(false);
+      setSpeakingResult(null);
+      setHasAwardedSpeakingStars(false);
       setSelectedSentenceFrame(null);
       setCustomMissionAnswer('');
       setIsMissionSubmitted(false);
+      if (activeSession) {
+        activeSession.cancel();
+      }
     }
   }, [isOpen, video?.id]);
 
@@ -98,11 +114,15 @@ export const VideoPlayerModal: React.FC<VideoPlayerModalProps> = ({
     }
     return () => {
       backgroundMusic.unduck('video');
+      backgroundMusic.unduck('mic_recording');
+      if (activeSession) {
+        activeSession.cancel();
+      }
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
       }
     };
-  }, [isOpen, isPlaying]);
+  }, [isOpen, isPlaying, activeSession]);
 
   if (!isOpen || !video) return null;
 
@@ -110,18 +130,7 @@ export const VideoPlayerModal: React.FC<VideoPlayerModalProps> = ({
     soundEffects.playClick();
     setIsPlaying(true);
     markStepComplete('watch');
-
-    onSaveProgress({
-      videoId: video.id,
-      studentId,
-      studentName,
-      classCode,
-      watched: true,
-      attempts: 1,
-      starsEarned: 10,
-      completedAt: new Date().toISOString()
-    });
-    if (onEarnStars) onEarnStars(10);
+    // Note: Do NOT automatically mark lesson complete or award stars on initial play (Requirement 10)
   };
 
   const markStepComplete = (step: VideoLearningStep) => {
@@ -156,28 +165,70 @@ export const VideoPlayerModal: React.FC<VideoPlayerModalProps> = ({
     });
   };
 
-  // Step 3 Mic Practice
-  const handleStartMicPractice = () => {
+  // Step 3 Mic Practice with Real Speech Recognition & Silence Detection
+  const handleStartMicPractice = async () => {
     soundEffects.playClick();
-    setIsRecording(true);
-    setSpeechSuccess(false);
-    setRecordingSeconds(3);
+    if (activeSession) {
+      activeSession.cancel();
+    }
 
-    // Speech countdown & evaluation simulation
-    const interval = setInterval(() => {
+    const session = new SpeakingAssessmentSession();
+    setActiveSession(session);
+    setIsRecording(true);
+    setSpeakingResult(null);
+    setRecordingSeconds(7);
+    setLiveVolume(0);
+
+    // Duck background music during microphone session
+    backgroundMusic.duck('mic_recording');
+
+    // Visual countdown
+    const countdownInterval = setInterval(() => {
       setRecordingSeconds(prev => {
         if (prev <= 1) {
-          clearInterval(interval);
-          setIsRecording(false);
-          setSpeechSuccess(true);
-          soundEffects.playSuccess();
-          markStepComplete('speak');
-          if (onEarnStars) onEarnStars(15);
+          clearInterval(countdownInterval);
           return 0;
         }
         return prev - 1;
       });
     }, 1000);
+
+    try {
+      const result = await session.start(speakingTask.modelSentenceEn, {
+        maxDurationSeconds: 7,
+        lang: 'en-GB',
+        onVolumeChange: (vol) => setLiveVolume(vol)
+      });
+
+      clearInterval(countdownInterval);
+      backgroundMusic.unduck('mic_recording');
+      setIsRecording(false);
+      setSpeakingResult(result);
+
+      if (result.success && result.status === 'matched') {
+        soundEffects.playSuccess();
+        markStepComplete('speak');
+        // REPLAY PROTECTION: Only award stars ONCE per speaking challenge!
+        if (!hasAwardedSpeakingStars) {
+          setHasAwardedSpeakingStars(true);
+          if (onEarnStars) onEarnStars(15);
+        }
+      } else {
+        // Did not match or remained silent: NO STARS!
+        soundEffects.playClick();
+      }
+    } catch (err) {
+      clearInterval(countdownInterval);
+      backgroundMusic.unduck('mic_recording');
+      setIsRecording(false);
+    }
+  };
+
+  const handleStopRecordingManually = () => {
+    soundEffects.playClick();
+    if (activeSession) {
+      activeSession.stop();
+    }
   };
 
   // Step 4 Quiz Completion
@@ -395,47 +446,62 @@ export const VideoPlayerModal: React.FC<VideoPlayerModalProps> = ({
         {/* Modal Body - Scrollable */}
         <div className="p-4 sm:p-6 overflow-y-auto space-y-5">
           
-          {/* STEP 1: WATCH (Click-to-play child-safe video facade) */}
+          {/* STEP 1: WATCH (Click-to-play child-safe video facade or Smart Clip Player) */}
           {activeStep === 'watch' && (
             <div className="space-y-4 animate-fade-in">
-              <div className="relative aspect-video w-full rounded-2xl overflow-hidden bg-black shadow-lg border border-slate-800">
-                {isPlaying ? (
-                  <iframe
-                    src={video.embedUrl}
-                    title={video.titleEn}
-                    className="w-full h-full border-0"
-                    allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    allowFullScreen
-                    loading="lazy"
-                  />
-                ) : (
-                  <div 
-                    onClick={handleStartPlay}
-                    className="group relative w-full h-full cursor-pointer overflow-hidden flex items-center justify-center"
-                  >
-                    <img 
-                      src={video.thumbnailUrl} 
-                      alt={video.titleEn}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-80"
+              {typeof video.startSeconds === 'number' && typeof video.endSeconds === 'number' && video.endSeconds > video.startSeconds ? (
+                <SmartYouTubeClipPlayer
+                  videoId={extractYouTubeId(video.videoUrl) || ''}
+                  title={video.titleEn}
+                  subtitle={video.titleVi}
+                  startSeconds={video.startSeconds}
+                  endSeconds={video.endSeconds}
+                  thumbnailUrl={video.thumbnailUrl}
+                  showDetails={false}
+                  onClipEnded={() => {
+                    markStepComplete('watch');
+                  }}
+                />
+              ) : (
+                <div className="relative aspect-video w-full rounded-2xl overflow-hidden bg-black shadow-lg border border-slate-800">
+                  {isPlaying ? (
+                    <iframe
+                      src={video.embedUrl}
+                      title={video.titleEn}
+                      className="w-full h-full border-0"
+                      allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                      loading="lazy"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
+                  ) : (
+                    <div 
+                      onClick={handleStartPlay}
+                      className="group relative w-full h-full cursor-pointer overflow-hidden flex items-center justify-center"
+                    >
+                      <img 
+                        src={video.thumbnailUrl} 
+                        alt={video.titleEn}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-80"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
 
-                    <div className="relative z-10 text-center space-y-3 px-4">
-                      <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-full bg-rose-600/90 text-white flex items-center justify-center shadow-2xl group-hover:scale-110 group-hover:bg-rose-500 transition-all duration-300 border-4 border-white/80">
-                        <Play className="w-8 h-8 sm:w-10 sm:h-10 ml-1 fill-white text-white" />
-                      </div>
-                      <div>
-                        <h3 className="text-base sm:text-xl font-black text-white font-heading drop-shadow-md">
-                          Bấm để bắt đầu xem & học tập
-                        </h3>
-                        <p className="text-xs text-slate-200 mt-1 font-medium">
-                          Thời lượng: {video.durationMinutes} phút • Bảo mật an toàn cho học sinh
-                        </p>
+                      <div className="relative z-10 text-center space-y-3 px-4">
+                        <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-full bg-rose-600/90 text-white flex items-center justify-center shadow-2xl group-hover:scale-110 group-hover:bg-rose-500 transition-all duration-300 border-4 border-white/80">
+                          <Play className="w-8 h-8 sm:w-10 sm:h-10 ml-1 fill-white text-white" />
+                        </div>
+                        <div>
+                          <h3 className="text-base sm:text-xl font-black text-white font-heading drop-shadow-md">
+                            Bấm để bắt đầu xem & học tập
+                          </h3>
+                          <p className="text-xs text-slate-200 mt-1 font-medium">
+                            Thời lượng: {video.durationMinutes} phút • Bảo mật an toàn cho học sinh
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )}
-              </div>
+                  )}
+                </div>
+              )}
 
               {/* Child-Safe Protection Strip */}
               <div className="p-2.5 rounded-xl bg-sky-50 border border-sky-200 flex items-center justify-between text-[11px] text-sky-900 font-semibold">
@@ -624,41 +690,135 @@ export const VideoPlayerModal: React.FC<VideoPlayerModalProps> = ({
                 </div>
 
                 {/* Interactive Mic Practice Box */}
-                <div className="bg-white p-5 rounded-2xl border border-amber-200 text-center space-y-3">
-                  <div className="text-xs font-black text-slate-600 uppercase tracking-wider">
-                    Phòng Thu Thử Thách Phát Âm Của Bé
+                <div className="bg-white p-5 rounded-2xl border border-amber-200 text-center space-y-4">
+                  <div className="flex items-center justify-between text-xs font-black text-slate-600 uppercase tracking-wider">
+                    <span>Phòng Thu Thử Thách Phát Âm Của Bé</span>
+                    {isSpeechRecognitionAvailable() ? (
+                      <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-extrabold flex items-center gap-1 border border-emerald-200">
+                        <Sparkles className="w-3 h-3 text-emerald-600" />
+                        <span>Speech Recognition</span>
+                      </span>
+                    ) : (
+                      <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[10px] font-bold">
+                        Microphone Input
+                      </span>
+                    )}
                   </div>
 
                   {isRecording ? (
-                    <div className="py-4 space-y-3 animate-pulse">
-                      <div className="w-16 h-16 mx-auto rounded-full bg-rose-500 text-white flex items-center justify-center shadow-lg ring-8 ring-rose-200 animate-bounce">
-                        <Mic className="w-8 h-8" />
+                    <div className="py-4 space-y-3">
+                      {/* Dynamic Volume Visualizer Ring */}
+                      <div className="relative w-20 h-20 mx-auto flex items-center justify-center">
+                        <div 
+                          className="absolute inset-0 rounded-full bg-rose-400 opacity-30 animate-ping"
+                          style={{ transform: `scale(${1 + liveVolume / 100})` }}
+                        />
+                        <div 
+                          className="relative w-16 h-16 rounded-full bg-rose-500 text-white flex items-center justify-center shadow-lg transition-transform duration-100"
+                          style={{ transform: `scale(${1 + (liveVolume / 200)})` }}
+                        >
+                          <Mic className="w-8 h-8 animate-bounce" />
+                        </div>
                       </div>
-                      <div className="text-sm font-black text-rose-600">
-                        Bé đang nói... Đếm ngược: {recordingSeconds}s
+
+                      <div className="text-sm font-black text-rose-600 flex items-center justify-center gap-2">
+                        <span>Đang lắng nghe bé nói...</span>
+                        <span className="px-2 py-0.5 rounded-full bg-rose-100 text-rose-800 text-xs font-mono font-black">
+                          {recordingSeconds}s
+                        </span>
                       </div>
-                      <p className="text-xs text-slate-500 font-medium">
-                        Hãy đọc to câu mẫu ở trên với ngữ điệu tự tin nhé!
-                      </p>
-                    </div>
-                  ) : speechSuccess ? (
-                    <div className="py-3 space-y-2 animate-fade-in">
-                      <div className="w-12 h-12 mx-auto rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-md">
-                        <CheckCircle2 className="w-6 h-6" />
+
+                      {/* Live volume level meter */}
+                      <div className="max-w-xs mx-auto space-y-1">
+                        <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden border border-slate-200">
+                          <div 
+                            className={`h-full transition-all duration-100 ${liveVolume > 15 ? 'bg-emerald-500' : 'bg-amber-400'}`}
+                            style={{ width: `${Math.min(100, liveVolume * 1.5)}%` }}
+                          />
+                        </div>
+                        <p className="text-[11px] text-slate-500 font-medium">
+                          {liveVolume > 12 ? '🟢 Đã thu được âm thanh! Bé nói tiếp nhé.' : '🟡 Bé hãy nói to và gần micro hơn nhé!'}
+                        </p>
                       </div>
-                      <h4 className="text-base font-black text-emerald-700 font-heading">
-                        Tuyệt vời! Excellent Pronunciation! 🌟
-                      </h4>
-                      <p className="text-xs text-slate-600 font-medium">
-                        Bé đã phát âm to, rõ ràng và nhận được <span className="font-black text-amber-600">+15 sao</span>!
-                      </p>
+
                       <button
-                        onClick={handleStartMicPractice}
-                        className="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold inline-flex items-center gap-1 cursor-pointer"
+                        onClick={handleStopRecordingManually}
+                        className="px-4 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer transition-colors shadow-2xs"
                       >
-                        <RotateCcw className="w-3 h-3" />
-                        <span>Thử lại lần nữa</span>
+                        <Square className="w-3.5 h-3.5 fill-slate-700" />
+                        <span>Dừng & Đánh giá ngay</span>
                       </button>
+                    </div>
+                  ) : speakingResult ? (
+                    <div className="py-3 space-y-3 animate-fade-in">
+                      {speakingResult.success ? (
+                        <>
+                          <div className="w-12 h-12 mx-auto rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-md">
+                            <CheckCircle2 className="w-6 h-6" />
+                          </div>
+                          <div>
+                            <h4 className="text-base font-black text-emerald-700 font-heading">
+                              {speakingResult.titleVi}
+                            </h4>
+                            <p className="text-xs text-slate-600 font-medium mt-1">
+                              {speakingResult.feedbackVi}
+                            </p>
+                          </div>
+                          {speakingResult.transcript && (
+                            <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 max-w-md mx-auto text-left space-y-1">
+                              <span className="text-[10px] uppercase font-bold text-emerald-800 block">
+                                Lời đọc của con (Recognized Speech):
+                              </span>
+                              <p className="text-xs font-bold text-slate-800">
+                                "{speakingResult.transcript}"
+                              </p>
+                            </div>
+                          )}
+                          <div className="flex items-center justify-center gap-2">
+                            <span className="px-3 py-1 rounded-full bg-amber-100 text-amber-900 border border-amber-300 font-black text-xs inline-flex items-center gap-1">
+                              <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-600" />
+                              <span>{hasAwardedSpeakingStars ? 'Đã nhận +15 sao' : '+15 sao'}</span>
+                            </span>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="w-12 h-12 mx-auto rounded-full bg-amber-100 text-amber-800 border-2 border-amber-300 flex items-center justify-center shadow-xs">
+                            <AlertCircle className="w-6 h-6 text-amber-600" />
+                          </div>
+                          <div>
+                            <h4 className="text-base font-black text-slate-800 font-heading">
+                              {speakingResult.titleVi}
+                            </h4>
+                            <p className="text-xs text-slate-600 font-medium mt-1 max-w-md mx-auto">
+                              {speakingResult.feedbackVi}
+                            </p>
+                          </div>
+                          {speakingResult.transcript && (
+                            <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 max-w-md mx-auto text-left space-y-1">
+                              <span className="text-[10px] uppercase font-bold text-amber-800 block">
+                                Âm thanh ghi nhận được:
+                              </span>
+                              <p className="text-xs font-semibold text-slate-700">
+                                "{speakingResult.transcript}"
+                              </p>
+                            </div>
+                          )}
+                          <div className="text-[11px] font-bold text-rose-600">
+                            (Chưa ghi nhận hoàn thành • Không cộng sao khi chưa nói đúng mẫu câu)
+                          </div>
+                        </>
+                      )}
+
+                      <div className="pt-2">
+                        <button
+                          onClick={handleStartMicPractice}
+                          className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-black inline-flex items-center gap-1.5 cursor-pointer transition-all"
+                        >
+                          <RotateCcw className="w-3.5 h-3.5" />
+                          <span>Luyện đọc lại lần nữa (Practice Again)</span>
+                        </button>
+                      </div>
                     </div>
                   ) : (
                     <div className="py-3 space-y-2">

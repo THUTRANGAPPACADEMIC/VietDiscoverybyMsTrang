@@ -9,7 +9,8 @@ import {
   ArrowRight,
   Star,
   MapPin,
-  Volume2
+  Volume2,
+  Tv
 } from 'lucide-react';
 import { Destination, DestinationProgress, GradeBand, ChallengeBreakdown } from '../../types';
 import { stopSpeech } from '../../lib/speech';
@@ -19,6 +20,7 @@ import { ImmersiveListeningQuest } from './ImmersiveListeningQuest';
 import { ImmersiveReadingAdventure } from './ImmersiveReadingAdventure';
 import { ImmersiveSpeakingQuest } from './ImmersiveSpeakingQuest';
 import { BloomQuizGameShow } from './BloomQuizGameShow';
+import { YouTubeLessonEmbed } from '../Common/YouTubeLessonEmbed';
 
 interface LessonModalProps {
   destination: Destination | null;
@@ -26,11 +28,12 @@ interface LessonModalProps {
   isOpen: boolean;
   initialTab?: LessonTab;
   onClose: () => void;
-  onCompleteLesson: (destId: string, score: number, stars: number, breakdown?: ChallengeBreakdown) => void;
+  onCompleteLesson: (destId: string, score: number, stars: number, stepUpdates?: any) => void;
   existingProgress?: DestinationProgress;
+  isTeacher?: boolean;
 }
 
-type LessonTab = 'vocabulary' | 'reading' | 'listening' | 'speaking' | 'quiz';
+export type LessonTab = 'vocabulary' | 'reading' | 'listening' | 'speaking' | 'video' | 'quiz';
 
 export const LessonModal: React.FC<LessonModalProps> = ({
   destination,
@@ -39,7 +42,8 @@ export const LessonModal: React.FC<LessonModalProps> = ({
   initialTab,
   onClose,
   onCompleteLesson,
-  existingProgress
+  existingProgress,
+  isTeacher
 }) => {
   const [activeTab, setActiveTab] = useState<LessonTab>(initialTab || 'vocabulary');
 
@@ -62,20 +66,19 @@ export const LessonModal: React.FC<LessonModalProps> = ({
   const content = destination.gradeContent[bandKey] || destination.gradeContent.grade_3;
 
   // Authentic landmark photography selection
-  const landmarkPhoto = destination.id === 'danang_hoian'
-    ? '/destinations/danang_dragon_bridge.jpg'
-    : (destination.image || '/destinations/danang_golden_bridge.jpg');
+  const landmarkPhoto = destination.image || destination.fallbackImage || '/destinations/halong_bay.jpg';
 
   const landmarkTitle = destination.id === 'danang_hoian'
     ? 'Dragon Bridge & Han River (Cầu Rồng Đà Nẵng)'
     : destination.name;
 
-  const handleEarnStars = (stars: number) => {
-    onCompleteLesson(destination.id, 100, stars);
+  const handleEarnStars = (stars: number, step?: 'vocabulary' | 'reading' | 'listening' | 'speaking') => {
+    const currentQuizScore = existingProgress?.quizScore ?? 0;
+    onCompleteLesson(destination.id, currentQuizScore, stars, step ? { [step]: true } : undefined);
   };
 
   const handleQuizComplete = (scorePercent: number, starsEarned: number) => {
-    onCompleteLesson(destination.id, scorePercent, starsEarned);
+    onCompleteLesson(destination.id, scorePercent, starsEarned, { quiz: true });
   };
 
   return (
@@ -184,16 +187,31 @@ export const LessonModal: React.FC<LessonModalProps> = ({
           <button
             onClick={() => {
               soundEffects.playClick();
+              setActiveTab('video');
+            }}
+            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-2xl transition-all whitespace-nowrap cursor-pointer ${
+              activeTab === 'video'
+                ? 'bg-rose-600 text-white shadow-md shadow-rose-200 scale-102'
+                : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+            }`}
+          >
+            <Tv className="w-4 h-4" />
+            <span>5. Video Khám Phá 🎬</span>
+          </button>
+
+          <button
+            onClick={() => {
+              soundEffects.playClick();
               setActiveTab('quiz');
             }}
             className={`flex items-center gap-1.5 px-3.5 py-2 rounded-2xl transition-all whitespace-nowrap cursor-pointer ${
               activeTab === 'quiz'
-                ? 'bg-rose-500 text-white shadow-md shadow-rose-200 scale-102'
+                ? 'bg-amber-600 text-white shadow-md shadow-amber-200 scale-102'
                 : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
             }`}
           >
             <Award className="w-4 h-4" />
-            <span>5. Bloom Quiz ({content.quiz.length})</span>
+            <span>6. Bloom Quiz ({content.quiz.length})</span>
           </button>
         </div>
 
@@ -246,7 +264,7 @@ export const LessonModal: React.FC<LessonModalProps> = ({
                       imageAttribution={item.imageAttribution}
                       category={destination.theme === 'Culture' ? 'culture' : destination.theme === 'Nature' ? 'nature' : 'landmark'}
                       colorTheme={theme}
-                      onEarnStars={() => handleEarnStars(2)}
+                      onEarnStars={() => handleEarnStars(2, 'vocabulary')}
                     />
                   );
                 })}
@@ -306,7 +324,7 @@ export const LessonModal: React.FC<LessonModalProps> = ({
               explanationEn={`Verified clue: ${content.reading.titleEn}`}
               explanationVi={destination.summaryVi}
               gradeBadge={gradeBand === 'grade_4_5' ? 'Grade 4–5 Explorer Mission' : 'Grade 3 Explorer Mission'}
-              onEarnStars={(stars) => handleEarnStars(stars)}
+              onEarnStars={(stars) => handleEarnStars(stars, 'listening')}
               onContinue={() => {
                 soundEffects.playClick();
                 setActiveTab('speaking');
@@ -322,15 +340,43 @@ export const LessonModal: React.FC<LessonModalProps> = ({
               promptVi={content.speaking.promptVi}
               sampleSentence={content.speaking.sampleSentence}
               tips={content.speaking.tips}
-              onEarnStars={(stars) => handleEarnStars(stars)}
+              onEarnStars={(stars) => handleEarnStars(stars, 'speaking')}
               onContinue={() => {
                 soundEffects.playClick();
-                setActiveTab('quiz');
+                setActiveTab('video');
               }}
             />
           )}
 
-          {/* TAB 5: BLOOM QUIZ GAME SHOW */}
+          {/* TAB 5: LIGHTWEIGHT YOUTUBE VIDEO DISCOVERY */}
+          {activeTab === 'video' && (
+            <div className="space-y-5 animate-in fade-in duration-200">
+              <YouTubeLessonEmbed
+                destinationId={destination.id}
+                gradeBand={bandKey}
+                title={`Video Khám Phá: ${destination.name}`}
+                subtitle={`Xem thước phim sống động về ${destination.vietnameseName} (${destination.province}) • Tỷ lệ chuẩn 16:9 • Phát trực tiếp không rời bài học`}
+                isTeacher={isTeacher}
+              />
+
+              {/* Continue to Bloom Quiz Action */}
+              <div className="pt-2 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => {
+                    soundEffects.playClick();
+                    setActiveTab('quiz');
+                  }}
+                  className="px-5 py-2.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs flex items-center gap-2 shadow-md transition-all cursor-pointer transform hover:scale-102"
+                >
+                  <span>Continue to Bloom Quiz</span>
+                  <ArrowRight className="w-4 h-4 text-amber-400" />
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 6: BLOOM QUIZ GAME SHOW */}
           {activeTab === 'quiz' && (
             <BloomQuizGameShow
               questions={content.quiz}

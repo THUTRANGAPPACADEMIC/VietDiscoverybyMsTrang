@@ -8,7 +8,7 @@ interface DestinationExplorerModalProps {
   destination: Destination | null;
   isOpen: boolean;
   onClose: () => void;
-  onStartAdventure: (destination: Destination, initialTab?: 'vocabulary' | 'reading' | 'listening' | 'speaking' | 'quiz') => void;
+  onStartAdventure: (destination: Destination, initialTab?: 'vocabulary' | 'reading' | 'listening' | 'speaking' | 'quiz' | 'video') => void;
   gradeBand?: GradeBand;
 }
 
@@ -63,12 +63,22 @@ export const DestinationExplorerModal: React.FC<DestinationExplorerModalProps> =
         </button>
 
         {/* 1. TOP HERO SCENERY CARD WITH CAPTAIN TRANG */}
-        <div className="relative rounded-3xl overflow-hidden shadow-lg border-2 border-white group h-48 sm:h-56">
-          <img
-            src={destination.image || '/destinations/halong_bay.jpg'}
-            alt={destination.name}
-            className="w-full h-full object-cover select-none group-hover:scale-103 transition-transform duration-500"
-          />
+        <div className="relative rounded-3xl overflow-hidden shadow-lg border-2 border-white group h-48 sm:h-56 bg-slate-900">
+          <picture>
+            <source type="image/webp" srcSet={destination.image} />
+            <img
+              src={destination.fallbackImage || destination.image || '/destinations/halong_bay.jpg'}
+              alt={destination.name}
+              className="w-full h-full object-cover object-center select-none group-hover:scale-103 transition-transform duration-500"
+              loading="lazy"
+              onError={(e) => {
+                const target = e.currentTarget;
+                if (target.src.endsWith('.webp')) {
+                  target.src = destination.fallbackImage || '/destinations/halong_bay.jpg';
+                }
+              }}
+            />
+          </picture>
 
           {/* Destination Location Pill (Top-Left) */}
           <div className="absolute top-3 left-3 bg-gradient-to-r from-rose-500 via-pink-500 to-rose-600 text-white rounded-full px-3.5 py-1.5 shadow-md flex items-center gap-1.5 text-xs font-black border border-white/80">

@@ -74,7 +74,7 @@ export const SIX_LANDMARKS: DragLandmarkItem[] = [
     provinceVi: 'Tỉnh Quảng Ninh',
     region: 'North',
     icon: '⛵',
-    image: '/destinations/halong_bay.jpg',
+    image: '/destinations/halong_bay.webp',
     gradeHints: {
       g12: 'Emerald Bay • Vịnh biển xanh ngọc',
       g3: 'UNESCO World Natural Wonder with limestone islands',
@@ -91,7 +91,7 @@ export const SIX_LANDMARKS: DragLandmarkItem[] = [
     provinceVi: 'Thành phố Huế',
     region: 'Central',
     icon: '👑',
-    image: '/destinations/hue_citadel.jpg',
+    image: '/destinations/hue_citadel.webp',
     gradeHints: {
       g12: 'Royal Palace • Hoàng cung cổ kính',
       g3: 'Ancient royal capital by the gentle Perfume River',
@@ -108,7 +108,7 @@ export const SIX_LANDMARKS: DragLandmarkItem[] = [
     provinceVi: 'Thành phố Đà Nẵng',
     region: 'Central',
     icon: '🐉',
-    image: '/destinations/danang_golden_bridge.jpg',
+    image: '/destinations/danang_golden_bridge.webp',
     gradeHints: {
       g12: 'Golden Dragon • Rồng vàng phun lửa',
       g3: 'Giant golden dragon spanning the beautiful Han River',
@@ -369,6 +369,7 @@ export const LandmarkDragDropGame: React.FC<LandmarkDragDropGameProps> = ({
           speaking: true,
           quiz: true,
           placedLandmarks: placedIds,
+          placements: newPlaced.map(p => ({ id: p.landmark.id, zone: p.zone })),
           completed: nextCompleted
         },
         quizScore: placedIds.length,
@@ -655,6 +656,13 @@ export const LandmarkDragDropGame: React.FC<LandmarkDragDropGameProps> = ({
                       src={lm.image}
                       alt={lm.nameEn}
                       className="w-full h-full object-cover"
+                      loading="lazy"
+                      onError={(e) => {
+                        const target = e.currentTarget;
+                        if (target.src.endsWith('.webp')) {
+                          target.src = target.src.replace('.webp', '.jpg');
+                        }
+                      }}
                     />
                     <div className="absolute top-1 left-1 text-xs">
                       {lm.icon}
@@ -780,6 +788,13 @@ export const LandmarkDragDropGame: React.FC<LandmarkDragDropGameProps> = ({
                             src={landmark.image}
                             alt={landmark.nameEn}
                             className="w-9 h-9 rounded-xl object-cover shrink-0 border border-slate-200"
+                            loading="lazy"
+                            onError={(e) => {
+                              const target = e.currentTarget;
+                              if (target.src.endsWith('.webp')) {
+                                target.src = target.src.replace('.webp', '.jpg');
+                              }
+                            }}
                           />
                           <div className="min-w-0">
                             <div className="font-black text-slate-900 truncate">

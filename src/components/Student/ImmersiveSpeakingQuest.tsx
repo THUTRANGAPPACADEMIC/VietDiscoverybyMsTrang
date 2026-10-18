@@ -10,13 +10,17 @@ import {
   CheckCircle2, 
   AlertCircle, 
   ArrowRight,
-  Award,
   Smile
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { soundEffects } from '../../lib/soundEffects';
+import { backgroundMusic } from '../../lib/backgroundMusic';
 import { playEnglishSpeech, stopSpeech } from '../../lib/speech';
-import { VoiceRecorder } from '../../lib/audioRecorder';
+import { 
+  SpeakingAssessmentSession, 
+  SpeechEvaluationResult, 
+  isSpeechRecognitionAvailable 
+} from '../../lib/speechRecognition';
 
 export interface ImmersiveSpeakingQuestProps {
   destinationName: string;
@@ -41,36 +45,25 @@ export const ImmersiveSpeakingQuest: React.FC<ImmersiveSpeakingQuestProps> = ({
   onEarnStars,
   onContinue
 }) => {
-  const [recorder] = useState(() => new VoiceRecorder());
+  const [activeSession, setActiveSession] = useState<SpeakingAssessmentSession | null>(null);
   const [isRecording, setIsRecording] = useState(false);
+  const [liveVolume, setLiveVolume] = useState(0);
+  const [speakingResult, setSpeakingResult] = useState<SpeechEvaluationResult | null>(null);
   const [recordedAudioUrl, setRecordedAudioUrl] = useState<string | null>(null);
-  const [recordError, setRecordError] = useState<string | null>(null);
   const [recordingSeconds, setRecordingSeconds] = useState(0);
   const [isPlayingModel, setIsPlayingModel] = useState(false);
   const [isPlayingStudentVoice, setIsPlayingStudentVoice] = useState(false);
-  const [hasCompleted, setHasCompleted] = useState(false);
   const [starsAwarded, setStarsAwarded] = useState(false);
-
-  // Recording timer
-  useEffect(() => {
-    let interval: any = null;
-    if (isRecording) {
-      interval = setInterval(() => {
-        setRecordingSeconds(sec => sec + 1);
-      }, 1000);
-    } else {
-      setRecordingSeconds(0);
-    }
-    return () => clearInterval(interval);
-  }, [isRecording]);
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
       stopSpeech();
-      recorder.cancel();
+      if (activeSession) {
+        activeSession.cancel();
+      }
     };
-  }, [recorder]);
+  }, [activeSession]);
 
   const handlePlayModel = () => {
     if (isPlayingModel) {
@@ -92,30 +85,63 @@ export const ImmersiveSpeakingQuest: React.FC<ImmersiveSpeakingQuestProps> = ({
   };
 
   const handleStartRecording = async () => {
-    setRecordError(null);
     stopSpeech();
+    soundEffects.playClick();
+    if (activeSession) {
+      activeSession.cancel();
+    }
+
+    const session = new SpeakingAssessmentSession();
+    setActiveSession(session);
+    setIsRecording(true);
+    setSpeakingResult(null);
+    setLiveVolume(0);
+    setRecordingSeconds(8);
+
+    backgroundMusic.duck('speaking_quest');
+
+    const countdownInterval = setInterval(() => {
+      setRecordingSeconds(prev => {
+        if (prev <= 1) {
+          clearInterval(countdownInterval);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
 
     try {
-      soundEffects.playClick();
-      await recorder.start();
-      setIsRecording(true);
-      setRecordedAudioUrl(null);
+      const result = await session.start(sampleSentence, {
+        maxDurationSeconds: 8,
+        lang: 'en-GB',
+        onVolumeChange: (vol) => setLiveVolume(vol)
+      });
+
+      clearInterval(countdownInterval);
+      backgroundMusic.unduck('speaking_quest');
+      setIsRecording(false);
+      setSpeakingResult(result);
+
+      if (result.audioUrl) {
+        setRecordedAudioUrl(result.audioUrl);
+      }
+
+      if (result.success && result.status === 'matched') {
+        soundEffects.playSuccess();
+      } else {
+        soundEffects.playClick();
+      }
     } catch (err: any) {
-      setRecordError(err.message || 'Microphone access is not supported or was denied.');
+      clearInterval(countdownInterval);
+      backgroundMusic.unduck('speaking_quest');
+      setIsRecording(false);
     }
   };
 
-  const handleStopRecording = async () => {
+  const handleStopRecordingManually = () => {
     soundEffects.playClick();
-    try {
-      const url = await recorder.stop();
-      setIsRecording(false);
-      setRecordedAudioUrl(url);
-      setHasCompleted(true);
-      soundEffects.playCorrect();
-    } catch (err: any) {
-      setRecordError(err.message || 'Recording failed. Please try again.');
-      setIsRecording(false);
+    if (activeSession) {
+      activeSession.stop();
     }
   };
 
@@ -132,7 +158,7 @@ export const ImmersiveSpeakingQuest: React.FC<ImmersiveSpeakingQuestProps> = ({
   };
 
   const handleClaimReward = () => {
-    if (starsAwarded) return;
+    if (starsAwarded || !speakingResult?.success || speakingResult.status !== 'matched') return;
     setStarsAwarded(true);
     soundEffects.playStarFanfare();
 
@@ -266,20 +292,12 @@ export const ImmersiveSpeakingQuest: React.FC<ImmersiveSpeakingQuestProps> = ({
                 Step 4: Your Turn to Speak!
               </span>
               <h4 className="text-lg font-black text-slate-900 font-heading">
-                Record Your Own Voice
+                Record & Verify Speech Recognition
               </h4>
               <p className="text-xs text-slate-500 font-medium">
                 Hold your head up high, smile, and speak clearly into your microphone!
               </p>
             </div>
-
-            {/* Error Message if any */}
-            {recordError && (
-              <div className="p-3 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 shrink-0" />
-                <span>{recordError}</span>
-              </div>
-            )}
 
             {/* Big Interactive Recording Disc */}
             <div className="flex flex-col items-center justify-center p-6 rounded-3xl bg-gradient-to-b from-purple-50/50 via-slate-50 to-indigo-50/30 border-2 border-slate-200/80 space-y-4">
@@ -295,7 +313,7 @@ export const ImmersiveSpeakingQuest: React.FC<ImmersiveSpeakingQuestProps> = ({
               ) : (
                 <button
                   type="button"
-                  onClick={handleStopRecording}
+                  onClick={handleStopRecordingManually}
                   className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-slate-900 hover:bg-slate-800 text-white flex items-center justify-center shadow-xl shadow-slate-400 transition-all transform hover:scale-105 active:scale-95 cursor-pointer ring-4 ring-rose-400 ring-offset-4 animate-pulse"
                 >
                   <Square className="w-8 h-8 fill-rose-500 text-rose-500" />
@@ -303,36 +321,73 @@ export const ImmersiveSpeakingQuest: React.FC<ImmersiveSpeakingQuestProps> = ({
               )}
 
               {/* Status Indicator */}
-              <div className="text-center">
+              <div className="text-center w-full max-w-xs">
                 {isRecording ? (
-                  <div className="space-y-1">
+                  <div className="space-y-2">
                     <div className="flex items-center justify-center gap-2 text-rose-600 font-black text-sm">
                       <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping" />
-                      <span>Recording Live... 00:{recordingSeconds < 10 ? `0${recordingSeconds}` : recordingSeconds}</span>
+                      <span>Đang thu âm... 00:{recordingSeconds < 10 ? `0${recordingSeconds}` : recordingSeconds}</span>
                     </div>
-                    <p className="text-xs text-slate-500 font-medium">Click square button when you finish speaking!</p>
+
+                    {/* Live Audio Volume Bar */}
+                    <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden border border-slate-300">
+                      <div 
+                        className={`h-full transition-all duration-100 ${liveVolume > 15 ? 'bg-emerald-500' : 'bg-amber-400'}`}
+                        style={{ width: `${Math.min(100, liveVolume * 2)}%` }}
+                      />
+                    </div>
+                    <p className="text-[11px] text-slate-500">
+                      {liveVolume > 12 ? '🎙️ Đã nhận tín hiệu giọng nói' : 'Hãy nói to, rõ ràng hơn...'}
+                    </p>
                   </div>
-                ) : recordedAudioUrl ? (
-                  <div className="space-y-1">
-                    <div className="text-emerald-600 font-black text-sm flex items-center justify-center gap-1.5">
-                      <CheckCircle2 className="w-4 h-4" />
-                      <span>Voice Recorded Successfully!</span>
-                    </div>
-                    <p className="text-xs text-slate-500 font-medium">Listen to your recording or try again.</p>
+                ) : speakingResult ? (
+                  <div className="space-y-2 animate-fade-in">
+                    {speakingResult.success && speakingResult.status === 'matched' ? (
+                      <div className="text-emerald-600 font-black text-sm flex items-center justify-center gap-1.5">
+                        <CheckCircle2 className="w-4 h-4" />
+                        <span>{speakingResult.titleVi}</span>
+                      </div>
+                    ) : (
+                      <div className="text-amber-700 font-black text-sm flex items-center justify-center gap-1.5">
+                        <AlertCircle className="w-4 h-4 text-amber-600" />
+                        <span>{speakingResult.titleVi}</span>
+                      </div>
+                    )}
+                    <p className="text-xs text-slate-600 font-medium">
+                      {speakingResult.feedbackVi}
+                    </p>
                   </div>
                 ) : (
                   <div className="space-y-1">
                     <div className="font-extrabold text-slate-700 text-xs">
-                      Tap the pink microphone to start recording
+                      Bấm vào micro màu hồng để bắt đầu luyện nói
                     </div>
                     <p className="text-[11px] text-slate-400">
-                      Speak the model sentence clearly at your normal pace.
+                      Đọc to câu mẫu bằng tiếng Anh rõ ràng theo nhịp độ tự nhiên.
                     </p>
                   </div>
                 )}
               </div>
 
             </div>
+
+            {/* Recognized Speech Box */}
+            {speakingResult?.transcript && (
+              <div className="p-3 rounded-2xl bg-indigo-50/80 border border-indigo-200 text-left space-y-1 animate-in fade-in duration-200">
+                <span className="text-[10px] uppercase font-bold text-indigo-700 block">
+                  Hệ thống nghe được (Recognized Text):
+                </span>
+                <p className="text-xs font-bold text-slate-800">
+                  "{speakingResult.transcript}"
+                </p>
+                {speakingResult.status === 'matched' && (
+                  <div className="text-[10px] text-emerald-700 font-semibold flex items-center gap-1">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Độ khớp từ vựng: {speakingResult.matchPercentage}%</span>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Student Audio Playback Bar */}
             {recordedAudioUrl && (
@@ -351,10 +406,10 @@ export const ImmersiveSpeakingQuest: React.FC<ImmersiveSpeakingQuestProps> = ({
                   </button>
                   <div>
                     <div className="text-xs font-black text-indigo-950">
-                      {isPlayingStudentVoice ? 'Playing back your voice...' : 'Listen to Your Recording'}
+                      {isPlayingStudentVoice ? 'Đang phát lại giọng đọc của bé...' : 'Nghe lại giọng đọc vừa ghi âm'}
                     </div>
                     <div className="text-[10px] text-indigo-700 font-medium">
-                      Student Practice Voice Clip
+                      Bản ghi âm giọng đọc học sinh
                     </div>
                   </div>
                 </div>
@@ -363,43 +418,41 @@ export const ImmersiveSpeakingQuest: React.FC<ImmersiveSpeakingQuestProps> = ({
                   <button
                     type="button"
                     onClick={handleStartRecording}
-                    className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center gap-1 shadow-2xs"
+                    className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center gap-1 shadow-2xs cursor-pointer"
                   >
                     <RotateCcw className="w-3.5 h-3.5" />
-                    <span>Re-record</span>
+                    <span>Thử lại</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={handleClaimReward}
-                    disabled={starsAwarded}
+                    disabled={starsAwarded || !speakingResult?.success || speakingResult.status !== 'matched'}
                     className={`px-4 py-2 rounded-xl text-xs font-black flex items-center gap-1.5 shadow-xs transition-all ${
                       starsAwarded
                         ? 'bg-emerald-600 text-white cursor-default'
-                        : 'bg-amber-400 hover:bg-amber-300 text-amber-950 cursor-pointer transform hover:scale-102'
+                        : speakingResult?.success && speakingResult.status === 'matched'
+                        ? 'bg-amber-400 hover:bg-amber-300 text-amber-950 cursor-pointer transform hover:scale-102'
+                        : 'bg-slate-200 text-slate-400 cursor-not-allowed'
                     }`}
                   >
                     <Star className="w-3.5 h-3.5 fill-current" />
-                    <span>{starsAwarded ? '⭐ +25 Stars Claimed!' : 'Claim +25 Stars!'}</span>
+                    <span>{starsAwarded ? '⭐ Đã nhận +25 sao' : 'Nhận +25 sao'}</span>
                   </button>
                 </div>
               </div>
             )}
 
-            {/* Friendly Pedagogical Feedback (NO FAKE AI SCORES) */}
-            {hasCompleted && (
-              <div className="p-3.5 rounded-2xl bg-emerald-50/90 border border-emerald-200 text-emerald-950 flex items-start gap-2.5 animate-in fade-in duration-200">
-                <Smile className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-                <div className="text-xs space-y-0.5">
-                  <div className="font-black text-emerald-900">
-                    🌟 Excellent Effort, Young Explorer!
-                  </div>
-                  <div className="text-slate-600 font-medium">
-                    Your speaking practice was recorded. Speaking English aloud builds natural confidence and fluency!
-                  </div>
-                </div>
+            {/* Pedagogical Transparency Note */}
+            <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 text-[11px] text-slate-600 space-y-1">
+              <div className="font-bold flex items-center gap-1 text-slate-700">
+                <Smile className="w-3.5 h-3.5 text-indigo-600" />
+                <span>Tiêu chuẩn đánh giá kỹ năng Nói Tiểu học:</span>
               </div>
-            )}
+              <p>
+                Hệ thống sử dụng công nghệ nhận diện giọng nói (Web Speech API) và phân tích âm lượng thời gian thực để xác nhận học sinh có thực sự phát âm và nói đúng từ vựng tiếng Anh. Ứng dụng không suy diễn hoặc tạo điểm số phát âm nhân tạo.
+              </p>
+            </div>
 
           </div>
 
@@ -415,7 +468,7 @@ export const ImmersiveSpeakingQuest: React.FC<ImmersiveSpeakingQuestProps> = ({
                 onClick={onContinue}
                 className="px-5 py-2.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs flex items-center gap-2 shadow-md transition-all cursor-pointer transform hover:scale-102"
               >
-                <span>Continue to Bloom Quiz</span>
+                <span>Tiếp tục đến Bloom Quiz</span>
                 <ArrowRight className="w-4 h-4 text-amber-400" />
               </button>
             )}

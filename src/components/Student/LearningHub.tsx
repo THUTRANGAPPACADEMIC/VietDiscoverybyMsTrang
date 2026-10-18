@@ -74,14 +74,14 @@ interface LearningHubProps {
   activeTab: 'explore' | 'games' | 'videos' | 'passport' | 'progress';
   totalStars: number;
   previewGradeBand?: GradeBand; // for teacher previewing
-  onUpdateProgress: (destId: string, score: number, starsEarned: number) => void;
+  onUpdateProgress: (destId: string, score?: number, starsEarned?: number, stepUpdates?: any) => void;
   onEarnStars?: (stars: number) => void;
   onSaveGameProgress?: (gameId: string, progress: DestinationProgress) => void;
   onSelectTab?: (tab: 'explore' | 'games' | 'videos' | 'passport' | 'progress') => void;
   onNavigateGrade?: (gradeNum: GradeNumber) => void;
 }
 
-type LessonTabType = 'vocabulary' | 'reading' | 'listening' | 'speaking' | 'quiz';
+type LessonTabType = 'vocabulary' | 'reading' | 'listening' | 'speaking' | 'quiz' | 'video';
 
 export const LearningHub: React.FC<LearningHubProps> = ({
   user,
@@ -203,8 +203,8 @@ export const LearningHub: React.FC<LearningHubProps> = ({
     setIsDestinationExplorerOpen(true);
   };
 
-  const handleCompleteLesson = (destId: string, score: number, stars: number) => {
-    onUpdateProgress(destId, score, stars);
+  const handleCompleteLesson = (destId: string, score: number, stars: number, stepUpdates?: any) => {
+    onUpdateProgress(destId, score, stars, stepUpdates);
   };
 
   // Grade pathway metadata matching Image 2
@@ -602,7 +602,7 @@ export const LearningHub: React.FC<LearningHubProps> = ({
                     <span>🎯</span>
                     <span>Game 34 Tỉnh (3 Chế độ)</span>
                     <span className="text-[9.5px] bg-rose-500 text-white px-1.5 py-0.5 rounded-full font-black uppercase">
-                      Genially
+                      Tương tác
                     </span>
                   </button>
 
@@ -733,11 +733,20 @@ export const LearningHub: React.FC<LearningHubProps> = ({
                         {/* Top Row: Circular Thumbnail + Name */}
                         <div className="flex items-center gap-2.5">
                           <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-sky-300 shadow-xs shrink-0 group-hover:scale-105 transition-transform">
-                            <img
-                              src={selectedDestination.image || '/destinations/halong_bay.jpg'}
-                              alt={selectedDestination.name}
-                              className="w-full h-full object-cover"
-                            />
+                            <picture>
+                              <source type="image/webp" srcSet={selectedDestination.image} />
+                              <img
+                                src={selectedDestination.fallbackImage || selectedDestination.image || '/destinations/halong_bay.jpg'}
+                                alt={selectedDestination.name}
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                  const target = e.currentTarget;
+                                  if (target.src.endsWith('.webp')) {
+                                    target.src = selectedDestination.fallbackImage || '/destinations/halong_bay.jpg';
+                                  }
+                                }}
+                              />
+                            </picture>
                           </div>
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center justify-between">
@@ -790,7 +799,10 @@ export const LearningHub: React.FC<LearningHubProps> = ({
                         className="absolute top-[28%] left-[58%] -translate-x-1/2 -translate-y-1/2 cursor-pointer transition-transform hover:scale-125 z-20 group/pin"
                       >
                         <div className="w-8 h-8 rounded-full border-2 border-white shadow-lg overflow-hidden ring-2 ring-rose-400 animate-pulse">
-                          <img src="/destinations/halong_bay.jpg" alt="Ha Long" className="w-full h-full object-cover" />
+                          <picture>
+                            <source type="image/webp" srcSet="/destinations/halong_bay.webp" />
+                            <img src="/destinations/halong_bay.jpg" alt="Ha Long" className="w-full h-full object-cover" />
+                          </picture>
                         </div>
                       </button>
 
@@ -805,7 +817,10 @@ export const LearningHub: React.FC<LearningHubProps> = ({
                         className="absolute top-[25%] left-[38%] -translate-x-1/2 -translate-y-1/2 cursor-pointer transition-transform hover:scale-125 z-20"
                       >
                         <div className="w-7 h-7 rounded-full border-2 border-white shadow-lg overflow-hidden ring-2 ring-amber-400">
-                          <img src="/destinations/hanoi_turtle_tower.jpg" alt="Hanoi" className="w-full h-full object-cover" />
+                          <picture>
+                            <source type="image/webp" srcSet="/destinations/hanoi_turtle_tower.webp" />
+                            <img src="/destinations/hanoi_turtle_tower.jpg" alt="Hanoi" className="w-full h-full object-cover" />
+                          </picture>
                         </div>
                       </button>
 
@@ -820,7 +835,10 @@ export const LearningHub: React.FC<LearningHubProps> = ({
                         className="absolute top-[52%] left-[48%] -translate-x-1/2 -translate-y-1/2 cursor-pointer transition-transform hover:scale-125 z-20"
                       >
                         <div className="w-7 h-7 rounded-full border-2 border-white shadow-lg overflow-hidden ring-2 ring-purple-400">
-                          <img src="/destinations/hue_citadel.jpg" alt="Hue" className="w-full h-full object-cover" />
+                          <picture>
+                            <source type="image/webp" srcSet="/destinations/hue_citadel.webp" />
+                            <img src="/destinations/hue_citadel.jpg" alt="Hue" className="w-full h-full object-cover" />
+                          </picture>
                         </div>
                       </button>
 
@@ -835,7 +853,10 @@ export const LearningHub: React.FC<LearningHubProps> = ({
                         className="absolute top-[60%] left-[52%] -translate-x-1/2 -translate-y-1/2 cursor-pointer transition-transform hover:scale-125 z-20"
                       >
                         <div className="w-7 h-7 rounded-full border-2 border-white shadow-lg overflow-hidden ring-2 ring-emerald-400">
-                          <img src="/destinations/danang_golden_bridge.jpg" alt="Da Nang" className="w-full h-full object-cover" />
+                          <picture>
+                            <source type="image/webp" srcSet="/destinations/danang_golden_bridge.webp" />
+                            <img src="/destinations/danang_golden_bridge.jpg" alt="Da Nang" className="w-full h-full object-cover" />
+                          </picture>
                         </div>
                       </button>
 
@@ -895,11 +916,21 @@ export const LearningHub: React.FC<LearningHubProps> = ({
 
                       {/* Destination Photo with Region Tag */}
                       <div className="relative rounded-2xl overflow-hidden shadow-xs border border-slate-100 h-28 sm:h-32 group">
-                        <img
-                          src={selectedDestination.image || '/destinations/halong_bay.jpg'}
-                          alt={selectedDestination.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
+                        <picture>
+                          <source type="image/webp" srcSet={selectedDestination.image} />
+                          <img
+                            src={selectedDestination.fallbackImage || selectedDestination.image || '/destinations/halong_bay.jpg'}
+                            alt={selectedDestination.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            loading="lazy"
+                            onError={(e) => {
+                              const target = e.currentTarget;
+                              if (target.src.endsWith('.webp')) {
+                                target.src = selectedDestination.fallbackImage || '/destinations/halong_bay.jpg';
+                              }
+                            }}
+                          />
+                        </picture>
                         <div className="absolute top-2 left-2 px-2.5 py-0.5 rounded-full bg-rose-500/90 text-white font-black text-[10px] shadow-xs border border-white/70">
                           {selectedDestination.region === 'North' ? 'Miền Bắc' : selectedDestination.region === 'Central' ? 'Miền Trung' : 'Miền Nam'}
                         </div>
@@ -1101,16 +1132,20 @@ export const LearningHub: React.FC<LearningHubProps> = ({
               destination={activeLessonDestination}
               isOpen={isLessonModalOpen}
               onClose={() => setIsLessonModalOpen(false)}
-              onCompleteLesson={(destId: string, score: number, stars: number) => handleCompleteLesson(destId, score, stars)}
-              initialStep={initialLessonTab === 'reading' ? 'learn' : initialLessonTab === 'listening' ? 'listen' : initialLessonTab === 'speaking' ? 'speak' : initialLessonTab === 'quiz' ? 'play' : 'listen'}
+              onCompleteLesson={(destId: string, score: number, stars: number, stepUpdates?: any) => handleCompleteLesson(destId, score, stars, stepUpdates)}
+              initialStep={initialLessonTab === 'reading' ? 'learn' : initialLessonTab === 'listening' ? 'listen' : initialLessonTab === 'speaking' ? 'speak' : initialLessonTab === 'video' ? 'video' : initialLessonTab === 'quiz' ? 'play' : 'listen'}
+              existingProgress={activeLessonDestination ? progressMap[activeLessonDestination.id] : undefined}
+              isTeacher={user?.role === 'teacher' || user?.role === 'admin' || user?.role === 'super_admin'}
             />
           ) : (
             <LessonModal
               destination={activeLessonDestination}
               isOpen={isLessonModalOpen}
               onClose={() => setIsLessonModalOpen(false)}
-              onCompleteLesson={(destId: string, score: number, stars: number) => handleCompleteLesson(destId, score, stars)}
+              onCompleteLesson={(destId: string, score: number, stars: number, stepUpdates?: any) => handleCompleteLesson(destId, score, stars, stepUpdates)}
               initialTab={initialLessonTab}
+              existingProgress={activeLessonDestination ? progressMap[activeLessonDestination.id] : undefined}
+              isTeacher={user?.role === 'teacher' || user?.role === 'admin' || user?.role === 'super_admin'}
             />
           )}
         </Suspense>

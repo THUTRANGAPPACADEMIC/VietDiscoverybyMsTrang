@@ -472,6 +472,13 @@ export const StudentCurriculumExperience: React.FC<StudentCurriculumExperiencePr
                         src={lesson.coverImage || '/destinations/halong_bay.jpg'}
                         alt={lesson.titleEn}
                         className="w-full h-full object-cover group-hover:scale-106 transition-transform duration-500"
+                        loading="lazy"
+                        onError={(e) => {
+                          const target = e.currentTarget;
+                          if (!target.src.includes('halong_bay.jpg')) {
+                            target.src = '/destinations/halong_bay.jpg';
+                          }
+                        }}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent pointer-events-none" />
 
@@ -761,6 +768,13 @@ export const StudentCurriculumExperience: React.FC<StudentCurriculumExperiencePr
                               src={activeLesson.coverImage || '/destinations/halong_bay.jpg'}
                               alt="Video Preview"
                               className="absolute inset-0 w-full h-full object-cover opacity-40"
+                              loading="lazy"
+                              onError={(e) => {
+                                const target = e.currentTarget;
+                                if (!target.src.includes('halong_bay.jpg')) {
+                                  target.src = '/destinations/halong_bay.jpg';
+                                }
+                              }}
                             />
                             <div className="relative z-10 space-y-3">
                               <button
@@ -868,11 +882,17 @@ export const StudentCurriculumExperience: React.FC<StudentCurriculumExperiencePr
                             : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
                         }`}
                       >
-                        <img
-                          src={getVocabularyVisual(v.word).imageUrl}
-                          alt={v.word}
-                          className="w-5 h-5 rounded-md object-cover shrink-0"
-                        />
+                        {getVocabularyVisual(v.word).imageUrl ? (
+                          <img
+                            src={getVocabularyVisual(v.word).imageUrl}
+                            alt={v.word}
+                            className="w-5 h-5 rounded-md object-cover shrink-0"
+                          />
+                        ) : (
+                          <span className="w-5 h-5 rounded-md bg-slate-100 flex items-center justify-center text-[10px] shrink-0 select-none">
+                            🖼️
+                          </span>
+                        )}
                         <span>{v.word}</span>
                       </button>
                     ))}

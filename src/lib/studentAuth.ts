@@ -326,7 +326,7 @@ export async function authenticateStudent(
               : (localVal?.completedSteps?.placedLandmarks || []);
             cleanProgress[key] = {
               ...val,
-              starsEarned: Math.max(val.starsEarned || 0, localVal?.starsEarned || 0),
+              starsEarned: typeof val.starsEarned === 'number' ? val.starsEarned : (localVal?.starsEarned || 0),
               completedSteps: {
                 ...localVal?.completedSteps,
                 ...val.completedSteps,
@@ -424,7 +424,7 @@ export async function syncStudentProgress(
   studentId: string,
   destinationId: string,
   progress: DestinationProgress
-): Promise<{ success: boolean; isCloudSynced: boolean; serverTotalStars?: number }> {
+): Promise<{ success: boolean; isCloudSynced: boolean; serverTotalStars?: number; verifiedStars?: number }> {
   // Update local storage first (instant responsiveness), scoped by studentId
   const studentKey = studentId ? `progress_map_${studentId}` : 'progress_map';
   const currentMap = localStore.get<Record<string, DestinationProgress>>(studentKey, {});
@@ -437,6 +437,7 @@ export async function syncStudentProgress(
 
   let isCloudSynced = false;
   let serverTotalStars: number | undefined;
+  let verifiedStars: number | undefined;
 
   // Sync to Supabase using Authenticated Session RPC
   if (isSupabaseConfigured() && supabase) {
@@ -458,6 +459,18 @@ export async function syncStudentProgress(
           if (typeof data.totalStars === 'number') {
             serverTotalStars = data.totalStars;
           }
+          if (typeof data.verifiedStars === 'number') {
+            const vStars: number = data.verifiedStars;
+            verifiedStars = vStars;
+            if (updatedMap[destinationId].starsEarned !== vStars) {
+              updatedMap[destinationId] = {
+                ...updatedMap[destinationId],
+                starsEarned: vStars
+              };
+              localStore.set(studentKey, updatedMap);
+              localStore.set('progress_map', updatedMap);
+            }
+          }
         }
       } else {
         console.warn('[Security]: Không có phiên học sinh (sessionToken). Tiến trình học tập được lưu tại bộ nhớ máy.');
@@ -467,7 +480,7 @@ export async function syncStudentProgress(
     }
   }
 
-  return { success: true, isCloudSynced, serverTotalStars };
+  return { success: true, isCloudSynced, serverTotalStars, verifiedStars };
 }
 
 /**
@@ -514,7 +527,7 @@ export async function loadStudentProgress(studentId: string): Promise<{ data: Re
               : (localVal?.completedSteps?.placedLandmarks || []);
             merged[key] = {
               ...val,
-              starsEarned: Math.max(val.starsEarned || 0, localVal?.starsEarned || 0),
+              starsEarned: typeof val.starsEarned === 'number' ? val.starsEarned : (localVal?.starsEarned || 0),
               completedSteps: {
                 ...localVal?.completedSteps,
                 ...val.completedSteps,

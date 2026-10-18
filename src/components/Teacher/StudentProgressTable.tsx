@@ -125,8 +125,8 @@ export const StudentProgressTable: React.FC<StudentProgressTableProps> = ({
               <div className="text-xs font-black flex items-center gap-2">
                 <span>
                   {loadState.isCloudSynced 
-                    ? `ĐÃ KẾT NỐI SUPABASE TEST CLOUD (${loadState.cloudProgressCount} bản ghi tiến độ thật)` 
-                    : 'BẢO MẬT RLS SUPABASE TEST ĐANG KÍCH HOẠT'}
+                    ? `ĐÃ KẾT NỐI SUPABASE PRODUCTION CLOUD (${loadState.cloudProgressCount} bản ghi tiến độ thật)` 
+                    : 'BẢO MẬT RLS SUPABASE PRODUCTION ĐANG KÍCH HOẠT'}
                 </span>
                 <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
                   loadState.isCloudSynced ? 'bg-emerald-200 text-emerald-800' : 'bg-indigo-200 text-indigo-800'
@@ -137,7 +137,7 @@ export const StudentProgressTable: React.FC<StudentProgressTableProps> = ({
               <p className="text-[11px] opacity-80 mt-0.5">
                 {loadState.isCloudSynced
                   ? 'Bảng tiến độ đang hiển thị dữ liệu học tập thật trực tiếp từ bảng student_progress trên máy chủ.'
-                  : (loadState.errorMessage || 'Máy chủ Supabase TEST đang bảo vệ danh bạ và tiến độ học sinh. Hiển thị điểm số thực tế đã lưu, không cộng điểm ảo.')}
+                  : (loadState.errorMessage || 'Máy chủ Supabase Production đang bảo vệ danh bạ và tiến độ học sinh. Hiển thị điểm số thực tế đã lưu, không cộng điểm ảo.')}
               </p>
             </div>
           </div>
@@ -168,7 +168,7 @@ export const StudentProgressTable: React.FC<StudentProgressTableProps> = ({
             onClick={fetchProgress}
             disabled={isRefreshing}
             className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs border border-slate-300/80 transition-all cursor-pointer disabled:opacity-50"
-            title="Tải lại tiến độ mới nhất từ Supabase TEST"
+            title="Tải lại tiến độ mới nhất từ Supabase Production"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin text-indigo-600' : ''}`} />
             <span>{isRefreshing ? 'Đang tải...' : 'Làm mới'}</span>
@@ -227,7 +227,15 @@ export const StudentProgressTable: React.FC<StudentProgressTableProps> = ({
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {filtered.map((stu) => (
+              {filtered.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="py-12 text-center text-slate-400">
+                    <p className="font-bold text-sm text-slate-600">Chưa có dữ liệu học sinh nào</p>
+                    <p className="text-xs text-slate-400 mt-1">Dữ liệu học sinh giả đã được loại bỏ hoàn toàn. Vui lòng làm mới hoặc đồng bộ với Supabase Production.</p>
+                  </td>
+                </tr>
+              ) : (
+                filtered.map((stu) => (
                 <tr key={stu.id} className="hover:bg-slate-50/80 transition-colors">
                   <td className="py-4 px-5">
                     <div className="flex items-center gap-2.5">
@@ -279,7 +287,7 @@ export const StudentProgressTable: React.FC<StudentProgressTableProps> = ({
                     </button>
                   </td>
                 </tr>
-              ))}
+              )))}
             </tbody>
           </table>
         </div>

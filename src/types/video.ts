@@ -75,6 +75,10 @@ export interface EducationalVideo {
   listeningTask?: VideoListeningTask;
   speakingTask?: VideoSpeakingTask;
   applyTask?: VideoApplyTask;
+
+  // Smart Clip Selection (Start / End times in seconds)
+  startSeconds?: number;
+  endSeconds?: number;
 }
 
 export interface StudentVideoProgress {

@@ -1048,13 +1048,23 @@ export const VietnamMap: React.FC<VietnamMapProps> = ({
               <div className="space-y-4">
                 
                 {/* Destination Photo Banner */}
-                <div className="relative rounded-3xl overflow-hidden aspect-[16/10] shadow-sm">
-                  <img
-                    src={selectedDestination.image}
-                    alt={selectedDestination.name}
-                    className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent"></div>
+                <div className="relative rounded-3xl overflow-hidden aspect-[16/10] shadow-sm bg-slate-900">
+                  <picture>
+                    <source type="image/webp" srcSet={selectedDestination.image} />
+                    <img
+                      src={selectedDestination.fallbackImage || selectedDestination.image}
+                      alt={selectedDestination.name}
+                      className="w-full h-full object-cover object-center transition-transform duration-500 hover:scale-105"
+                      loading="lazy"
+                      onError={(e) => {
+                        const target = e.currentTarget;
+                        if (target.src.endsWith('.webp')) {
+                          target.src = selectedDestination.fallbackImage || '/destinations/halong_bay.jpg';
+                        }
+                      }}
+                    />
+                  </picture>
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent pointer-events-none"></div>
                   
                   <div className="absolute top-3 left-3 flex items-center gap-1.5">
                     <span className="px-2.5 py-1 rounded-full bg-slate-900/80 backdrop-blur-md text-white text-[11px] font-bold">

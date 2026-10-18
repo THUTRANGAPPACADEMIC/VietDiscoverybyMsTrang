@@ -110,6 +110,7 @@ export interface Destination {
   geoCoordinates: { latitude: number; longitude: number };
   coordinates: { x: number; y: number }; // SVG map percentage or legacy coords
   image: string;
+  fallbackImage?: string;
   photoAttribution?: DestinationPhotoAttribution;
   summaryEn: string;
   summaryVi: string;

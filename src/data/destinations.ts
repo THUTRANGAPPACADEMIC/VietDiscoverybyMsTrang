@@ -28,7 +28,8 @@ export const DESTINATIONS: Destination[] = [
     theme: 'Nature',
     geoCoordinates: { latitude: 20.910, longitude: 107.184 },
     coordinates: { x: 74, y: 19 },
-    image: '/destinations/halong_bay.jpg',
+    image: '/destinations/halong_bay.webp',
+    fallbackImage: '/destinations/halong_bay.jpg',
     photoAttribution: {
       author: 'Amstram Gram',
       source: 'Verified Photography Archive',
@@ -280,13 +281,14 @@ export const DESTINATIONS: Destination[] = [
     theme: 'History',
     geoCoordinates: { latitude: 21.028, longitude: 105.854 },
     coordinates: { x: 62, y: 18 },
-    // AUTHENTIC PHOTO: Hoan Kiem Lake with iconic ancient Turtle Tower reflecting in green water
-    image: '/destinations/hanoi_turtle_tower.jpg',
+    // AUTHENTIC PHOTO: Hoan Kiem Lake with iconic The Huc Bridge & Ngoc Son Temple
+    image: '/destinations/hanoi_turtle_tower.webp',
+    fallbackImage: '/destinations/hanoi_turtle_tower.jpg',
     photoAttribution: {
-      author: 'Wikimedia Commons / Public Domain',
-      source: 'Wikimedia Commons',
-      license: 'CC BY-SA 3.0 / Educational Public Domain',
-      landmark: 'Turtle Tower & Sword Lake (Tháp Rùa Hồ Gươm), Hanoi'
+      author: 'Verified Photography Archive',
+      source: 'Verified High-Resolution Photography',
+      license: 'Educational Creative Commons License',
+      landmark: 'The Huc Bridge & Ngoc Son Temple (Hồ Hoàn Kiếm), Hanoi'
     },
     summaryEn: 'The thousand-year-old capital with peaceful lakes, the ancient Temple of Literature, and joyful streets.',
     summaryVi: 'Thủ đô ngàn năm văn hiến với những hồ nước thanh bình, Văn Miếu cổ kính và phố phường rộn rã.',
@@ -533,8 +535,9 @@ export const DESTINATIONS: Destination[] = [
     theme: 'Culture',
     geoCoordinates: { latitude: 16.470, longitude: 107.578 },
     coordinates: { x: 67, y: 44 },
-    // AUTHENTIC PHOTO: Ngo Mon Gate & Imperial Citadel with traditional tiled dragon roofs and lotus moats
-    image: '/destinations/hue_citadel.jpg',
+    // AUTHENTIC PHOTO: Meridian Gate (Ngo Mon) & Hue Imperial Citadel
+    image: '/destinations/hue_citadel.webp',
+    fallbackImage: '/destinations/hue_citadel.jpg',
     photoAttribution: {
       author: 'Wikimedia Commons',
       source: 'Wikimedia Commons',
@@ -821,8 +824,9 @@ export const DESTINATIONS: Destination[] = [
     theme: 'Culture',
     geoCoordinates: { latitude: 16.054, longitude: 108.202 },
     coordinates: { x: 74, y: 47 },
-    // AUTHENTIC PHOTO: Golden Bridge (Cau Vang) held by giant hands overlooking the misty Da Nang mountains
-    image: '/destinations/danang_golden_bridge.jpg',
+    // AUTHENTIC PHOTO: Golden Bridge (Cau Vang) held by giant hands overlooking the lush Da Nang mountains
+    image: '/destinations/danang_golden_bridge.webp',
+    fallbackImage: '/destinations/danang_golden_bridge.jpg',
     photoAttribution: {
       author: 'Tran Tuan Viet / Verified Archive',
       source: 'Verified High-Resolution Photography',

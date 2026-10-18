@@ -71,17 +71,17 @@ export const AboutCreatorModal: React.FC<AboutCreatorModalProps> = ({ isOpen, on
                 <div className="flex items-center gap-1.5 flex-wrap">
                   <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#00B8D9]/25 border border-[#00B8D9]/50 text-cyan-200 text-[10px] sm:text-[11px] font-black uppercase tracking-wider">
                     <Sparkles className="w-3 h-3 text-[#FFB627]" />
-                    <span>Dự án giáo dục • VietDiscovery</span>
+                    <span>Website giáo dục tương tác · VietDiscovery</span>
                   </span>
                 </div>
                 <h3 
                   id="modal-author-title"
                   className="font-black text-white text-base sm:text-xl md:text-2xl font-heading tracking-tight leading-tight mt-1 truncate sm:whitespace-normal"
                 >
-                  THÔNG TIN VỀ TÁC GIẢ VÀ DỰ ÁN
+                  THÔNG TIN VỀ TÁC GIẢ VÀ WEBSITE
                 </h3>
                 <p className="text-cyan-200 text-xs sm:text-sm font-semibold mt-0.5 flex items-center gap-1.5">
-                  <span>About the Author & Project</span>
+                  <span>About the Author & Website</span>
                   <span className="text-white/40">•</span>
                   <span className="text-amber-300 font-bold">VietDiscovery by Ms. Trang</span>
                 </p>
@@ -113,10 +113,10 @@ export const AboutCreatorModal: React.FC<AboutCreatorModalProps> = ({ isOpen, on
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-white text-[11px] font-black uppercase tracking-wider shadow-xs w-fit">
                 <Award className="w-3.5 h-3.5 text-amber-100" />
-                <span>Tác giả & Chủ nhiệm Dự án Giáo dục</span>
+                <span>Tác giả & Người phát triển Website</span>
               </div>
               <span className="text-[11px] font-bold text-slate-400">
-                Chuyên viên Tiếng Anh Tiểu học
+                Giáo viên Tiếng Anh Tiểu học
               </span>
             </div>
 
@@ -165,7 +165,7 @@ export const AboutCreatorModal: React.FC<AboutCreatorModalProps> = ({ isOpen, on
             </div>
 
             <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-normal">
-              Dự án kết hợp phương pháp <strong>EdTech hiện đại</strong> và <strong>Gamification (học qua trò chơi)</strong> nhằm khơi dậy tình yêu quê hương, đất nước và văn hóa Việt Nam trong từng bài học tiếng Anh. Trải nghiệm được phân hóa sư phạm chặt chẽ theo từng khối lớp từ Lớp 1 đến Lớp 5.
+              Website kết hợp phương pháp <strong>EdTech hiện đại</strong> và <strong>Gamification (học qua trò chơi)</strong> nhằm khơi dậy tình yêu quê hương, đất nước và văn hóa Việt Nam trong từng bài học tiếng Anh. Trải nghiệm được phân hóa sư phạm chặt chẽ theo từng khối lớp từ Lớp 1 đến Lớp 5.
             </p>
 
             {/* Key Pedagogical Feature Badges */}
@@ -204,7 +204,7 @@ export const AboutCreatorModal: React.FC<AboutCreatorModalProps> = ({ isOpen, on
             </div>
 
             <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-normal">
-              Bản đồ tương tác ứng dụng hệ tọa độ <strong>WGS84 GIS chuẩn xác</strong> từ <em>Cục Đo đạc, Bản đồ và Thông tin địa lý Việt Nam</em>. Dự án giáo dục khẳng định chủ quyền toàn vẹn và bất khả xâm phạm của Việt Nam đối với <strong>Quần đảo Hoàng Sa (TP. Đà Nẵng)</strong>, <strong>Quần đảo Trường Sa (Tỉnh Khánh Hòa)</strong> cùng toàn bộ các hải đảo thiêng liêng trên Biển Đông.
+              Bản đồ tương tác ứng dụng hệ tọa độ <strong>WGS84 GIS chuẩn xác</strong> từ <em>Cục Đo đạc, Bản đồ và Thông tin địa lý Việt Nam</em>. Website khẳng định chủ quyền toàn vẹn và bất khả xâm phạm của Việt Nam đối với <strong>Quần đảo Hoàng Sa (TP. Đà Nẵng)</strong>, <strong>Quần đảo Trường Sa (Tỉnh Khánh Hòa)</strong> cùng toàn bộ các hải đảo thiêng liêng trên Biển Đông.
             </p>
 
             {/* National Sovereignty Badges */}

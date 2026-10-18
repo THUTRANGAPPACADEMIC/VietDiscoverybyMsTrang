@@ -18,7 +18,8 @@ import {
   Star,
   Volume2,
   VolumeX,
-  Tv
+  Tv,
+  Scissors
 } from 'lucide-react';
 import { UserProfile, UserRole, GradeBand } from '../types';
 import { isSupabaseConfigured } from '../lib/supabase';
@@ -33,8 +34,8 @@ interface HeaderProps {
   setActiveSection: (section: 'student' | 'teacher' | 'admin') => void;
   activeStudentTab: 'explore' | 'games' | 'videos' | 'passport' | 'progress';
   setActiveStudentTab: (tab: 'explore' | 'games' | 'videos' | 'passport' | 'progress') => void;
-  activeTeacherTab: 'approval' | 'curriculum' | 'materials' | 'videos' | 'classes' | 'progress' | 'assessment' | 'ai';
-  setActiveTeacherTab: (tab: 'approval' | 'curriculum' | 'materials' | 'videos' | 'classes' | 'progress' | 'assessment' | 'ai') => void;
+  activeTeacherTab: 'approval' | 'curriculum' | 'materials' | 'videos' | 'classes' | 'progress' | 'assessment' | 'ai' | 'clip_selector';
+  setActiveTeacherTab: (tab: 'approval' | 'curriculum' | 'materials' | 'videos' | 'classes' | 'progress' | 'assessment' | 'ai' | 'clip_selector') => void;
   previewGradeBand?: GradeBand;
   onOpenStudentAuth: () => void;
   onLogout: () => void;
@@ -99,7 +100,7 @@ export const Header: React.FC<HeaderProps> = ({
                 className="text-[10px] sm:text-[11px] font-bold text-amber-100 hover:text-white underline flex items-center gap-1 cursor-pointer transition-colors"
               >
                 <Sparkles className="w-3.5 h-3.5 text-amber-200" />
-                <span>Về Tác Giả & Dự Án</span>
+                <span>Về Tác Giả & Website</span>
               </button>
             )}
           </div>
@@ -538,6 +539,21 @@ export const Header: React.FC<HeaderProps> = ({
               >
                 <Tv className="w-4 h-4 text-amber-300" />
                 <span>Quản lý Video Học tập</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  soundEffects.playClick();
+                  setActiveTeacherTab('clip_selector');
+                }}
+                className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 whitespace-nowrap transition-colors cursor-pointer ${
+                  activeTeacherTab === 'clip_selector'
+                    ? 'bg-gradient-to-r from-rose-600 to-pink-600 text-white shadow-xs ring-2 ring-rose-300'
+                    : 'bg-rose-50 text-rose-800 hover:bg-rose-100 border border-rose-200'
+                }`}
+              >
+                <Scissors className="w-4 h-4 text-rose-600" />
+                <span>Cắt Clip YouTube (Mới)</span>
               </button>
 
               <button

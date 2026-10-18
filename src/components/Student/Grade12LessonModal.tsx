@@ -19,24 +19,28 @@ import { VoiceRecorder } from '../../lib/audioRecorder';
 import { soundEffects } from '../../lib/soundEffects';
 import { RealisticVisualVocabularyCard } from './RealisticVisualVocabularyCard';
 import { getVocabularyVisual } from '../../data/vocabularyVisualsRegistry';
+import { YouTubeLessonEmbed } from '../Common/YouTubeLessonEmbed';
 
 interface Grade12LessonModalProps {
   destination: Destination | null;
   isOpen: boolean;
   initialStep?: StepType;
   onClose: () => void;
-  onCompleteLesson: (destId: string, score: number, stars: number) => void;
+  onCompleteLesson: (destId: string, score: number, stars: number, stepUpdates?: any) => void;
   existingProgress?: DestinationProgress;
+  isTeacher?: boolean;
 }
 
-type StepType = 'learn' | 'play' | 'listen' | 'speak';
+export type StepType = 'learn' | 'play' | 'listen' | 'speak' | 'video';
 
 export const Grade12LessonModal: React.FC<Grade12LessonModalProps> = ({
   destination,
   isOpen,
   initialStep,
   onClose,
-  onCompleteLesson
+  onCompleteLesson,
+  existingProgress,
+  isTeacher
 }) => {
   const [activeStep, setActiveStep] = useState<StepType>(initialStep || 'learn');
 
@@ -117,7 +121,12 @@ export const Grade12LessonModal: React.FC<Grade12LessonModalProps> = ({
     setIsFinished(true);
     soundEffects.playStarFanfare();
     confetti({ particleCount: 100, spread: 80, origin: { y: 0.6 } });
-    onCompleteLesson(destination.id, 100, 50);
+    onCompleteLesson(destination.id, existingProgress?.quizScore ?? 100, 50, {
+      vocabulary: true,
+      listening: true,
+      speaking: Boolean(recordedAudioUrl),
+      quiz: true
+    });
   };
 
   return (
@@ -156,11 +165,11 @@ export const Grade12LessonModal: React.FC<Grade12LessonModalProps> = ({
           </button>
         </div>
 
-        {/* 4 Big Kid Buttons for Grade 1-2: Learn, Play, Listen, Speak */}
-        <div className="grid grid-cols-4 gap-2 p-3 bg-amber-100/60 border-b-2 border-amber-200">
+        {/* 5 Big Kid Buttons for Grade 1-2: Learn, Play, Listen, Speak, Video */}
+        <div className="grid grid-cols-5 gap-1.5 sm:gap-2 p-3 bg-amber-100/60 border-b-2 border-amber-200">
           <button
             onClick={() => setActiveStep('learn')}
-            className={`py-3 rounded-2xl text-xs sm:text-sm font-extrabold transition-all flex flex-col items-center justify-center gap-1 ${
+            className={`py-2.5 sm:py-3 rounded-2xl text-xs sm:text-sm font-extrabold transition-all flex flex-col items-center justify-center gap-1 ${
               activeStep === 'learn'
                 ? 'bg-rose-500 text-white shadow-md scale-102 ring-2 ring-rose-300'
                 : 'bg-white text-slate-700 hover:bg-rose-50'
@@ -172,7 +181,7 @@ export const Grade12LessonModal: React.FC<Grade12LessonModalProps> = ({
 
           <button
             onClick={() => setActiveStep('play')}
-            className={`py-3 rounded-2xl text-xs sm:text-sm font-extrabold transition-all flex flex-col items-center justify-center gap-1 ${
+            className={`py-2.5 sm:py-3 rounded-2xl text-xs sm:text-sm font-extrabold transition-all flex flex-col items-center justify-center gap-1 ${
               activeStep === 'play'
                 ? 'bg-emerald-500 text-white shadow-md scale-102 ring-2 ring-emerald-300'
                 : 'bg-white text-slate-700 hover:bg-emerald-50'
@@ -184,7 +193,7 @@ export const Grade12LessonModal: React.FC<Grade12LessonModalProps> = ({
 
           <button
             onClick={() => setActiveStep('listen')}
-            className={`py-3 rounded-2xl text-xs sm:text-sm font-extrabold transition-all flex flex-col items-center justify-center gap-1 ${
+            className={`py-2.5 sm:py-3 rounded-2xl text-xs sm:text-sm font-extrabold transition-all flex flex-col items-center justify-center gap-1 ${
               activeStep === 'listen'
                 ? 'bg-sky-500 text-white shadow-md scale-102 ring-2 ring-sky-300'
                 : 'bg-white text-slate-700 hover:bg-sky-50'
@@ -196,7 +205,7 @@ export const Grade12LessonModal: React.FC<Grade12LessonModalProps> = ({
 
           <button
             onClick={() => setActiveStep('speak')}
-            className={`py-3 rounded-2xl text-xs sm:text-sm font-extrabold transition-all flex flex-col items-center justify-center gap-1 ${
+            className={`py-2.5 sm:py-3 rounded-2xl text-xs sm:text-sm font-extrabold transition-all flex flex-col items-center justify-center gap-1 ${
               activeStep === 'speak'
                 ? 'bg-purple-500 text-white shadow-md scale-102 ring-2 ring-purple-300'
                 : 'bg-white text-slate-700 hover:bg-purple-50'
@@ -204,6 +213,18 @@ export const Grade12LessonModal: React.FC<Grade12LessonModalProps> = ({
           >
             <span className="text-xl">🎤</span>
             <span>Speak</span>
+          </button>
+
+          <button
+            onClick={() => setActiveStep('video')}
+            className={`py-2.5 sm:py-3 rounded-2xl text-xs sm:text-sm font-extrabold transition-all flex flex-col items-center justify-center gap-1 ${
+              activeStep === 'video'
+                ? 'bg-rose-600 text-white shadow-md scale-102 ring-2 ring-rose-300'
+                : 'bg-white text-slate-700 hover:bg-rose-50'
+            }`}
+          >
+            <span className="text-xl">🎬</span>
+            <span>Video</span>
           </button>
         </div>
 
@@ -295,11 +316,17 @@ export const Grade12LessonModal: React.FC<Grade12LessonModalProps> = ({
                             : 'border-slate-200 hover:border-amber-300'
                         }`}
                       >
-                        <img
-                          src={getVocabularyVisual(p.word).imageUrl}
-                          alt={p.word}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                        />
+                        {getVocabularyVisual(p.word).imageUrl ? (
+                          <img
+                            src={getVocabularyVisual(p.word).imageUrl}
+                            alt={p.word}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 text-2xl select-none">
+                            🖼️
+                          </div>
+                        )}
                         <div className="absolute inset-0 bg-black/25 flex items-end justify-center p-1">
                           <span className="text-[10px] font-black text-white bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-xs">
                             {p.meaningVi}
@@ -446,10 +473,33 @@ export const Grade12LessonModal: React.FC<Grade12LessonModalProps> = ({
               <div className="pt-2">
                 <button
                   onClick={handleFinish}
-                  className="w-full py-4 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-extrabold text-base shadow-lg shadow-amber-200 transition-all flex items-center justify-center gap-2"
+                  className="w-full py-4 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-extrabold text-base shadow-lg shadow-amber-200 transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <Star className="w-5 h-5 fill-white" />
                   <span>Finish & Collect 50 Stars! 🌟</span>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* STEP 5: VIDEO (KID-FRIENDLY YOUTUBE FACADE) */}
+          {activeStep === 'video' && (
+            <div className="space-y-4 animate-in fade-in duration-200">
+              <YouTubeLessonEmbed
+                destinationId={destination.id}
+                gradeBand="grade_1_2"
+                title={`Khám phá cùng cô Trang: ${destination.vietnameseName}`}
+                subtitle="Video sống động, an toàn và tối ưu cho học sinh Lớp 1–2!"
+                isTeacher={isTeacher}
+              />
+
+              <div className="pt-2">
+                <button
+                  onClick={handleFinish}
+                  className="w-full py-4 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-extrabold text-base shadow-lg shadow-amber-200 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <Star className="w-5 h-5 fill-white" />
+                  <span>Hoàn thành bài học & Nhận 50 Sao! 🌟</span>
                 </button>
               </div>
             </div>

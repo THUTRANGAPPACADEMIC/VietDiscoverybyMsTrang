@@ -50,12 +50,94 @@ export const getAvailableVoices = (): Promise<SpeechSynthesisVoice[]> => {
   });
 };
 
-// Select best natural English voice (US or GB)
+// Dictionary of common Vietnamese place names and cultural terms phoneticized for clear General American speech synthesis
+export const VIETNAMESE_TO_AMERICAN_PHONETICS: Record<string, string> = {
+  'Hạ Long': 'Hah Long',
+  'Ha Long': 'Hah Long',
+  'Hà Nội': 'Hah Noy',
+  'Hanoi': 'Hah Noy',
+  'Hội An': 'Hoy Ahn',
+  'Hoi An': 'Hoy Ahn',
+  'Đà Nẵng': 'Dah Nahng',
+  'Da Nang': 'Dah Nahng',
+  'Huế': 'Hway',
+  'Hue': 'Hway',
+  'Hồ Hoàn Kiếm': 'Hwan Kee-em Lake',
+  'Hoan Kiem': 'Hwan Kee-em',
+  'Tháp Rùa': 'Turtle Tower',
+  'Nha Trang': 'Nyah Trang',
+  'Phú Quốc': 'Foo Kwok',
+  'Phu Quoc': 'Foo Kwok',
+  'Đà Lạt': 'Dah Laht',
+  'Da Lat': 'Dah Laht',
+  'Sa Pa': 'Sah Pah',
+  'Sapa': 'Sah Pah',
+  'Fansipan': 'Fahn-see-pahn',
+  'Tràng An': 'Chahng Ahn',
+  'Trang An': 'Chahng Ahn',
+  'Ninh Bình': 'Ning Bing',
+  'Ninh Binh': 'Ning Bing',
+  'Phong Nha': 'Fong Nyah',
+  'Sơn Đoòng': 'Shon Doong',
+  'Son Doong': 'Shon Doong',
+  'Bà Nà': 'Bah Nah',
+  'Ba Na': 'Bah Nah',
+  'Mê Kông': 'May-kong',
+  'Mekong': 'May-kong',
+  'Cần Thơ': 'Kuhn Ter',
+  'Can Tho': 'Kuhn Ter',
+  'Bến Thành': 'Ben Tahn',
+  'Ben Thanh': 'Ben Tahn',
+  'Thăng Long': 'Tahng Long',
+  'Thang Long': 'Tahng Long',
+  'Văn Miếu': 'Temple of Literature',
+  'Bánh mì': 'Bahn mee',
+  'Banh mi': 'Bahn mee',
+  'Phở': 'Fuh',
+  'Pho': 'Fuh',
+  'Áo dài': 'Ow zye',
+  'Ao dai': 'Ow zye'
+};
+
+/**
+ * Phonetically preprocess text for General American English speech synthesis.
+ * Ensures Vietnamese landmarks and cultural terms are pronounced cleanly by American voices.
+ */
+export function normalizeForAmericanSpeech(text: string): string {
+  if (!text) return '';
+  let result = text;
+  for (const [vietnamese, phonetic] of Object.entries(VIETNAMESE_TO_AMERICAN_PHONETICS)) {
+    const regex = new RegExp(`\\b${vietnamese}\\b`, 'gi');
+    result = result.replace(regex, phonetic);
+  }
+  return result;
+}
+
+// Select best natural General American English voice
 export const selectBestEnglishVoice = async (preferredLang: 'en-US' | 'en-GB' = 'en-US'): Promise<SpeechSynthesisVoice | null> => {
   const voices = await getAvailableVoices();
   if (!voices.length) return null;
 
-  // 1. First priority: High-quality Natural / Neural / Cloud English voices
+  // 1. Primary priority: High-quality General American (US) Child-friendly / Natural voices
+  if (preferredLang === 'en-US') {
+    const americanPreferred = voices.find(v => {
+      const isUs = v.lang.toLowerCase() === 'en-us' || v.lang.toLowerCase() === 'en_us';
+      const name = v.name.toLowerCase();
+      return isUs && (
+        name.includes('natural') || 
+        name.includes('google us english') || 
+        name.includes('jenny') || 
+        name.includes('samantha') || 
+        name.includes('aria') || 
+        name.includes('guy') || 
+        name.includes('zira') ||
+        name.includes('alex')
+      );
+    });
+    if (americanPreferred) return americanPreferred;
+  }
+
+  // 2. High-quality Natural / Neural / Cloud English voices generally
   const naturalEnglish = voices.find(v => {
     const isEn = v.lang.toLowerCase().startsWith('en');
     const name = v.name.toLowerCase();
@@ -72,11 +154,11 @@ export const selectBestEnglishVoice = async (preferredLang: 'en-US' | 'en-GB' = 
   });
   if (naturalEnglish) return naturalEnglish;
 
-  // 2. Second priority: Exact language match (e.g., en-US or en-GB)
+  // 3. Exact language match (e.g., en-US or en-GB)
   const exactMatch = voices.find(v => v.lang.toLowerCase().replace('_', '-') === preferredLang.toLowerCase());
   if (exactMatch) return exactMatch;
 
-  // 3. Third priority: Any English voice
+  // 4. Any English voice
   const anyEnglish = voices.find(v => v.lang.toLowerCase().startsWith('en'));
   if (anyEnglish) return anyEnglish;
 
@@ -104,7 +186,10 @@ export const playEnglishSpeech = async (
   const targetLang = options.lang || 'en-US';
   const voice = await selectBestEnglishVoice(targetLang);
 
-  const utterance = new SpeechSynthesisUtterance(cleanText);
+  // Normalize Vietnamese place names and cultural nouns for smooth American pronunciation
+  const spokenText = targetLang === 'en-US' ? normalizeForAmericanSpeech(cleanText) : cleanText;
+
+  const utterance = new SpeechSynthesisUtterance(spokenText);
   utterance.lang = targetLang;
   
   // Rate: Slow mode for Grade 1-2 or learners (0.68), Normal elementary friendly rate (0.86)

@@ -31,6 +31,7 @@ interface UnitData {
   quoteEn: string;
   viSummary: string;
   sceneryImg?: string;
+  headerPhotoWebp?: string;
   headerPhotoFallback: string;
   badgeImg: string;
   badgeAlt: string;
@@ -52,7 +53,7 @@ export const UnitAdventureHub: React.FC<UnitAdventureHubProps> = ({
   activeStudentTab
 }) => {
   // Active unit pair: 0 = Unit 1 & 2 (Hạ Long & Hà Nội), 1 = Unit 3 & 4 (Huế & Đà Nẵng)
-  const [activePairIndex, setActivePairIndex] = useState(1);
+  const [activePairIndex, setActivePairIndex] = useState(0);
   const [speakingWord, setSpeakingWord] = useState<string | null>(null);
   const [viewingVocabUnit, setViewingVocabUnit] = useState<UnitData | null>(null);
 
@@ -88,7 +89,7 @@ export const UnitAdventureHub: React.FC<UnitAdventureHubProps> = ({
       title: "Vietnam's limestone islands rising from emerald waters",
       quoteEn: "Vietnam's limestone islands rising from emerald waters.",
       viSummary: "Vịnh Hạ Long — Kỳ quan thiên nhiên thế giới nổi tiếng với làn nước trong xanh như ngọc bích và hàng nghìn hòn đảo đá vôi kỳ vĩ.",
-      sceneryImg: '/assets/cute/unit1_scenery.png',
+      headerPhotoWebp: '/destinations/halong_bay.webp',
       headerPhotoFallback: '/destinations/halong_bay.jpg',
       badgeImg: '/assets/cute/btn1_mountain.png',
       badgeAlt: 'Mountain Flag',
@@ -108,7 +109,7 @@ export const UnitAdventureHub: React.FC<UnitAdventureHubProps> = ({
       title: "The ancient Temple of Literature, and joyful streets",
       quoteEn: "The ancient Temple of Literature, and joyful streets.",
       viSummary: "Hà Nội — Thủ đô ngàn năm văn hiến với Văn Miếu Quốc Tử Giám, Tháp Rùa Hồ Gươm và 36 phố phường rộn rã.",
-      sceneryImg: '/assets/cute/unit2_scenery.png',
+      headerPhotoWebp: '/destinations/hanoi_turtle_tower.webp',
       headerPhotoFallback: '/destinations/hanoi_turtle_tower.jpg',
       badgeImg: '/assets/cute/btn2_temple.png',
       badgeAlt: 'Ancient Temple',
@@ -131,6 +132,7 @@ export const UnitAdventureHub: React.FC<UnitAdventureHubProps> = ({
       title: "The historic royal capital by the Perfume River with grand palaces, royal music, and delicate cuisine.",
       quoteEn: "The historic royal capital by the Perfume River with grand palaces, royal music, and delicate cuisine.",
       viSummary: "Cố đô Huế — Di sản hoàng triều bên dòng sông Hương thơ mộng với Đại Nội nguy nga, nhã nhạc cung đình và ẩm thực thanh tao.",
+      headerPhotoWebp: '/destinations/hue_citadel.webp',
       headerPhotoFallback: '/destinations/hue_citadel.jpg',
       badgeImg: '/assets/cute/btn2_temple.png',
       badgeAlt: 'Imperial Gate',
@@ -150,6 +152,7 @@ export const UnitAdventureHub: React.FC<UnitAdventureHubProps> = ({
       title: "A dynamic coastal city featuring the Golden Dragon Bridge paired with the ancient glowing lantern town.",
       quoteEn: "A dynamic coastal city featuring the Golden Dragon Bridge paired with the ancient glowing lantern town.",
       viSummary: "Đà Nẵng & Hội An — Thành phố biển năng động với Cầu Rồng phun lửa kỳ vĩ hòa cùng vẻ đẹp cổ kính của phố Hội lung linh đèn lồng.",
+      headerPhotoWebp: '/destinations/danang_golden_bridge.webp',
       headerPhotoFallback: '/destinations/danang_golden_bridge.jpg',
       badgeImg: '/assets/cute/btn1_mountain.png',
       badgeAlt: 'Dragon Bridge',
@@ -301,51 +304,61 @@ export const UnitAdventureHub: React.FC<UnitAdventureHubProps> = ({
             >
               <div className="space-y-3.5">
                 
-                {/* 1. Header Scenery Banner */}
-                {unit.sceneryImg ? (
-                  <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-xs border border-sky-100 group">
-                    <img
-                      src={unit.sceneryImg}
-                      alt={`Unit ${unit.unitNumber} - ${dest.name}`}
-                      className="w-full h-auto object-cover select-none group-hover:scale-101 transition-transform"
-                    />
-                  </div>
-                ) : (
-                  /* Rich Illustrated Header Scenery for Unit 3 & 4 (Matching reference prompt) */
-                  <div className="space-y-2">
-                    <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-xs border border-sky-100 group h-28 sm:h-32">
+                {/* 1. Header Scenery Banner - Authentic High-Resolution Landmark Photo (WebP + JPG fallback) */}
+                <div className="space-y-2">
+                  <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-md border-2 border-white/80 group h-44 sm:h-52 md:h-56 bg-slate-900">
+                    <picture>
+                      <source type="image/webp" srcSet={unit.headerPhotoWebp || dest.image} />
                       <img
-                        src={dest.image || unit.headerPhotoFallback}
-                        alt={dest.name}
-                        className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-500"
+                        src={dest.fallbackImage || unit.headerPhotoFallback || dest.image}
+                        alt={`${dest.name} (${dest.vietnameseName})`}
+                        className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 select-none"
+                        loading="lazy"
+                        onError={(e) => {
+                          const target = e.currentTarget;
+                          if (target.src.endsWith('.webp')) {
+                            target.src = unit.headerPhotoFallback || '/destinations/halong_bay.jpg';
+                          } else if (!target.src.includes('halong_bay.jpg')) {
+                            target.src = '/destinations/halong_bay.jpg';
+                          }
+                        }}
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent pointer-events-none" />
-                      
-                      {/* Playful Unit Pill Badge */}
-                      <div className="absolute top-2.5 left-2.5 px-3 py-1 rounded-full bg-gradient-to-r from-rose-500 to-pink-500 text-white font-black text-xs shadow-md border border-white/80 flex items-center gap-1.5">
-                        <span>{unit.unitNumber === 3 ? '🏛️' : '🐉'}</span>
-                        <span>Unit {unit.unitNumber}</span>
-                      </div>
-
-                      {/* Sparkles */}
-                      <div className="absolute top-2.5 right-2.5 text-amber-300 text-sm animate-pulse">
-                        ✨
-                      </div>
-
-                      {/* Bottom Banner Title */}
-                      <div className="absolute bottom-2 left-3 right-3 text-white text-xs sm:text-sm font-black font-heading drop-shadow-md truncate">
-                        {dest.name} ({dest.vietnameseName})
-                      </div>
+                    </picture>
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/30 to-transparent pointer-events-none" />
+                    
+                    {/* Playful Unit Pill Badge */}
+                    <div className="absolute top-3 left-3 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-rose-500 via-pink-500 to-rose-600 text-white font-black text-xs shadow-md border border-white/80 flex items-center gap-1.5 z-10">
+                      <span>{unit.unitNumber === 1 ? '🌊' : unit.unitNumber === 2 ? '🏛️' : unit.unitNumber === 3 ? '👑' : '🐉'}</span>
+                      <span>Unit {unit.unitNumber}</span>
                     </div>
 
-                    {/* Playful Quote Box */}
-                    <div className="bg-sky-50/90 rounded-2xl p-2.5 px-3.5 border border-sky-200/70 shadow-2xs">
-                      <p className="text-xs sm:text-sm font-black text-blue-950 leading-snug font-heading tracking-tight">
-                        "{unit.quoteEn}"
+                    {/* Sparkles / Theme badge */}
+                    <div className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-slate-900/80 backdrop-blur-md text-amber-300 font-black text-[11px] shadow-md border border-white/30 flex items-center gap-1 z-10">
+                      <span>✨</span>
+                      <span>{dest.theme || 'Discovery'}</span>
+                    </div>
+
+                    {/* Bottom Banner Title */}
+                    <div className="absolute bottom-2.5 left-3.5 right-3.5 text-white z-10">
+                      <div className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-amber-300 drop-shadow-sm truncate">
+                        {dest.region === 'North' ? 'Northern Vietnam' : dest.region === 'Central' ? 'Central Vietnam' : 'Southern Vietnam'} • {dest.province}
+                      </div>
+                      <h4 className="text-sm sm:text-base md:text-lg font-black font-heading leading-tight drop-shadow-md truncate">
+                        {dest.name}
+                      </h4>
+                      <p className="text-[11px] sm:text-xs text-white/90 font-bold drop-shadow-sm truncate">
+                        🇻🇳 {dest.vietnameseName}
                       </p>
                     </div>
                   </div>
-                )}
+
+                  {/* Playful Quote Box */}
+                  <div className="bg-sky-50/90 rounded-2xl p-2.5 px-3.5 border border-sky-200/70 shadow-2xs">
+                    <p className="text-xs sm:text-sm font-black text-blue-950 leading-snug font-heading tracking-tight">
+                      "{unit.quoteEn}"
+                    </p>
+                  </div>
+                </div>
 
                 {/* 2. Bilingual Support Bar: "VN Hỗ trợ Tiếng Việt (Bấm để xem)" */}
                 <div className="bg-amber-50/90 rounded-2xl p-2.5 px-3.5 sm:px-4 flex items-center justify-between border border-amber-200/70 shadow-xs">
@@ -390,11 +403,17 @@ export const UnitAdventureHub: React.FC<UnitAdventureHubProps> = ({
                         }`}
                       >
                         <div className="flex items-center gap-1.5 min-w-0">
-                          <img 
-                            src={getVocabularyVisual(item.word).imageUrl} 
-                            alt={item.word} 
-                            className="w-5 h-5 rounded-md object-cover shrink-0" 
-                          />
+                          {getVocabularyVisual(item.word).imageUrl ? (
+                            <img 
+                              src={getVocabularyVisual(item.word).imageUrl} 
+                              alt={item.word} 
+                              className="w-5 h-5 rounded-md object-cover shrink-0" 
+                            />
+                          ) : (
+                            <span className="w-5 h-5 rounded-md bg-slate-100 flex items-center justify-center text-[10px] shrink-0 select-none">
+                              🖼️
+                            </span>
+                          )}
                           <span className="text-xs sm:text-sm font-black text-slate-800 truncate">
                             {item.word}
                           </span>
@@ -599,11 +618,17 @@ export const UnitAdventureHub: React.FC<UnitAdventureHubProps> = ({
                   className="p-3 rounded-2xl bg-amber-50/80 border border-amber-200/80 flex items-center justify-between gap-3 hover:bg-amber-100/60 transition-colors"
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <img
-                      src={getVocabularyVisual(item.word).imageUrl}
-                      alt={item.word}
-                      className="w-14 h-14 rounded-2xl object-cover shrink-0 border border-amber-200 shadow-2xs"
-                    />
+                    {getVocabularyVisual(item.word).imageUrl ? (
+                      <img
+                        src={getVocabularyVisual(item.word).imageUrl}
+                        alt={item.word}
+                        className="w-14 h-14 rounded-2xl object-cover shrink-0 border border-amber-200 shadow-2xs"
+                      />
+                    ) : (
+                      <div className="w-14 h-14 rounded-2xl bg-amber-100/80 border border-amber-200 flex items-center justify-center text-2xl shrink-0 select-none">
+                        🖼️
+                      </div>
+                    )}
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
                         <span className="font-black text-sm sm:text-base text-slate-900">{item.word}</span>

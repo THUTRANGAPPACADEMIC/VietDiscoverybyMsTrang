@@ -22,7 +22,8 @@ import {
   MapPin,
   Compass,
   Archive,
-  Send
+  Send,
+  Scissors
 } from 'lucide-react';
 import { EducationalVideo, VideoQuestion, VideoSourceType, VideoStatus, VideoDifficulty, VideoLearningAdventure } from '../../types';
 import { 
@@ -35,6 +36,8 @@ import {
 } from '../../lib/videoAcademyService';
 import { OFFICIAL_34_PROVINCES_DATA } from '../../data/administrativeData';
 import { VideoPlayerModal } from '../Student/VideoAcademy/VideoPlayerModal';
+import { SmartYouTubeClipSelector } from './SmartYouTubeClipSelector';
+import { parseTimeToSeconds, formatSecondsToTime } from '../../lib/youtubeClipHelper';
 import { soundEffects } from '../../lib/soundEffects';
 
 export const TeacherVideoDashboard: React.FC = () => {
@@ -51,10 +54,13 @@ export const TeacherVideoDashboard: React.FC = () => {
 
   // Modal State for Adding / Editing Video
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isClipSelectorOpen, setIsClipSelectorOpen] = useState(false);
   const [previewVideo, setPreviewVideo] = useState<EducationalVideo | null>(null);
 
   // Form State
   const [formUrl, setFormUrl] = useState('');
+  const [formStartTime, setFormStartTime] = useState('00:00');
+  const [formEndTime, setFormEndTime] = useState('');
   const [formTitleEn, setFormTitleEn] = useState('');
   const [formTitleVi, setFormTitleVi] = useState('');
   const [formGrade, setFormGrade] = useState<1 | 2 | 3 | 4 | 5>(4);
@@ -148,6 +154,23 @@ export const TeacherVideoDashboard: React.FC = () => {
     await loadTeacherVideos();
   };
 
+  const handleFormStartTimeChange = (val: string) => {
+    setFormStartTime(val);
+    const sec = parseTimeToSeconds(val);
+    if (sec !== null) {
+      setFormEndTime(formatSecondsToTime(sec + 60));
+    }
+  };
+
+  const handleFormEndTimeChange = (val: string) => {
+    setFormEndTime(val);
+    const endSec = parseTimeToSeconds(val);
+    const startSec = parseTimeToSeconds(formStartTime) ?? 0;
+    if (endSec !== null && endSec > startSec + 60) {
+      setFormEndTime(formatSecondsToTime(startSec + 60));
+    }
+  };
+
   // Handle Form Submit
   const handleAddSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -164,6 +187,24 @@ export const TeacherVideoDashboard: React.FC = () => {
       return;
     }
 
+    let startSec: number | undefined;
+    let endSec: number | undefined;
+    if (formEndTime.trim()) {
+      const s = parseTimeToSeconds(formStartTime) ?? 0;
+      const e = parseTimeToSeconds(formEndTime);
+      if (e === null || e <= 0) {
+        setFormError('Thời gian kết thúc (End Time) không hợp lệ (định dạng mm:ss, ví dụ 01:30)');
+        return;
+      }
+      if (s >= e) {
+        setFormError('Thời gian bắt đầu (Start Time) phải nhỏ hơn thời gian kết thúc (End Time)');
+        return;
+      }
+      // Strict 60-second limit (Requirement 1 & 3)
+      startSec = s;
+      endSec = Math.min(e, s + 60);
+    }
+
     setIsSaving(true);
     try {
       const objectivesEnArr = formObjectivesEn.split('\n').map(s => s.trim()).filter(Boolean);
@@ -173,6 +214,8 @@ export const TeacherVideoDashboard: React.FC = () => {
 
       const res = await addEducationalVideo({
         videoUrl: formUrl,
+        startSeconds: startSec,
+        endSeconds: endSec,
         titleEn: formTitleEn,
         titleVi: formTitleVi,
         grade: formGrade,
@@ -232,6 +275,8 @@ export const TeacherVideoDashboard: React.FC = () => {
 
   const resetForm = () => {
     setFormUrl('');
+    setFormStartTime('00:00');
+    setFormEndTime('');
     setFormTitleEn('');
     setFormTitleVi('');
     setFormGrade(4);
@@ -348,17 +393,31 @@ export const TeacherVideoDashboard: React.FC = () => {
           </p>
         </div>
 
-        <button
-          onClick={() => {
-            soundEffects.playClick();
-            resetForm();
-            setIsAddModalOpen(true);
-          }}
-          className="px-5 py-3 rounded-2xl bg-gradient-to-r from-rose-500 via-rose-600 to-indigo-600 hover:from-rose-600 hover:to-indigo-700 text-white font-extrabold text-xs sm:text-sm shadow-md shadow-rose-200 flex items-center gap-2 transition-all cursor-pointer transform hover:-translate-y-0.5"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Thêm Video Mới (Add Video by URL)</span>
-        </button>
+        <div className="flex items-center gap-2.5 flex-wrap">
+          <button
+            onClick={() => {
+              soundEffects.playClick();
+              setIsClipSelectorOpen(true);
+            }}
+            className="px-4 py-3 rounded-2xl bg-amber-50 hover:bg-amber-100 text-amber-900 border-2 border-amber-300 font-extrabold text-xs sm:text-sm shadow-xs flex items-center gap-2 transition-all cursor-pointer hover:scale-102 active:scale-98"
+            title="Mở công cụ cắt đoạn video YouTube thông minh"
+          >
+            <Scissors className="w-4 h-4 text-amber-700" />
+            <span>Cắt Clip Thông Minh (Clip Selector)</span>
+          </button>
+
+          <button
+            onClick={() => {
+              soundEffects.playClick();
+              resetForm();
+              setIsAddModalOpen(true);
+            }}
+            className="px-5 py-3 rounded-2xl bg-gradient-to-r from-rose-500 via-rose-600 to-indigo-600 hover:from-rose-600 hover:to-indigo-700 text-white font-extrabold text-xs sm:text-sm shadow-md shadow-rose-200 flex items-center gap-2 transition-all cursor-pointer transform hover:-translate-y-0.5"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Thêm Video Mới (Add Video by URL)</span>
+          </button>
+        </div>
       </div>
 
       {/* 2. Key Teacher Metrics Strip */}
@@ -677,6 +736,47 @@ export const TeacherVideoDashboard: React.FC = () => {
                 <p className="text-[10.5px] text-slate-400 mt-1">
                   Hỗ trợ link YouTube, YouTube Shorts, Vimeo hoặc video stream. Hệ thống sẽ tự động dùng domain an toàn <code>youtube-nocookie.com</code>.
                 </p>
+
+                {/* Optional Smart Clip Timing */}
+                <div className="mt-3 p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-black uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
+                      <Scissors className="w-3.5 h-3.5 text-rose-600" />
+                      <span>Cắt đoạn video ngắn (Tùy chọn - Clip Selection):</span>
+                    </span>
+                    <span className="text-[10px] text-slate-400 font-mono">Định dạng mm:ss (vd: 00:30, 01:45)</span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[10.5px] font-bold text-emerald-800 mb-1">
+                        Bắt đầu (Start Time):
+                      </label>
+                      <input
+                        type="text"
+                        value={formStartTime}
+                        onChange={(e) => handleFormStartTimeChange(e.target.value)}
+                        placeholder="00:00"
+                        className="w-full px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-mono font-bold text-emerald-900 bg-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10.5px] font-bold text-rose-800 mb-1">
+                        Kết thúc (End Time - Tối đa +60s):
+                      </label>
+                      <input
+                        type="text"
+                        value={formEndTime}
+                        onChange={(e) => handleFormEndTimeChange(e.target.value)}
+                        placeholder="01:00"
+                        className="w-full px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-mono font-bold text-rose-900 bg-white"
+                      />
+                    </div>
+                  </div>
+                  <p className="text-[10.5px] text-slate-500 italic">
+                    ⚡ <strong>Quy định:</strong> Mỗi đoạn clip tối đa 60 giây. Khi chọn Start Time, End Time sẽ tự động là +60s. Khi học sinh bấm Play, video sẽ bắt đầu tại Start Time và tự động dừng chuẩn xác tại End Time.
+                  </p>
+                </div>
 
                 {/* Parsed Preview Feedback */}
                 {parsedPreview && (
@@ -1149,6 +1249,49 @@ export const TeacherVideoDashboard: React.FC = () => {
           onClose={() => setPreviewVideo(null)}
           onSaveProgress={() => {}}
         />
+      )}
+
+      {/* 7. Standalone Clip Selector Modal */}
+      {isClipSelectorOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-slate-950/75 backdrop-blur-sm animate-fade-in overflow-y-auto">
+          <div className="relative w-full max-w-5xl max-h-[94vh] bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden my-auto flex flex-col">
+            <div className="p-4 sm:p-5 bg-gradient-to-r from-rose-600 to-indigo-700 text-white flex items-center justify-between shrink-0">
+              <div className="flex items-center gap-2">
+                <span className="p-2 rounded-xl bg-white/20">
+                  <Scissors className="w-5 h-5 text-white" />
+                </span>
+                <div>
+                  <h3 className="text-base sm:text-lg font-black font-heading">
+                    Công Cụ Chọn Đoạn Video YouTube Thông Minh (Smart Clip Selector)
+                  </h3>
+                  <p className="text-[11px] text-white/80">
+                    Cắt đoạn clip YouTube bằng Start Time &amp; End Time • Xem trước trực tiếp • Tự động dừng chuẩn xác
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setIsClipSelectorOpen(false)}
+                className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-5 overflow-y-auto flex-1">
+              <SmartYouTubeClipSelector
+                onApplyClip={(clip) => {
+                  setFormUrl(clip.videoUrl);
+                  setFormStartTime(formatSecondsToTime(clip.startSeconds));
+                  setFormEndTime(formatSecondsToTime(clip.endSeconds));
+                  setFormTitleEn(clip.title);
+                  setIsClipSelectorOpen(false);
+                  setIsAddModalOpen(true);
+                }}
+              />
+            </div>
+          </div>
+        </div>
       )}
 
     </div>

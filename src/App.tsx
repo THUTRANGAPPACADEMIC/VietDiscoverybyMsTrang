@@ -89,7 +89,7 @@ export const App: React.FC = () => {
     return 'student';
   });
   const [activeStudentTab, setActiveStudentTab] = useState<'explore' | 'games' | 'videos' | 'passport' | 'progress'>('explore');
-  const [activeTeacherTab, setActiveTeacherTab] = useState<'approval' | 'curriculum' | 'materials' | 'videos' | 'classes' | 'progress' | 'assessment' | 'ai'>('approval');
+  const [activeTeacherTab, setActiveTeacherTab] = useState<'approval' | 'curriculum' | 'materials' | 'videos' | 'classes' | 'progress' | 'assessment' | 'ai' | 'clip_selector'>('approval');
 
   // Teacher / Admin student experience previewer override
   const [previewGradeBand, setPreviewGradeBand] = useState<GradeBand | undefined>(undefined);
@@ -149,60 +149,28 @@ export const App: React.FC = () => {
   });
 
   const [classes, setClasses] = useState<ClassRoom[]>(() => {
-    const cached = localStore.get<ClassRoom[]>('classes', INITIAL_CLASSES);
-    if (!cached || cached.length === 0) return INITIAL_CLASSES;
-    // Ensure all 5 standard classes exist
-    const cachedIds = new Set(cached.map(c => c.id));
-    const missing = INITIAL_CLASSES.filter(c => !cachedIds.has(c.id));
-    return [...cached, ...missing];
+    localStore.remove('classes');
+    return INITIAL_CLASSES.map(c => ({ ...c, studentCount: 0 }));
   });
 
   const [students, setStudents] = useState<StudentRosterItem[]>(() => {
-    const cached = localStore.get<StudentRosterItem[]>('students', INITIAL_STUDENTS);
-    if (!cached || cached.length === 0) return INITIAL_STUDENTS;
-    const cachedMap = new Map(cached.map(s => [s.id, s]));
-    const merged = INITIAL_STUDENTS.map(stu => {
-      const existing = cachedMap.get(stu.id);
-      if (existing) {
-        // Purge legacy mock stars (200, 220, 170) if not backed by verified learning
-        const isLegacyMock = (existing.totalStars === 200 || existing.totalStars === 220 || existing.totalStars === 170) && 
-          (existing.completedDestinations === 4 || existing.completedDestinations === 3 || existing.completedDestinations === 0);
-        return {
-          ...stu,
-          avatar: existing.avatar || stu.avatar,
-          totalStars: isLegacyMock ? 0 : (existing.totalStars ?? stu.totalStars),
-          completedDestinations: isLegacyMock ? 0 : (existing.completedDestinations ?? stu.completedDestinations),
-          averageScore: isLegacyMock ? 0 : (existing.averageScore ?? stu.averageScore),
-          lastActive: isLegacyMock ? 'Chưa có hoạt động' : (existing.lastActive || stu.lastActive),
-          accessCode: stu.accessCode || existing.accessCode,
-          accessCodeHash: stu.accessCodeHash || existing.accessCodeHash,
-        };
-      }
-      return stu;
-    });
-    // Retain any custom students teacher might have manually uploaded
-    const baselineIds = new Set(INITIAL_STUDENTS.map(s => s.id));
-    cached.forEach(s => {
-      if (!baselineIds.has(s.id)) {
-        merged.push(s);
-      }
-    });
-    return merged;
+    localStore.remove('students');
+    return [];
   });
 
   const [materials, setMaterials] = useState<MaterialItem[]>(() => {
     return localStore.get<MaterialItem[]>('materials', INITIAL_MATERIALS);
   });
 
+  // Cloud synchronization status (only true when verified cloud sync succeeded)
+  const [isCloudSynced, setIsCloudSynced] = useState<boolean>(false);
+
   // Dynamic total stars: for students, single source of truth is user.stars, backed by verified progressMap
   // Using Math.max prevents any double-counting while ensuring immediate UI update when stars are earned
   const progressStars = Object.values(progressMap).reduce((acc, p) => acc + (p.starsEarned || 0), 0);
-  const totalStars = user ? Math.max(user.stars ?? 0, progressStars) : progressStars;
-
-  // Cloud synchronization status (only true when verified cloud sync succeeded)
-  const [isCloudSynced, setIsCloudSynced] = useState<boolean>(() => {
-    return Boolean(localStore.get<string | null>('session_token', null));
-  });
+  const totalStars = user
+    ? (isCloudSynced && typeof user.stars === 'number' ? user.stars : Math.max(user.stars ?? 0, progressStars))
+    : progressStars;
 
   // Strict Route Guard: prevent student role from ever accessing teacher or admin screens
   useEffect(() => {
@@ -360,7 +328,7 @@ export const App: React.FC = () => {
         // Sanitize and reconcile user.stars if it was corrupted or double-counted previously in localStorage
         setUser(prev => {
           if (!prev) return null;
-          const targetStars = verifiedProgressStars > 0 ? verifiedProgressStars : (prev.stars || 0);
+          const targetStars = synced ? verifiedProgressStars : (verifiedProgressStars > 0 ? verifiedProgressStars : (prev.stars || 0));
           if (prev.stars !== targetStars) {
             const updated = { ...prev, stars: targetStars };
             localStore.set('current_user', updated);
@@ -375,13 +343,37 @@ export const App: React.FC = () => {
   }, [user?.id]);
 
   // Update progress handler with automatic cloud synchronization
-  const handleUpdateProgress = async (destId: string, score: number, starsEarned: number) => {
+  const handleUpdateProgress = async (
+    destId: string, 
+    score?: number, 
+    starsEarned?: number, 
+    stepUpdates?: Partial<DestinationProgress['completedSteps']>
+  ) => {
     const existing = progressMap[destId];
-    const finalStars = Math.max(existing?.starsEarned || 0, starsEarned);
+    const finalStars = Math.max(existing?.starsEarned || 0, starsEarned || 0);
+    const existingSteps = existing?.completedSteps || {
+      vocabulary: false,
+      reading: false,
+      listening: false,
+      speaking: false,
+      quiz: false
+    };
+
+    const nextSteps = {
+      ...existingSteps,
+      ...(stepUpdates || {})
+    };
+
+    // Only update quizScore if a quiz step is explicitly completed or valid quiz score provided
+    const isQuizUpdate = Boolean(stepUpdates?.quiz) || (stepUpdates === undefined && typeof score === 'number' && score > 0);
+    const finalScore = isQuizUpdate
+      ? (score !== undefined ? score : (existing?.quizScore || 0))
+      : (existing?.quizScore || 0);
+
     const updatedEntry: DestinationProgress = {
       destinationId: destId,
-      completedSteps: { vocabulary: true, reading: true, listening: true, speaking: true, quiz: true },
-      quizScore: score,
+      completedSteps: nextSteps,
+      quizScore: finalScore,
       totalQuestions: 4,
       attempts: (existing?.attempts || 0) + 1,
       starsEarned: finalStars,
@@ -408,15 +400,26 @@ export const App: React.FC = () => {
         return updated;
       });
 
-      const { isCloudSynced: synced, serverTotalStars } = await syncStudentProgress(user.id, destId, updatedEntry);
+      const { isCloudSynced: synced, serverTotalStars, verifiedStars } = await syncStudentProgress(user.id, destId, updatedEntry);
       setIsCloudSynced(synced);
-      if (synced && typeof serverTotalStars === 'number') {
-        setUser(prev => {
-          if (!prev) return null;
-          const updated = { ...prev, stars: Math.max(serverTotalStars, nextTotalStars) };
-          localStore.set('current_user', updated);
-          return updated;
-        });
+      if (synced) {
+        if (typeof verifiedStars === 'number' && verifiedStars !== updatedEntry.starsEarned) {
+          setProgressMap(prev => ({
+            ...prev,
+            [destId]: {
+              ...prev[destId],
+              starsEarned: verifiedStars
+            }
+          }));
+        }
+        if (typeof serverTotalStars === 'number') {
+          setUser(prev => {
+            if (!prev) return null;
+            const updated = { ...prev, stars: serverTotalStars };
+            localStore.set('current_user', updated);
+            return updated;
+          });
+        }
       }
     }
   };
@@ -457,16 +460,26 @@ export const App: React.FC = () => {
       });
 
       // Synchronize with Supabase Cloud via Session RPC
-      const { isCloudSynced: synced, serverTotalStars } = await syncStudentProgress(user.id, gameId, updatedEntry);
+      const { isCloudSynced: synced, serverTotalStars, verifiedStars } = await syncStudentProgress(user.id, gameId, updatedEntry);
       setIsCloudSynced(synced);
-      if (synced && typeof serverTotalStars === 'number') {
-        setUser(prev => {
-          if (!prev) return null;
-          const targetStars = Math.max(serverTotalStars, totalVerifiedStars);
-          const updated = { ...prev, stars: targetStars };
-          localStore.set('current_user', updated);
-          return updated;
-        });
+      if (synced) {
+        if (typeof verifiedStars === 'number' && verifiedStars !== updatedEntry.starsEarned) {
+          setProgressMap(prev => ({
+            ...prev,
+            [gameId]: {
+              ...prev[gameId],
+              starsEarned: verifiedStars
+            }
+          }));
+        }
+        if (typeof serverTotalStars === 'number') {
+          setUser(prev => {
+            if (!prev) return null;
+            const updated = { ...prev, stars: serverTotalStars };
+            localStore.set('current_user', updated);
+            return updated;
+          });
+        }
       }
     }
   };

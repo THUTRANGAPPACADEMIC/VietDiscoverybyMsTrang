@@ -585,41 +585,48 @@ export const ClassManagement: React.FC<ClassManagementProps> = ({
             </div>
 
             {/* Access Cards Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5 pt-1">
-              {displayedStudentsForCards.map((stu) => (
-                <div
-                  key={stu.id}
-                  className="p-4 rounded-2xl border border-slate-200 bg-gradient-to-tr from-slate-50 to-white shadow-xs space-y-2 relative"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-indigo-100 text-indigo-800">
-                      Lớp {stu.classCode}
-                    </span>
-                    <span className="text-[10px] font-mono text-slate-400">
-                      {stu.studentCode}
-                    </span>
-                  </div>
+            {displayedStudentsForCards.length === 0 ? (
+              <div className="p-8 text-center rounded-2xl bg-slate-50 border border-slate-200 text-slate-500 space-y-2">
+                <p className="font-bold text-sm">Chưa có học sinh nào được tải cho danh sách này.</p>
+                <p className="text-xs text-slate-400">Dữ liệu học sinh giả đã được loại bỏ hoàn toàn. Vui lòng kiểm tra kết nối API giáo viên từ Supabase Production.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5 pt-1">
+                {displayedStudentsForCards.map((stu) => (
+                  <div
+                    key={stu.id}
+                    className="p-4 rounded-2xl border border-slate-200 bg-gradient-to-tr from-slate-50 to-white shadow-xs space-y-2 relative"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-indigo-100 text-indigo-800">
+                        Lớp {stu.classCode}
+                      </span>
+                      <span className="text-[10px] font-mono text-slate-400">
+                        {stu.studentCode}
+                      </span>
+                    </div>
 
-                  <div>
-                    <h5 className="font-extrabold text-slate-900 text-sm font-heading">
-                      {stu.name}
-                    </h5>
-                    <div className="text-[10.5px] text-slate-500">
-                      {stu.className}
+                    <div>
+                      <h5 className="font-extrabold text-slate-900 text-sm font-heading">
+                        {stu.name}
+                      </h5>
+                      <div className="text-[10.5px] text-slate-500">
+                        {stu.className}
+                      </div>
                     </div>
-                  </div>
 
-                  <div className="p-2 rounded-xl bg-amber-50 border border-amber-200/80 text-center">
-                    <div className="text-[9.5px] font-bold text-amber-800 uppercase tracking-wider">
-                      Mã Truy Cập (Access Code):
-                    </div>
-                    <div className="font-mono font-extrabold text-base text-amber-950 tracking-wider">
-                      {stu.accessCode || 'VD' + stu.classCode.replace('.', '') + stu.studentCode.slice(-2)}
+                    <div className="p-2 rounded-xl bg-amber-50 border border-amber-200/80 text-center">
+                      <div className="text-[9.5px] font-bold text-amber-800 uppercase tracking-wider">
+                        Mã Truy Cập (Access Code):
+                      </div>
+                      <div className="font-mono font-extrabold text-base text-amber-950 tracking-wider">
+                        {stu.accessCode || stu.studentCode}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
 
             <div className="flex justify-end pt-3 border-t border-slate-100">
               <button

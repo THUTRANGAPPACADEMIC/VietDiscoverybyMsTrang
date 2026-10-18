@@ -140,7 +140,9 @@ export async function getEducationalVideos(
           learningAdventure: item.learning_adventure || item.learningAdventure,
           listeningTask: item.listening_task || item.listeningTask,
           speakingTask: item.speaking_task || item.speakingTask,
-          applyTask: item.apply_task || item.applyTask
+          applyTask: item.apply_task || item.applyTask,
+          startSeconds: item.start_seconds || item.startSeconds,
+          endSeconds: item.end_seconds || item.endSeconds
         }));
 
         // Cache cloud videos locally
@@ -259,7 +261,9 @@ export async function addEducationalVideo(
     learningAdventure: videoInput.learningAdventure,
     listeningTask: videoInput.listeningTask,
     speakingTask: videoInput.speakingTask,
-    applyTask: videoInput.applyTask
+    applyTask: videoInput.applyTask,
+    startSeconds: videoInput.startSeconds,
+    endSeconds: videoInput.endSeconds
   };
 
   // 1. Update Local Storage Cache

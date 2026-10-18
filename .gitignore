@@ -96,5 +96,10 @@ scripts/inspect_supabase_test.cjs
 scripts/sanitize_mock_students.cjs
 scripts/test_teacher_progress_service.cjs
 scripts/verify_ai_review_feature.cjs
+all_scanned_vocab.json
+all_unique_vocab_summary.txt
+scratch_missing_words.json
+public/destinations/_backup/
+*.sql
 
 
