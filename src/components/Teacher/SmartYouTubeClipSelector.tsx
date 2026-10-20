@@ -52,7 +52,7 @@ interface SmartYouTubeClipSelectorProps {
 }
 
 export const SmartYouTubeClipSelector: React.FC<SmartYouTubeClipSelectorProps> = ({
-  initialUrl = 'https://www.youtube.com/watch?v=k1BneeJTDcU',
+  initialUrl = '',
   initialStartSeconds = 0,
   initialEndSeconds = 60,
   destinationId,
@@ -61,7 +61,7 @@ export const SmartYouTubeClipSelector: React.FC<SmartYouTubeClipSelectorProps> =
 }) => {
   // Input fields
   const [urlInput, setUrlInput] = useState<string>(initialUrl);
-  const [titleInput, setTitleInput] = useState<string>('Khám phá Việt Nam (Đoạn trích 60s)');
+  const [titleInput, setTitleInput] = useState<string>('');
   const [startTimeInput, setStartTimeInput] = useState<string>(formatSecondsToTime(initialStartSeconds));
   const [endTimeInput, setEndTimeInput] = useState<string>(formatSecondsToTime(initialEndSeconds));
   const [selectedDestination, setSelectedDestination] = useState<string>(destinationId || 'halong');

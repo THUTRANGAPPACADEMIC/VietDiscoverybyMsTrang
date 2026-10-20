@@ -1,6 +1,7 @@
 import { EducationalVideo } from '../types';
+import teacherVideoOverrides from './teacherVideoOverrides.json';
 
-export const INITIAL_VIDEOS: EducationalVideo[] = [
+const RAW_INITIAL_VIDEOS: EducationalVideo[] = [
   // ==========================================================================
   // GRADE 1 – LITTLE EXPLORER (Pre-A1 Starter)
   // ==========================================================================
@@ -1385,3 +1386,25 @@ export const INITIAL_VIDEOS: EducationalVideo[] = [
     ]
   }
 ];
+
+const overridesMap = (teacherVideoOverrides as unknown as Record<string, Partial<EducationalVideo>>) || {};
+
+export const INITIAL_VIDEOS: EducationalVideo[] = RAW_INITIAL_VIDEOS.map(video => {
+  const custom = overridesMap[video.id];
+  if (custom) {
+    return {
+      ...video,
+      ...custom,
+      // Guarantee ID, questions, and pedagogical task integrity
+      id: video.id,
+      questions: video.questions,
+      listeningTask: video.listeningTask,
+      speakingTask: video.speakingTask,
+      applyTask: video.applyTask,
+      grade: video.grade,
+      gradeLevel: video.gradeLevel,
+      gradeBand: video.gradeBand
+    };
+  }
+  return video;
+});

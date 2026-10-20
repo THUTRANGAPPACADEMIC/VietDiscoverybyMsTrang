@@ -137,15 +137,15 @@ export const VideoPlayerModal: React.FC<VideoPlayerModalProps> = ({
     setCompletedSteps(prev => ({ ...prev, [step]: true }));
   };
 
-  // Step 2 Listen Audio Playback (British English RP)
+  // Step 2 Listen Audio Playback (General American Jenny Neural)
   const handlePlayListeningAudio = (text: string, slow: boolean = false) => {
     soundEffects.playClick();
     setIsAudioPlaying(true);
     setIsSlowAudio(slow);
     playEnglishSpeech(text, {
-      lang: 'en-GB', // British English RP pronunciation
+      lang: 'en-US', // General American Jenny Neural pronunciation
       slow,
-      rate: slow ? 0.68 : 0.86,
+      rate: slow ? 0.70 : 0.88,
       onEnd: () => {
         setIsAudioPlaying(false);
         markStepComplete('listen');
@@ -159,7 +159,7 @@ export const VideoPlayerModal: React.FC<VideoPlayerModalProps> = ({
     soundEffects.playClick();
     setIsModelSpeaking(true);
     playEnglishSpeech(text, {
-      lang: 'en-GB',
+      lang: 'en-US',
       onEnd: () => setIsModelSpeaking(false),
       onError: () => setIsModelSpeaking(false)
     });
@@ -196,7 +196,7 @@ export const VideoPlayerModal: React.FC<VideoPlayerModalProps> = ({
     try {
       const result = await session.start(speakingTask.modelSentenceEn, {
         maxDurationSeconds: 7,
-        lang: 'en-GB',
+        lang: 'en-US',
         onVolumeChange: (vol) => setLiveVolume(vol)
       });
 

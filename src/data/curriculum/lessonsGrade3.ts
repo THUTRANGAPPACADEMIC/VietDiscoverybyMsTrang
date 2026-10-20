@@ -30,16 +30,6 @@ export const GRADE_3_LESSONS: CurriculumLesson[] = [
     ],
     "coverImage": "/destinations/one_pillar_pagoda_3d.png",
     "coverImageAttribution": "VietDiscovery 3D Library",
-    "videoLesson": {
-      "videoId": "g3_pagoda_video",
-      "videoUrl": "https://www.youtube.com/watch?v=FjU_xYlVD4g",
-      "embedUrl": "https://www.youtube-nocookie.com/embed/FjU_xYlVD4g?rel=0&modestbranding=1&iv_load_policy=3&playsinline=1",
-      "titleEn": "Discovering One Pillar Pagoda in Hanoi",
-      "titleVi": "Khám phá Chùa Một Cột nghìn năm tại Hà Nội",
-      "durationMinutes": 4,
-      "isTeacherCreated": true,
-      "status": "approved"
-    },
     "vocabulary": [
       {
         "id": "g3-adv1-v1",
@@ -307,16 +297,6 @@ export const GRADE_3_LESSONS: CurriculumLesson[] = [
     ],
     "coverImage": "/destinations/hanoi.jpg",
     "coverImageAttribution": "VietDiscovery Team",
-    "videoLesson": {
-      "videoId": "g3_midautumn_video",
-      "videoUrl": "https://www.youtube.com/watch?v=FjU_xYlVD4g",
-      "embedUrl": "https://www.youtube-nocookie.com/embed/FjU_xYlVD4g?rel=0&modestbranding=1&iv_load_policy=3&playsinline=1",
-      "titleEn": "Traditional Festivals: Mid-Autumn Joy & Mooncakes",
-      "titleVi": "Lễ hội truyền thống: Trung thu rộn rã & Bánh nướng bánh dẻo",
-      "durationMinutes": 4,
-      "isTeacherCreated": false,
-      "status": "approved"
-    },
     "vocabulary": [
       {
         "id": "g3-adv2-v1",
@@ -584,16 +564,6 @@ export const GRADE_3_LESSONS: CurriculumLesson[] = [
     ],
     "coverImage": "/destinations/danang.jpg",
     "coverImageAttribution": "VietDiscovery Team",
-    "videoLesson": {
-      "videoId": "g3_food_video",
-      "videoUrl": "https://www.youtube.com/watch?v=FjU_xYlVD4g",
-      "embedUrl": "https://www.youtube-nocookie.com/embed/FjU_xYlVD4g?rel=0&modestbranding=1&iv_load_policy=3&playsinline=1",
-      "titleEn": "Street Food Adventure: Vietnamese Banh Mi",
-      "titleVi": "Khám phá ẩm thực đường phố: Bánh mì Việt Nam",
-      "durationMinutes": 4,
-      "isTeacherCreated": false,
-      "status": "approved"
-    },
     "vocabulary": [
       {
         "id": "g3-adv3-v1",
@@ -850,27 +820,17 @@ export const GRADE_3_LESSONS: CurriculumLesson[] = [
     "targetCefr": "A1 Elementary",
     "durationMinutes": 40,
     "learningObjectivesEn": [
-      "Learn 4 conservation words: langur, protect, endangered, habitat.",
+      "Learn 4 conservation words: langur, protect, rare, forest.",
       "Use the sentence pattern: 'We must protect [animal] because it is [reason].'",
       "Build empathy for rare wildlife in Vietnamese national parks."
     ],
     "learningObjectivesVi": [
-      "Học 4 từ bảo tồn: langur, protect, endangered, habitat.",
-      "Nói câu: 'We must protect the langur because it is endangered.'",
+      "Học 4 từ bảo tồn: langur, protect, rare, forest.",
+      "Nói câu: 'We must protect the langur because it is rare.'",
       "Xây dựng tình yêu và ý thức bảo vệ động vật hoang dã quý hiếm."
     ],
     "coverImage": "/destinations/phong_nha.jpg",
     "coverImageAttribution": "VietDiscovery Team",
-    "videoLesson": {
-      "videoId": "g3_langur_video",
-      "videoUrl": "https://www.youtube.com/watch?v=k1BneeJTDcU",
-      "embedUrl": "https://www.youtube-nocookie.com/embed/k1BneeJTDcU?rel=0&modestbranding=1&iv_load_policy=3&playsinline=1",
-      "titleEn": "Delacour's Langurs: Treasures of Cuc Phuong",
-      "titleVi": "Voọc mông trắng: Báu vật rừng Cúc Phương",
-      "durationMinutes": 4,
-      "isTeacherCreated": false,
-      "status": "approved"
-    },
     "vocabulary": [
       {
         "id": "g3-adv4-v1",
@@ -898,27 +858,27 @@ export const GRADE_3_LESSONS: CurriculumLesson[] = [
       },
       {
         "id": "g3-adv4-v3",
-        "word": "endangered",
-        "ipa": "/ɪnˈdeɪn.dʒəd/",
+        "word": "rare",
+        "ipa": "/rer/",
         "partOfSpeech": "adjective",
-        "meaningEn": "At risk of disappearing forever if not cared for.",
-        "meaningVi": "Có nguy cơ tuyệt chủng, cực kỳ quý hiếm.",
-        "exampleSentenceEn": "The langur is an endangered species.",
-        "exampleSentenceVi": "Voọc là một loài linh trưởng có nguy cơ tuyệt chủng.",
-        "emoji": "⚠️",
-        "audioPromptEn": "Endangered. An endangered species."
+        "meaningEn": "Not common and very special, hard to find in nature.",
+        "meaningVi": "Quý hiếm, hiếm gặp trong tự nhiên.",
+        "exampleSentenceEn": "The Delacour's langur is very rare in Vietnam.",
+        "exampleSentenceVi": "Voọc mông trắng là loài động vật rất quý hiếm ở Việt Nam.",
+        "emoji": "🐒",
+        "audioPromptEn": "Rare. A very rare animal."
       },
       {
         "id": "g3-adv4-v4",
-        "word": "habitat",
-        "ipa": "/ˈhæb.ɪ.tæt/",
+        "word": "forest",
+        "ipa": "/ˈfɔːr.ɪst/",
         "partOfSpeech": "noun",
-        "meaningEn": "The natural home of an animal or plant.",
-        "meaningVi": "Môi trường sống tự nhiên.",
-        "exampleSentenceEn": "Cuc Phuong is the safe natural habitat for rare birds.",
-        "exampleSentenceVi": "Cúc Phương là môi trường sống an toàn của nhiều loài chim quý.",
-        "emoji": "🌿",
-        "audioPromptEn": "Habitat. Safe natural habitat."
+        "meaningEn": "A large area of land covered with tall trees and plants.",
+        "meaningVi": "Khu rừng rậm rạp xanh mát.",
+        "exampleSentenceEn": "Wild animals live safely in the green forest.",
+        "exampleSentenceVi": "Muông thú sống an toàn trong khu rừng xanh.",
+        "emoji": "🌳",
+        "audioPromptEn": "Forest. A green tropical forest."
       }
     ],
     "sentencePatterns": [
@@ -933,7 +893,7 @@ export const GRADE_3_LESSONS: CurriculumLesson[] = [
           },
           {
             "speaker": "Explorer",
-            "text": "We must protect the langur because it is endangered!"
+            "text": "We must protect the langur because it is rare!"
           }
         ],
         "dialogueVi": [
@@ -956,7 +916,7 @@ export const GRADE_3_LESSONS: CurriculumLesson[] = [
       "wordCount": 42,
       "passagesEn": [
         "High up in the limestone cliffs of Cuc Phuong and Van Long, a family of Delacour's langurs leaps across the branches.",
-        "They eat green leaves and tender buds. Because very few remain in the wild, scientists and rangers protect their natural habitat every single day."
+        "They eat green leaves and tender buds. Because very few remain in the wild, scientists and rangers protect their green forest every single day."
       ],
       "passagesVi": [
         "Trên vách đá vôi dựng đứng ở Cúc Phương và Vân Long, một gia đình voọc mông trắng thoăn thoắt chuyền cành.",
@@ -987,9 +947,9 @@ export const GRADE_3_LESSONS: CurriculumLesson[] = [
       "promptVi": "Em hãy nói: 'We must protect our rare wildlife!'",
       "targetSentenceEn": "We must protect our rare wildlife!",
       "targetSentenceVi": "Chúng ta phải chung tay bảo vệ động vật hoang dã quý hiếm!",
-      "phoneticFocus": "/pr/ in protect and /h/ in habitat",
-      "pronunciationTipsEn": "Breathe out gently for /h/ in habitat and combine /p/ with /r/.",
-      "pronunciationTipsVi": "Thở nhẹ tạo âm /h/ trong habitat và nối liền phụ âm kép /pr/ trong protect.",
+      "phoneticFocus": "/pr/ in protect and /f/ in forest",
+      "pronunciationTipsEn": "Breathe out gently for /f/ in forest and combine /p/ with /r/ in protect.",
+      "pronunciationTipsVi": "Đặt răng chạm môi nhẹ tạo âm /f/ trong forest và nối liền phụ âm kép /pr/ trong protect.",
       "shadowAudioText": "We must protect our rare wildlife!"
     },
     "interactiveGame": {
@@ -1015,15 +975,15 @@ export const GRADE_3_LESSONS: CurriculumLesson[] = [
         },
         {
           "id": "m3",
-          "promptEn": "endangered",
-          "promptVi": "nguy cơ tuyệt chủng",
+          "promptEn": "rare",
+          "promptVi": "quý hiếm",
           "targetMatch": "⚠️",
           "emojiOrIcon": "⚠️"
         },
         {
           "id": "m4",
-          "promptEn": "habitat",
-          "promptVi": "môi trường sống",
+          "promptEn": "forest",
+          "promptVi": "khu rừng",
           "targetMatch": "🌿",
           "emojiOrIcon": "🌿"
         }
@@ -1035,17 +995,17 @@ export const GRADE_3_LESSONS: CurriculumLesson[] = [
         "challengeLevel": 1,
         "levelNameEn": "Recognize",
         "levelNameVi": "Nhận biết",
-        "questionEn": "What does the word 'endangered' mean?",
-        "questionVi": "Từ 'endangered' có nghĩa là gì?",
+        "questionEn": "What does the word 'rare' mean?",
+        "questionVi": "Từ 'rare' có nghĩa là gì?",
         "options": [
-          "At risk of disappearing forever",
+          "Special and hard to find in nature",
           "Very common everywhere",
           "Made of plastic",
           "Happy and full"
         ],
         "correctIndex": 0,
-        "explanationEn": "'Endangered' means facing a high risk of extinction.",
-        "explanationVi": "'Endangered' nghĩa là có nguy cơ tuyệt chủng trong tự nhiên.",
+        "explanationEn": "'Rare' means special and hard to find in nature.",
+        "explanationVi": "'Rare' nghĩa là quý hiếm và khó tìm thấy trong tự nhiên.",
         "learningSkill": "Vocabulary Recognition"
       },
       {
@@ -1053,8 +1013,8 @@ export const GRADE_3_LESSONS: CurriculumLesson[] = [
         "challengeLevel": 2,
         "levelNameEn": "Connect",
         "levelNameVi": "Kết nối",
-        "questionEn": "Why do forest rangers protect natural habitats?",
-        "questionVi": "Vì sao các kiểm lâm viên lại bảo vệ môi trường sống tự nhiên?",
+        "questionEn": "Why do rangers protect the green forest?",
+        "questionVi": "Vì sao các kiểm lâm viên lại bảo vệ khu rừng xanh?",
         "options": [
           "So wild animals have safe homes, food, and clean water",
           "To build noisy factories",
@@ -1062,8 +1022,8 @@ export const GRADE_3_LESSONS: CurriculumLesson[] = [
           "To drive fast race cars"
         ],
         "correctIndex": 0,
-        "explanationEn": "Habitats give wildlife food, shelter, and security.",
-        "explanationVi": "Môi trường tự nhiên mang lại thức ăn, nơi trú ngụ và sự an toàn cho động vật hoang dã.",
+        "explanationEn": "Forests give wildlife food, shelter, and security.",
+        "explanationVi": "Khu rừng mang lại thức ăn, nơi trú ngụ và sự an toàn cho động vật hoang dã.",
         "learningSkill": "Cultural Connection"
       },
       {
@@ -1091,7 +1051,7 @@ export const GRADE_3_LESSONS: CurriculumLesson[] = [
       "criteria": [
         {
           "skill": "Conservation Terms",
-          "standardEn": "Identifies langur, protect, endangered, habitat.",
+          "standardEn": "Identifies langur, protect, rare, forest.",
           "standardVi": "Nhận biết thuật ngữ bảo tồn."
         },
         {
@@ -1127,27 +1087,17 @@ export const GRADE_3_LESSONS: CurriculumLesson[] = [
     "targetCefr": "A1 Elementary",
     "durationMinutes": 40,
     "learningObjectivesEn": [
-      "Learn 4 green tech words: solar panel, robot, recycle, clean energy.",
+      "Learn 4 green tech words: solar panel, robot, recycle, sunlight.",
       "Use the sentence pattern: 'Our school uses [source] to [action].'",
       "Promote waste sorting and clean energy awareness at primary school."
     ],
     "learningObjectivesVi": [
-      "Học 4 từ công nghệ xanh: solar panel, robot, recycle, clean energy.",
+      "Học 4 từ công nghệ xanh: solar panel, robot, recycle, sunlight.",
       "Nói câu: 'Our school uses solar panels to power smart classrooms.'",
       "Nâng cao ý thức phân loại rác và sử dụng năng lượng sạch."
     ],
     "coverImage": "/destinations/hanoi.jpg",
     "coverImageAttribution": "VietDiscovery Team",
-    "videoLesson": {
-      "videoId": "g3_smart_video",
-      "videoUrl": "https://www.youtube.com/watch?v=k1BneeJTDcU",
-      "embedUrl": "https://www.youtube-nocookie.com/embed/k1BneeJTDcU?rel=0&modestbranding=1&iv_load_policy=3&playsinline=1",
-      "titleEn": "Green Smart Classrooms Across Modern Vietnam",
-      "titleVi": "Lớp học thông minh xanh trên khắp đất nước Việt Nam",
-      "durationMinutes": 4,
-      "isTeacherCreated": true,
-      "status": "approved"
-    },
     "vocabulary": [
       {
         "id": "g3-adv5-v1",
@@ -1187,15 +1137,15 @@ export const GRADE_3_LESSONS: CurriculumLesson[] = [
       },
       {
         "id": "g3-adv5-v4",
-        "word": "clean energy",
-        "ipa": "/kliːn ˈen.ə.dʒi/",
+        "word": "sunlight",
+        "ipa": "/ˈsʌn.laɪt/",
         "partOfSpeech": "noun",
-        "meaningEn": "Power made from sun and wind that does not pollute.",
-        "meaningVi": "Nguồn năng lượng sạch, không gây ô nhiễm.",
-        "exampleSentenceEn": "Clean energy protects our skies and seas.",
-        "exampleSentenceVi": "Năng lượng sạch bảo vệ bầu trời và đại dương của chúng ta.",
-        "emoji": "🌱",
-        "audioPromptEn": "Clean energy. Sustainable clean energy."
+        "meaningEn": "The natural light and warmth that comes from the sun.",
+        "meaningVi": "Ánh nắng mặt trời tự nhiên.",
+        "exampleSentenceEn": "Solar panels catch bright sunlight to make clean power.",
+        "exampleSentenceVi": "Pin mặt trời đón ánh nắng rực rỡ để tạo ra nguồn điện sạch.",
+        "emoji": "☀️",
+        "audioPromptEn": "Sunlight. Bright natural sunlight."
       }
     ],
     "sentencePatterns": [
@@ -1299,8 +1249,8 @@ export const GRADE_3_LESSONS: CurriculumLesson[] = [
         },
         {
           "id": "m4",
-          "promptEn": "clean energy",
-          "promptVi": "năng lượng sạch",
+          "promptEn": "sunlight",
+          "promptVi": "ánh nắng mặt trời",
           "targetMatch": "🌱",
           "emojiOrIcon": "🌱"
         }
@@ -1348,17 +1298,17 @@ export const GRADE_3_LESSONS: CurriculumLesson[] = [
         "challengeLevel": 3,
         "levelNameEn": "Apply",
         "levelNameVi": "Vận dụng",
-        "questionEn": "Complete the sentence: 'Clean energy comes from the sun and the ______.'",
-        "questionVi": "Hoàn thành câu: 'Clean energy comes from the sun and the ______.'",
+        "questionEn": "Complete the sentence: 'Solar panels catch bright ______ to make clean electricity.'",
+        "questionVi": "Hoàn thành câu: 'Pin mặt trời đón ______ rực rỡ để tạo ra nguồn điện sạch.'",
         "options": [
-          "wind",
+          "sunlight",
           "smoke",
           "trash",
           "plastic"
         ],
         "correctIndex": 0,
-        "explanationEn": "Solar and wind are key clean energy sources.",
-        "explanationVi": "Năng lượng sạch đến từ mặt trời và gió ('the sun and the wind').",
+        "explanationEn": "Solar panels absorb natural sunlight to produce electricity.",
+        "explanationVi": "Pin mặt trời hấp thụ ánh nắng tự nhiên ('sunlight') để tạo ra nguồn điện sạch.",
         "learningSkill": "Communicative Application"
       }
     ],
@@ -1368,13 +1318,13 @@ export const GRADE_3_LESSONS: CurriculumLesson[] = [
       "criteria": [
         {
           "skill": "Green Tech Words",
-          "standardEn": "Identifies solar panel, robot, recycle, clean energy.",
+          "standardEn": "Identifies solar panel, robot, recycle, sunlight.",
           "standardVi": "Nhận biết từ vựng công nghệ xanh."
         },
         {
           "skill": "Energy Consciousness",
-          "standardEn": "Explains benefits of clean energy.",
-          "standardVi": "Diễn đạt được lợi ích của năng lượng sạch."
+          "standardEn": "Explains benefits of clean sunlight energy.",
+          "standardVi": "Diễn đạt được lợi ích của năng lượng ánh nắng mặt trời."
         }
       ]
     },

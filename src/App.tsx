@@ -39,6 +39,7 @@ import { DESTINATIONS } from './data/destinations';
 import { INITIAL_CLASSES, INITIAL_STUDENTS, INITIAL_MATERIALS } from './data/initialClasses';
 import { localStore, supabase, isSupabaseConfigured } from './lib/supabase';
 import { syncStudentProgress, loadStudentProgress, resolveStudentGrade, logoutStudent } from './lib/studentAuth';
+import { syncTeacherVideosWithSupabase } from './lib/teacherVideoManager';
 import { 
   parseAuthUrl, 
   exchangeAuthCode, 
@@ -89,7 +90,7 @@ export const App: React.FC = () => {
     return 'student';
   });
   const [activeStudentTab, setActiveStudentTab] = useState<'explore' | 'games' | 'videos' | 'passport' | 'progress'>('explore');
-  const [activeTeacherTab, setActiveTeacherTab] = useState<'approval' | 'curriculum' | 'materials' | 'videos' | 'classes' | 'progress' | 'assessment' | 'ai' | 'clip_selector'>('approval');
+  const [activeTeacherTab, setActiveTeacherTab] = useState<'approval' | 'curriculum' | 'materials' | 'videos' | 'classes' | 'progress' | 'assessment' | 'ai' | 'clip_selector' | 'vocab_images'>('approval');
 
   // Teacher / Admin student experience previewer override
   const [previewGradeBand, setPreviewGradeBand] = useState<GradeBand | undefined>(undefined);
@@ -154,7 +155,17 @@ export const App: React.FC = () => {
   });
 
   const [students, setStudents] = useState<StudentRosterItem[]>(() => {
+    // Thoroughly wipe any legacy mock roster from browser local storage
     localStore.remove('students');
+    localStore.remove('student_roster');
+    localStore.remove('legacy_mock_students');
+    try {
+      localStorage.removeItem('vietdiscovery_students');
+      localStorage.removeItem('vietdiscovery_student_roster');
+      localStorage.removeItem('vietdiscovery_classes');
+    } catch {
+      // ignore
+    }
     return [];
   });
 
@@ -162,8 +173,10 @@ export const App: React.FC = () => {
     return localStore.get<MaterialItem[]>('materials', INITIAL_MATERIALS);
   });
 
-  // Cloud synchronization status (only true when verified cloud sync succeeded)
-  const [isCloudSynced, setIsCloudSynced] = useState<boolean>(false);
+  // Cloud synchronization status (reflects active Supabase configuration and connectivity)
+  const [isCloudSynced, setIsCloudSynced] = useState<boolean>(() => {
+    return isSupabaseConfigured() && (typeof navigator === 'undefined' || navigator.onLine);
+  });
 
   // Dynamic total stars: for students, single source of truth is user.stars, backed by verified progressMap
   // Using Math.max prevents any double-counting while ensuring immediate UI update when stars are earned
@@ -178,6 +191,20 @@ export const App: React.FC = () => {
       setActiveSection('student');
     }
   }, [user, activeSection]);
+
+  // Maintain active cloud connectivity state based on network changes
+  useEffect(() => {
+    const handleOnline = () => {
+      if (isSupabaseConfigured()) setIsCloudSynced(true);
+    };
+    const handleOffline = () => setIsCloudSynced(false);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   // Save to local storage on changes
   useEffect(() => {
@@ -201,6 +228,11 @@ export const App: React.FC = () => {
       localStore.set('current_user', user);
     }
   }, [user]);
+
+  // Synchronize official curriculum videos from Supabase Cloud on application startup
+  useEffect(() => {
+    syncTeacherVideosWithSupabase().catch(() => {});
+  }, []);
 
   // Listen for Supabase invitation tokens, PKCE codes, recovery hashes, or auth errors
   useEffect(() => {
@@ -338,7 +370,7 @@ export const App: React.FC = () => {
         });
       });
     } else {
-      setIsCloudSynced(false);
+      setIsCloudSynced(isSupabaseConfigured() && (typeof navigator === 'undefined' || navigator.onLine));
     }
   }, [user?.id]);
 
@@ -549,7 +581,7 @@ export const App: React.FC = () => {
     }
     setProgressMap({});
     setUser(null);
-    setIsCloudSynced(false);
+    setIsCloudSynced(isSupabaseConfigured() && (typeof navigator === 'undefined' || navigator.onLine));
     setPreviewGradeBand(undefined);
     setActiveSection('student');
   };

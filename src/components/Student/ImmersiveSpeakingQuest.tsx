@@ -77,7 +77,7 @@ export const ImmersiveSpeakingQuest: React.FC<ImmersiveSpeakingQuestProps> = ({
 
     playEnglishSpeech(sampleSentence, {
       pitch: 1.05,
-      lang: 'en-GB',
+      lang: 'en-US',
       onStart: () => setIsPlayingModel(true),
       onEnd: () => setIsPlayingModel(false),
       onError: () => setIsPlayingModel(false)
@@ -113,7 +113,7 @@ export const ImmersiveSpeakingQuest: React.FC<ImmersiveSpeakingQuestProps> = ({
     try {
       const result = await session.start(sampleSentence, {
         maxDurationSeconds: 8,
-        lang: 'en-GB',
+        lang: 'en-US',
         onVolumeChange: (vol) => setLiveVolume(vol)
       });
 

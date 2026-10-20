@@ -30,16 +30,6 @@ export const GRADE_2_LESSONS: CurriculumLesson[] = [
     ],
     "coverImage": "/destinations/hanoi.jpg",
     "coverImageAttribution": "VietDiscovery Team",
-    "videoLesson": {
-      "videoId": "g2_hanoi_video",
-      "videoUrl": "https://www.youtube.com/watch?v=FjU_xYlVD4g",
-      "embedUrl": "https://www.youtube-nocookie.com/embed/FjU_xYlVD4g?rel=0&modestbranding=1&iv_load_policy=3&playsinline=1",
-      "titleEn": "Greetings Across Vietnam & Sword Lake",
-      "titleVi": "Chào hỏi quanh Việt Nam & Hồ Hoàn Kiếm",
-      "durationMinutes": 4,
-      "isTeacherCreated": false,
-      "status": "approved"
-    },
     "vocabulary": [
       {
         "id": "g2-adv1-v1",
@@ -307,16 +297,6 @@ export const GRADE_2_LESSONS: CurriculumLesson[] = [
     ],
     "coverImage": "/destinations/hanoi.jpg",
     "coverImageAttribution": "VietDiscovery Team",
-    "videoLesson": {
-      "videoId": "g2_tet_video",
-      "videoUrl": "https://www.youtube.com/watch?v=FjU_xYlVD4g",
-      "embedUrl": "https://www.youtube-nocookie.com/embed/FjU_xYlVD4g?rel=0&modestbranding=1&iv_load_policy=3&playsinline=1",
-      "titleEn": "Celebrating Tet with Family in Vietnam",
-      "titleVi": "Đón Tết sum vầy cùng gia đình Việt Nam",
-      "durationMinutes": 4,
-      "isTeacherCreated": false,
-      "status": "approved"
-    },
     "vocabulary": [
       {
         "id": "g2-adv2-v1",
@@ -584,16 +564,6 @@ export const GRADE_2_LESSONS: CurriculumLesson[] = [
     ],
     "coverImage": "/destinations/danang.jpg",
     "coverImageAttribution": "VietDiscovery Team",
-    "videoLesson": {
-      "videoId": "g2_pho_video",
-      "videoUrl": "https://www.youtube.com/watch?v=FjU_xYlVD4g",
-      "embedUrl": "https://www.youtube-nocookie.com/embed/FjU_xYlVD4g?rel=0&modestbranding=1&iv_load_policy=3&playsinline=1",
-      "titleEn": "Making Traditional Vietnamese Pho with Love",
-      "titleVi": "Nấu tô phở truyền thống Việt Nam đầy yêu thương",
-      "durationMinutes": 4,
-      "isTeacherCreated": true,
-      "status": "approved"
-    },
     "vocabulary": [
       {
         "id": "g2-adv3-v1",
@@ -861,21 +831,11 @@ export const GRADE_2_LESSONS: CurriculumLesson[] = [
     ],
     "coverImage": "/destinations/phong_nha.jpg",
     "coverImageAttribution": "VietDiscovery Team",
-    "videoLesson": {
-      "videoId": "g2_nature_video",
-      "videoUrl": "https://www.youtube.com/watch?v=k1BneeJTDcU",
-      "embedUrl": "https://www.youtube-nocookie.com/embed/k1BneeJTDcU?rel=0&modestbranding=1&iv_load_policy=3&playsinline=1",
-      "titleEn": "Discovering Butterflies in Cuc Phuong Forest",
-      "titleVi": "Ngắm đàn bướm muôn màu ở rừng Cúc Phương",
-      "durationMinutes": 4,
-      "isTeacherCreated": false,
-      "status": "approved"
-    },
     "vocabulary": [
       {
         "id": "g2-adv4-v1",
         "word": "forest",
-        "ipa": "/ˈfɒr.ɪst/",
+        "ipa": "/ˈfɔːr.ɪst/",
         "partOfSpeech": "noun",
         "meaningEn": "A large area covered with many green trees.",
         "meaningVi": "Khu rừng nguyên sinh bạt ngàn.",
@@ -1138,16 +1098,6 @@ export const GRADE_2_LESSONS: CurriculumLesson[] = [
     ],
     "coverImage": "/destinations/halong_bay.jpg",
     "coverImageAttribution": "VietDiscovery Team",
-    "videoLesson": {
-      "videoId": "g2_metro_video",
-      "videoUrl": "https://www.youtube.com/watch?v=k1BneeJTDcU",
-      "embedUrl": "https://www.youtube-nocookie.com/embed/k1BneeJTDcU?rel=0&modestbranding=1&iv_load_policy=3&playsinline=1",
-      "titleEn": "The Green Electric Metro in Modern Vietnam",
-      "titleVi": "Tàu điện xanh hiện đại tại Việt Nam",
-      "durationMinutes": 4,
-      "isTeacherCreated": true,
-      "status": "approved"
-    },
     "vocabulary": [
       {
         "id": "g2-adv5-v1",

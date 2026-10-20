@@ -19,27 +19,17 @@ export const GRADE_4_LESSONS: CurriculumLesson[] = [
     "targetCefr": "A1+ Intermediate",
     "durationMinutes": 45,
     "learningObjectivesEn": [
-      "Acquire 4 historical travel vocabulary terms: citadel, emperor, dynasty, royal.",
-      "Use past and present descriptive structures: 'The citadel was built in [year] by [emperor].'",
+      "Acquire 4 historical travel vocabulary terms: citadel, king, palace, royal.",
+      "Use past and present descriptive structures: 'The citadel was built with [feature] by the [king].'",
       "Narrate a cultural travel itinerary along the Perfume River in Hue."
     ],
     "learningObjectivesVi": [
-      "Học 4 từ lịch sử du lịch: citadel, emperor, dynasty, royal.",
-      "Nói câu miêu tả lịch sử: 'The citadel was built by the Nguyen Dynasty.'",
+      "Học 4 từ lịch sử du lịch: citadel, king, palace, royal.",
+      "Nói câu miêu tả lịch sử: 'The king built the great palace inside the citadel.'",
       "Thuyết minh chuyến du ngoạn trên sông Hương bằng tiếng Anh trôi chảy."
     ],
     "coverImage": "/destinations/hue.jpg",
     "coverImageAttribution": "VietDiscovery Team",
-    "videoLesson": {
-      "videoId": "g4_hue_video",
-      "videoUrl": "https://www.youtube.com/watch?v=k1BneeJTDcU",
-      "embedUrl": "https://www.youtube-nocookie.com/embed/k1BneeJTDcU?rel=0&modestbranding=1&iv_load_policy=3&playsinline=1",
-      "titleEn": "The Ancient Capital of Hue: Royal Treasures",
-      "titleVi": "Cố đô Huế: Kho báu hoàng triều ngàn năm",
-      "durationMinutes": 5,
-      "isTeacherCreated": true,
-      "status": "approved"
-    },
     "vocabulary": [
       {
         "id": "g4-adv1-v1",
@@ -55,27 +45,27 @@ export const GRADE_4_LESSONS: CurriculumLesson[] = [
       },
       {
         "id": "g4-adv1-v2",
-        "word": "emperor",
-        "ipa": "/ˈem.pər.ər/",
+        "word": "king",
+        "ipa": "/kɪŋ/",
         "partOfSpeech": "noun",
-        "meaningEn": "The supreme royal ruler of an empire.",
-        "meaningVi": "Vị hoàng đế, người đứng đầu triều đại.",
-        "exampleSentenceEn": "Emperor Gia Long established Hue as the capital city.",
-        "exampleSentenceVi": "Vua Gia Long đã chọn Huế làm kinh đô đất nước.",
+        "meaningEn": "The male royal ruler of an independent country.",
+        "meaningVi": "Vị vua, người đứng đầu hoàng gia.",
+        "exampleSentenceEn": "The king lived in the Hue Citadel long ago.",
+        "exampleSentenceVi": "Vị vua đã từng sống trong Kinh thành Huế ngày xưa.",
         "emoji": "👑",
-        "audioPromptEn": "Emperor. The Nguyen Dynasty emperor."
+        "audioPromptEn": "King. The royal king of Vietnam."
       },
       {
         "id": "g4-adv1-v3",
-        "word": "dynasty",
-        "ipa": "/ˈdɪn.ə.sti/",
+        "word": "palace",
+        "ipa": "/ˈpæl.ɪs/",
         "partOfSpeech": "noun",
-        "meaningEn": "A succession of rulers belonging to the same family.",
-        "meaningVi": "Triều đại lịch sử phong kiến.",
-        "exampleSentenceEn": "The Nguyen Dynasty ruled Vietnam from 1802 to 1945.",
-        "exampleSentenceVi": "Nhà Nguyễn trị vì đất nước từ năm 1802 đến 1945.",
-        "emoji": "📜",
-        "audioPromptEn": "Dynasty. The historic Nguyen Dynasty."
+        "meaningEn": "A grand and splendid building where royal rulers lived.",
+        "meaningVi": "Cung điện hoàng gia lộng lẫy.",
+        "exampleSentenceEn": "We visit the golden palace inside the Hue Citadel.",
+        "exampleSentenceVi": "Chúng em ghé thăm cung điện vàng son bên trong Đại Nội Huế.",
+        "emoji": "🏛️",
+        "audioPromptEn": "Palace. The grand royal palace."
       },
       {
         "id": "g4-adv1-v4",
@@ -124,7 +114,7 @@ export const GRADE_4_LESSONS: CurriculumLesson[] = [
       "titleVi": "Tiếng vọng cố đô ngàn năm",
       "wordCount": 54,
       "passagesEn": [
-        "Hue was the imperial capital of Vietnam under the thirteen emperors of the Nguyen Dynasty.",
+        "Hue was the imperial capital of Vietnam under thirteen royal kings.",
         "Surrounded by thick stone ramparts and lotus-filled moats, the Forbidden Purple City houses ornate palaces with painted dragon pillars. As evening falls, golden dragon boats drift serenely along the Perfume River, carrying the timeless melodies of royal court music across the water."
       ],
       "passagesVi": [
@@ -156,7 +146,7 @@ export const GRADE_4_LESSONS: CurriculumLesson[] = [
       "promptVi": "Em hãy nói: 'Hue Citadel is a UNESCO World Heritage site!'",
       "targetSentenceEn": "Hue Citadel is a UNESCO World Heritage site!",
       "targetSentenceVi": "Đại Nội Huế là Di sản Văn hóa Thế giới được UNESCO công nhận!",
-      "phoneticFocus": "/sɪ/ in citadel and /dɪ/ in dynasty",
+      "phoneticFocus": "/sɪ/ in citadel and /p/ in palace",
       "pronunciationTipsEn": "Pronounce citadel as three syllables: /ˈsɪt.ə.del/.",
       "pronunciationTipsVi": "Phát âm chuẩn xác ba âm tiết: /ˈsɪt.ə.del/ với trọng âm rơi vào âm đầu tiên.",
       "shadowAudioText": "Hue Citadel is a UNESCO World Heritage site!"
@@ -177,15 +167,15 @@ export const GRADE_4_LESSONS: CurriculumLesson[] = [
         },
         {
           "id": "m2",
-          "promptEn": "emperor",
-          "promptVi": "vị hoàng đế",
+          "promptEn": "king",
+          "promptVi": "vị vua",
           "targetMatch": "👑",
           "emojiOrIcon": "👑"
         },
         {
           "id": "m3",
-          "promptEn": "dynasty",
-          "promptVi": "triều đại phong kiến",
+          "promptEn": "palace",
+          "promptVi": "cung điện hoàng gia",
           "targetMatch": "📜",
           "emojiOrIcon": "📜"
         },
@@ -204,17 +194,17 @@ export const GRADE_4_LESSONS: CurriculumLesson[] = [
         "challengeLevel": 1,
         "levelNameEn": "Recognize",
         "levelNameVi": "Nhận biết",
-        "questionEn": "Which royal dynasty built the Imperial Citadel of Hue?",
-        "questionVi": "Triều đại hoàng gia nào đã xây dựng Kinh thành Huế?",
+        "questionEn": "What is the grand royal building inside the Hue Citadel called?",
+        "questionVi": "Tòa nhà hoàng gia nguy nga lộng lẫy bên trong Đại Nội Huế được gọi là gì?",
         "options": [
-          "The Nguyen Dynasty",
-          "The Roman Empire",
-          "The Tudor Dynasty",
-          "The Ming Dynasty"
+          "The golden palace",
+          "A modern airport",
+          "A sports stadium",
+          "A shopping mall"
         ],
         "correctIndex": 0,
-        "explanationEn": "The Nguyen Dynasty built and ruled from the Hue Citadel.",
-        "explanationVi": "Triều Nguyễn ('The Nguyen Dynasty') đã xây dựng và định đô tại Huế.",
+        "explanationEn": "The palace inside the citadel was where the king lived and held ceremonies.",
+        "explanationVi": "Cung điện ('The golden palace') bên trong Đại Nội là nơi nhà vua thiết triều và sinh sống.",
         "learningSkill": "Vocabulary Recognition"
       },
       {
@@ -260,7 +250,7 @@ export const GRADE_4_LESSONS: CurriculumLesson[] = [
       "criteria": [
         {
           "skill": "Historical Vocabulary",
-          "standardEn": "Identifies citadel, emperor, dynasty, royal.",
+          "standardEn": "Identifies citadel, king, palace, royal.",
           "standardVi": "Nhận diện từ vựng lịch sử cố đô."
         },
         {
@@ -308,16 +298,6 @@ export const GRADE_4_LESSONS: CurriculumLesson[] = [
     ],
     "coverImage": "/destinations/danang.jpg",
     "coverImageAttribution": "VietDiscovery Team",
-    "videoLesson": {
-      "videoId": "g4_hoian_video",
-      "videoUrl": "https://www.youtube.com/watch?v=FjU_xYlVD4g",
-      "embedUrl": "https://www.youtube-nocookie.com/embed/FjU_xYlVD4g?rel=0&modestbranding=1&iv_load_policy=3&playsinline=1",
-      "titleEn": "The Lanterns of Hoi An Ancient Town",
-      "titleVi": "Những ngọn đèn lồng lung linh phố cổ Hội An",
-      "durationMinutes": 4,
-      "isTeacherCreated": false,
-      "status": "approved"
-    },
     "vocabulary": [
       {
         "id": "g4-adv2-v1",
@@ -575,27 +555,17 @@ export const GRADE_4_LESSONS: CurriculumLesson[] = [
     "targetCefr": "A1+ Intermediate",
     "durationMinutes": 45,
     "learningObjectivesEn": [
-      "Learn 4 culinary words: turmeric, broth, pancake, regional.",
+      "Learn 4 culinary words: turmeric, broth, pancake, fresh.",
       "Use the sentence pattern: 'In [region], people enjoy [dish] with [side].'",
-      "Compare regional culinary traditions between North, Central, and South Vietnam."
+      "Describe delicious Vietnamese dishes served with fresh green herbs."
     ],
     "learningObjectivesVi": [
-      "Học 4 từ ẩm thực: turmeric, broth, pancake, regional.",
+      "Học 4 từ ẩm thực: turmeric, broth, pancake, fresh.",
       "Nói câu so sánh: 'In Central Vietnam, people enjoy spicy broth and turmeric noodles.'",
       "So sánh đặc trưng văn hóa ẩm thực ba miền Bắc - Trung - Nam."
     ],
     "coverImage": "/destinations/danang.jpg",
     "coverImageAttribution": "VietDiscovery Team",
-    "videoLesson": {
-      "videoId": "g4_foodtour_video",
-      "videoUrl": "https://www.youtube.com/watch?v=FjU_xYlVD4g",
-      "embedUrl": "https://www.youtube-nocookie.com/embed/FjU_xYlVD4g?rel=0&modestbranding=1&iv_load_policy=3&playsinline=1",
-      "titleEn": "A Food Tour Across Vietnam: 3 Regions",
-      "titleVi": "Hành trình ẩm thực ba miền Bắc Trung Nam",
-      "durationMinutes": 5,
-      "isTeacherCreated": false,
-      "status": "approved"
-    },
     "vocabulary": [
       {
         "id": "g4-adv3-v1",
@@ -635,15 +605,15 @@ export const GRADE_4_LESSONS: CurriculumLesson[] = [
       },
       {
         "id": "g4-adv3-v4",
-        "word": "regional",
-        "ipa": "/ˈriː.dʒən.əl/",
+        "word": "fresh",
+        "ipa": "/freʃ/",
         "partOfSpeech": "adjective",
-        "meaningEn": "Belonging to a specific geographical area or culture.",
-        "meaningVi": "Mang nét đặc trưng của từng vùng miền.",
-        "exampleSentenceEn": "Vietnam has rich regional food traditions.",
-        "exampleSentenceVi": "Việt Nam có nền ẩm thực vùng miền vô cùng phong phú.",
-        "emoji": "🗺️",
-        "audioPromptEn": "Regional. Regional flavors of Vietnam."
+        "meaningEn": "Recently made or gathered, crisp and not stale.",
+        "meaningVi": "Tươi ngon, tươi mát tự nhiên.",
+        "exampleSentenceEn": "Vietnamese pancakes are served with fresh green herbs.",
+        "exampleSentenceVi": "Bánh xèo Việt Nam được ăn kèm với các loại rau thơm tươi ngon.",
+        "emoji": "🥗",
+        "audioPromptEn": "Fresh. Fresh green herbs and food."
       }
     ],
     "sentencePatterns": [
@@ -708,20 +678,20 @@ export const GRADE_4_LESSONS: CurriculumLesson[] = [
       "audioSlowAvailable": true
     },
     "speaking": {
-      "promptEn": "Say: 'Vietnamese cuisine is rich in regional flavors!'",
-      "promptVi": "Em hãy nói: 'Vietnamese cuisine is rich in regional flavors!'",
-      "targetSentenceEn": "Vietnamese cuisine is rich in regional flavors!",
+      "promptEn": "Say: 'Vietnamese food is served with fresh herbs!'",
+      "promptVi": "Em hãy nói: 'Vietnamese food is served with fresh herbs!'",
+      "targetSentenceEn": "Vietnamese food is served with fresh herbs!",
       "targetSentenceVi": "Ẩm thực Việt Nam vô cùng phong phú hương vị ba miền!",
       "phoneticFocus": "/tɜː/ in turmeric and /br/ in broth",
       "pronunciationTipsEn": "Focus on the long /ɜː/ vowel sound in tur-mer-ic.",
       "pronunciationTipsVi": "Kéo dài âm /ɜː/ trong tur-mer-ic và phát âm âm cuối /θ/ trong broth bằng cách đặt lưỡi giữa hai hàm răng.",
-      "shadowAudioText": "Vietnamese cuisine is rich in regional flavors!"
+      "shadowAudioText": "Vietnamese food is served with fresh herbs!"
     },
     "interactiveGame": {
       "gameType": "word_picture_match",
-      "gameTitleEn": "Regional Food Explorer",
+      "gameTitleEn": "Fresh Food Explorer",
       "gameTitleVi": "Khám phá ẩm thực ba miền",
-      "instructionsEn": "Match each culinary word to its delicious regional dish!",
+      "instructionsEn": "Match each culinary word to its delicious fresh dish!",
       "instructionsVi": "Nối từ tiếng Anh với món ăn đặc sắc tương ứng nhé!",
       "items": [
         {
@@ -747,8 +717,8 @@ export const GRADE_4_LESSONS: CurriculumLesson[] = [
         },
         {
           "id": "m4",
-          "promptEn": "regional",
-          "promptVi": "đặc sản vùng miền",
+          "promptEn": "fresh",
+          "promptVi": "tươi ngon, tươi mát",
           "targetMatch": "🗺️",
           "emojiOrIcon": "🗺️"
         }
@@ -815,8 +785,8 @@ export const GRADE_4_LESSONS: CurriculumLesson[] = [
       "minimumPassScorePercent": 60,
       "criteria": [
         {
-          "skill": "Regional Cuisine Words",
-          "standardEn": "Identifies turmeric, broth, pancake, regional.",
+          "skill": "Fresh Cuisine Words",
+          "standardEn": "Identifies turmeric, broth, pancake, fresh.",
           "standardVi": "Nhận diện từ vựng ẩm thực vùng miền."
         },
         {
@@ -853,27 +823,17 @@ export const GRADE_4_LESSONS: CurriculumLesson[] = [
     "targetCefr": "A1+ Intermediate",
     "durationMinutes": 45,
     "learningObjectivesEn": [
-      "Learn 4 geological science terms: cave, stalactite, underground, conservation.",
+      "Learn 4 geological science terms: cave, stalactite, underground, explore.",
       "Use the sentence pattern: 'Scientists discovered [noun] that formed over [time].'",
       "Promote eco-tourism ethics and cave preservation in UNESCO natural heritage sites."
     ],
     "learningObjectivesVi": [
-      "Học 4 từ khoa học địa chất: cave, stalactite, underground, conservation.",
+      "Học 4 từ khoa học địa chất: cave, stalactite, underground, explore.",
       "Nói câu: 'Stalactites took millions of years to grow drop by drop.'",
       "Nâng cao ý thức du lịch sinh thái và bảo vệ thạch nhũ trong hang động."
     ],
     "coverImage": "/destinations/phong_nha.jpg",
     "coverImageAttribution": "VietDiscovery Team",
-    "videoLesson": {
-      "videoId": "g4_caves_video",
-      "videoUrl": "https://www.youtube.com/watch?v=k1BneeJTDcU",
-      "embedUrl": "https://www.youtube-nocookie.com/embed/k1BneeJTDcU?rel=0&modestbranding=1&iv_load_policy=3&playsinline=1",
-      "titleEn": "Protecting Vietnam's Endangered Wildlife & Caves",
-      "titleVi": "Bảo vệ động vật hoang dã và kỳ quan hang động Việt Nam",
-      "durationMinutes": 5,
-      "isTeacherCreated": false,
-      "status": "approved"
-    },
     "vocabulary": [
       {
         "id": "g4-adv4-v1",
@@ -913,15 +873,15 @@ export const GRADE_4_LESSONS: CurriculumLesson[] = [
       },
       {
         "id": "g4-adv4-v4",
-        "word": "conservation",
-        "ipa": "/ˌkɒn.səˈveɪ.ʃən/",
-        "partOfSpeech": "noun",
-        "meaningEn": "The protection of animals, plants, and natural resources.",
-        "meaningVi": "Công tác bảo tồn thiên nhiên và di sản.",
-        "exampleSentenceEn": "Park rangers enforce strict conservation rules to preserve the caves.",
-        "exampleSentenceVi": "Các kiểm lâm viên thực thi quy định bảo tồn nghiêm ngặt để bảo vệ hang động.",
-        "emoji": "🌿",
-        "audioPromptEn": "Conservation. Environmental conservation."
+        "word": "explore",
+        "ipa": "/ɪkˈsplɔːr/",
+        "partOfSpeech": "verb",
+        "meaningEn": "To travel through an unfamiliar area in order to learn about it.",
+        "meaningVi": "Khám phá, thám hiểm nơi chốn mới.",
+        "exampleSentenceEn": "We take a boat to explore the cave.",
+        "exampleSentenceVi": "Chúng em đi thuyền nhỏ để khám phá hang động kỳ bí.",
+        "emoji": "🔦",
+        "audioPromptEn": "Explore. Explore the mysterious cave."
       }
     ],
     "sentencePatterns": [
@@ -997,7 +957,7 @@ export const GRADE_4_LESSONS: CurriculumLesson[] = [
     },
     "interactiveGame": {
       "gameType": "word_picture_match",
-      "gameTitleEn": "Cave Conservation Ranger",
+      "gameTitleEn": "Cave Explorer Ranger",
       "gameTitleVi": "Kiểm lâm bảo vệ hang động",
       "instructionsEn": "Match each geological term to its natural wonder!",
       "instructionsVi": "Nối thuật ngữ địa chất với kỳ quan tương ứng nhé!",
@@ -1025,8 +985,8 @@ export const GRADE_4_LESSONS: CurriculumLesson[] = [
         },
         {
           "id": "m4",
-          "promptEn": "conservation",
-          "promptVi": "công tác bảo tồn",
+          "promptEn": "explore",
+          "promptVi": "khám phá, thám hiểm",
           "targetMatch": "🌿",
           "emojiOrIcon": "🌿"
         }
@@ -1094,7 +1054,7 @@ export const GRADE_4_LESSONS: CurriculumLesson[] = [
       "criteria": [
         {
           "skill": "Geological Science Terms",
-          "standardEn": "Identifies cave, stalactite, underground, conservation.",
+          "standardEn": "Identifies cave, stalactite, underground, explore.",
           "standardVi": "Nhận diện từ vựng địa chất hang động."
         },
         {
@@ -1131,27 +1091,17 @@ export const GRADE_4_LESSONS: CurriculumLesson[] = [
     "targetCefr": "A1+ Intermediate",
     "durationMinutes": 45,
     "learningObjectivesEn": [
-      "Learn 4 green city words: wind turbine, renewable, public transit, zero-emission.",
+      "Learn 4 green city words: wind turbine, solar power, public transit, electric bus.",
       "Use the sentence pattern: 'By using [clean tech], our cities can reduce [pollution].'",
       "Debate sustainable solutions for urban modernization in Vietnam."
     ],
     "learningObjectivesVi": [
-      "Học 4 từ thành phố xanh: wind turbine, renewable, public transit, zero-emission.",
-      "Nói câu giải pháp: 'By using renewable wind energy, our cities can reduce air pollution.'",
+      "Học 4 từ thành phố xanh: wind turbine, solar power, public transit, electric bus.",
+      "Nói câu giải pháp: 'By using solar power and electric buses, our cities reduce air pollution.'",
       "Đề xuất các ý tưởng xây dựng đô thị thông minh bền vững tại Việt Nam."
     ],
     "coverImage": "/destinations/hanoi.jpg",
     "coverImageAttribution": "VietDiscovery Team",
-    "videoLesson": {
-      "videoId": "g4_smartcities_video",
-      "videoUrl": "https://www.youtube.com/watch?v=k1BneeJTDcU",
-      "embedUrl": "https://www.youtube-nocookie.com/embed/k1BneeJTDcU?rel=0&modestbranding=1&iv_load_policy=3&playsinline=1",
-      "titleEn": "Vietnam's Modern Cities & Green Future",
-      "titleVi": "Các đô thị hiện đại và tương lai xanh của Việt Nam",
-      "durationMinutes": 5,
-      "isTeacherCreated": true,
-      "status": "approved"
-    },
     "vocabulary": [
       {
         "id": "g4-adv5-v1",
@@ -1167,15 +1117,15 @@ export const GRADE_4_LESSONS: CurriculumLesson[] = [
       },
       {
         "id": "g4-adv5-v2",
-        "word": "renewable",
-        "ipa": "/rɪˈnjuː.ə.bəl/",
-        "partOfSpeech": "adjective",
-        "meaningEn": "Energy that comes from infinite natural resources like sun and wind.",
-        "meaningVi": "Năng lượng tái tạo vô tận và sạch sẽ.",
-        "exampleSentenceEn": "Solar and wind power are 100% renewable energy sources.",
-        "exampleSentenceVi": "Năng lượng mặt trời và gió là những nguồn năng lượng tái tạo hoàn toàn.",
-        "emoji": "♻️",
-        "audioPromptEn": "Renewable. Clean renewable energy."
+        "word": "solar power",
+        "ipa": "/ˈsoʊ.lɚ ˌpaʊ.ɚ/",
+        "partOfSpeech": "noun",
+        "meaningEn": "Clean electricity generated from the light of the sun.",
+        "meaningVi": "Năng lượng điện mặt trời sạch sẽ.",
+        "exampleSentenceEn": "Our green city uses solar power every day.",
+        "exampleSentenceVi": "Thành phố xanh của chúng ta dùng năng lượng mặt trời để thắp sáng đường phố.",
+        "emoji": "☀️",
+        "audioPromptEn": "Solar power. Clean solar power."
       },
       {
         "id": "g4-adv5-v3",
@@ -1191,15 +1141,15 @@ export const GRADE_4_LESSONS: CurriculumLesson[] = [
       },
       {
         "id": "g4-adv5-v4",
-        "word": "zero-emission",
-        "ipa": "/ˌzɪə.rəʊ iˈmɪʃ.ən/",
-        "partOfSpeech": "adjective",
-        "meaningEn": "Producing no harmful exhaust gases or pollution.",
-        "meaningVi": "Không phát thải khí gây hại ra môi trường.",
-        "exampleSentenceEn": "Electric buses provide zero-emission transportation.",
-        "exampleSentenceVi": "Xe buýt điện mang lại phương thức di chuyển không phát thải.",
-        "emoji": "🌿",
-        "audioPromptEn": "Zero-emission. Zero-emission green vehicles."
+        "word": "electric bus",
+        "ipa": "/iˈlek.trɪk bʌs/",
+        "partOfSpeech": "noun",
+        "meaningEn": "A quiet bus powered by batteries that produces no exhaust smoke.",
+        "meaningVi": "Xe buýt chạy bằng điện êm ái, thân thiện môi trường.",
+        "exampleSentenceEn": "The quiet electric bus keeps our city clean.",
+        "exampleSentenceVi": "Chúng em đi xe buýt điện êm ái để giữ cho không khí thành phố trong lành.",
+        "emoji": "🚌",
+        "audioPromptEn": "Electric bus. Clean electric bus."
       }
     ],
     "sentencePatterns": [
@@ -1249,7 +1199,7 @@ export const GRADE_4_LESSONS: CurriculumLesson[] = [
     },
     "listening": {
       "audioTitleEn": "Coastal Wind Farm with Captain Trang",
-      "audioScriptEn": "Feel the refreshing sea wind! Look at those towering white blades spinning against the deep blue sky! Each rotation of these offshore turbines generates clean, renewable power for thousands of homes without burning coal! This is the future of our nation!",
+      "audioScriptEn": "Feel the refreshing sea wind! Look at those towering white blades spinning against the deep blue sky! Each rotation of these offshore turbines generates clean solar and wind power for thousands of homes without burning coal! This is the future of our nation!",
       "audioScriptVi": "Cùng cảm nhận ngọn gió biển mát rượi nào! Hãy ngắm những cánh quạt trắng khổng lồ đang quay đều trên nền trời xanh biếc! Mỗi vòng quay của tua-bin ngoài khơi tạo ra nguồn năng lượng tái tạo sạch cho hàng ngàn gia đình mà không cần đốt than đá! Đó chính là tương lai đất nước chúng ta!",
       "speakerRole": "Captain Trang",
       "questionEn": "What powers offshore wind turbines along Vietnam's coast?",
@@ -1264,14 +1214,14 @@ export const GRADE_4_LESSONS: CurriculumLesson[] = [
       "audioSlowAvailable": true
     },
     "speaking": {
-      "promptEn": "Say: 'Renewable energy creates clean, green cities!'",
-      "promptVi": "Em hãy nói: 'Renewable energy creates clean, green cities!'",
-      "targetSentenceEn": "Renewable energy creates clean, green cities!",
+      "promptEn": "Say: 'Solar power and electric buses keep our city clean!'",
+      "promptVi": "Em hãy nói: 'Solar power and electric buses keep our city clean!'",
+      "targetSentenceEn": "Solar power and electric buses keep our city clean!",
       "targetSentenceVi": "Năng lượng tái tạo kiến tạo nên những thành phố xanh và sạch!",
-      "phoneticFocus": "/rɪˈnjuː/ in renewable and /tɜː/ in turbine",
+      "phoneticFocus": "/soʊ/ in solar and /tɜː/ in turbine",
       "pronunciationTipsEn": "Stress the second syllable in re-NEW-a-ble.",
       "pronunciationTipsVi": "Nhấn trọng âm vào âm tiết thứ hai trong re-NEW-a-ble.",
-      "shadowAudioText": "Renewable energy creates clean, green cities!"
+      "shadowAudioText": "Solar power and electric buses keep our city clean!"
     },
     "interactiveGame": {
       "gameType": "word_picture_match",
@@ -1289,8 +1239,8 @@ export const GRADE_4_LESSONS: CurriculumLesson[] = [
         },
         {
           "id": "m2",
-          "promptEn": "renewable",
-          "promptVi": "năng lượng tái tạo",
+          "promptEn": "solar power",
+          "promptVi": "năng lượng mặt trời",
           "targetMatch": "♻️",
           "emojiOrIcon": "♻️"
         },
@@ -1303,8 +1253,8 @@ export const GRADE_4_LESSONS: CurriculumLesson[] = [
         },
         {
           "id": "m4",
-          "promptEn": "zero-emission",
-          "promptVi": "không phát thải khói",
+          "promptEn": "electric bus",
+          "promptVi": "xe buýt điện",
           "targetMatch": "🌿",
           "emojiOrIcon": "🌿"
         }
@@ -1316,7 +1266,7 @@ export const GRADE_4_LESSONS: CurriculumLesson[] = [
         "challengeLevel": 1,
         "levelNameEn": "Recognize",
         "levelNameVi": "Nhận biết",
-        "questionEn": "Which of the following is a renewable source of energy?",
+        "questionEn": "Which clean technology uses sunlight to make electricity?",
         "questionVi": "Nguồn năng lượng nào sau đây là năng lượng tái tạo?",
         "options": [
           "Offshore wind and sunlight",
@@ -1334,8 +1284,8 @@ export const GRADE_4_LESSONS: CurriculumLesson[] = [
         "challengeLevel": 2,
         "levelNameEn": "Connect",
         "levelNameVi": "Kết nối",
-        "questionEn": "What is the key benefit of zero-emission electric buses?",
-        "questionVi": "Lợi ích then chốt của xe buýt điện không phát thải là gì?",
+        "questionEn": "What is the key benefit of riding an electric bus?",
+        "questionVi": "Lợi ích then chốt của việc đi xe buýt điện là gì?",
         "options": [
           "They produce no harmful exhaust smoke, keeping city air clean",
           "They can fly over mountains",
@@ -1343,7 +1293,7 @@ export const GRADE_4_LESSONS: CurriculumLesson[] = [
           "They never stop moving"
         ],
         "correctIndex": 0,
-        "explanationEn": "Zero-emission transit prevents toxic exhaust emissions.",
+        "explanationEn": "Electric buses run on clean batteries without producing smoke.",
         "explanationVi": "Phương tiện không phát thải giúp xóa bỏ khói độc hại, bảo vệ bầu không khí đô thị trong lành.",
         "learningSkill": "Cultural Connection"
       },
@@ -1372,7 +1322,7 @@ export const GRADE_4_LESSONS: CurriculumLesson[] = [
       "criteria": [
         {
           "skill": "Sustainability Vocabulary",
-          "standardEn": "Identifies wind turbine, renewable, public transit, zero-emission.",
+          "standardEn": "Identifies wind turbine, solar power, public transit, electric bus.",
           "standardVi": "Nhận diện từ vựng phát triển bền vững."
         },
         {

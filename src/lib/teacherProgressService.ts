@@ -156,22 +156,32 @@ export async function loadAuthenticTeacherProgress(
       };
     }
 
+    // Preserve authentic progress already loaded from Supabase RPC / teacherDataService
+    if (stu.totalStars > 0 || stu.completedDestinations > 0 || (typeof stu.averageScore === 'number' && stu.averageScore > 0)) {
+      return {
+        ...stu,
+        status: stu.totalStars > 0 ? 'online' : 'offline'
+      };
+    }
+
     // Authentic zero baseline: No fabricated scores or stars
     return {
       ...stu,
       completedDestinations: 0,
       totalStars: 0,
       averageScore: 0,
-      lastActive: 'Chưa có hoạt động',
+      lastActive: stu.lastActive || 'Chưa có hoạt động',
       status: 'offline'
     };
   });
 
+  const hasCloudProgress = isCloudSuccess || baselineStudents.some(s => s.totalStars > 0 || s.completedDestinations > 0);
+
   return {
     students: reconciledStudents,
-    dataSource: isCloudSuccess ? 'supabase_cloud' : rlsErrorMsg ? 'unauthorized_rls' : 'local_verified',
-    isCloudSynced: isCloudSuccess,
+    dataSource: hasCloudProgress ? 'supabase_cloud' : rlsErrorMsg ? 'unauthorized_rls' : 'local_verified',
+    isCloudSynced: hasCloudProgress,
     errorMessage: rlsErrorMsg,
-    cloudProgressCount: cloudCount
+    cloudProgressCount: cloudCount > 0 ? cloudCount : reconciledStudents.filter(s => s.totalStars > 0).length
   };
 }

@@ -6,11 +6,45 @@ const STORAGE_KEY_VIDEOS = 'vietdiscovery_educational_videos';
 const STORAGE_KEY_PROGRESS = 'vietdiscovery_student_video_progress';
 
 /**
+ * Convert mm:ss or seconds string to integer seconds
+ */
+export function parseTimeToSeconds(timeStr: string | number): number {
+  if (typeof timeStr === 'number') return isNaN(timeStr) ? 0 : Math.max(0, Math.floor(timeStr));
+  if (!timeStr) return 0;
+  const clean = timeStr.trim();
+  if (/^\d+$/.test(clean)) {
+    return parseInt(clean, 10);
+  }
+  const parts = clean.split(':').map(p => parseInt(p, 10));
+  if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+    return parts[0] * 60 + parts[1];
+  }
+  if (parts.length === 3 && !isNaN(parts[0]) && !isNaN(parts[1]) && !isNaN(parts[2])) {
+    return parts[0] * 3600 + parts[1] * 60 + parts[2];
+  }
+  return 0;
+}
+
+/**
+ * Format integer seconds to mm:ss string
+ */
+export function formatSecondsToTime(seconds: number): string {
+  if (!seconds || isNaN(seconds) || seconds < 0) return '00:00';
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60);
+  return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+}
+
+/**
  * Robust YouTube and Multi-Platform Video URL Parser
  * Converts arbitrary YouTube URLs into privacy-enhanced, child-safe embeds (youtube-nocookie.com)
  * without autoplay, external recommendations, or tracking cookies.
+ * Supports startSeconds and endSeconds clip parameters.
  */
-export function parseVideoUrl(inputUrl: string): {
+export function parseVideoUrl(
+  inputUrl: string,
+  options?: { startSeconds?: number; endSeconds?: number }
+): {
   isValid: boolean;
   embedUrl: string;
   thumbnailUrl: string;
@@ -38,12 +72,19 @@ export function parseVideoUrl(inputUrl: string): {
 
   if (ytMatch && ytMatch[1]) {
     const videoId = ytMatch[1];
+    let queryParams = 'rel=0&modestbranding=1&iv_load_policy=3&playsinline=1';
+    if (options?.startSeconds !== undefined && options.startSeconds > 0) {
+      queryParams += `&start=${options.startSeconds}`;
+    }
+    if (options?.endSeconds !== undefined && options.endSeconds > 0) {
+      queryParams += `&end=${options.endSeconds}`;
+    }
     return {
       isValid: true,
       platform: 'youtube',
       videoId,
       // Privacy-enhanced mode, rel=0 (no external recommendations), modestbranding, playsinline, no autoplay
-      embedUrl: `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1&iv_load_policy=3&playsinline=1`,
+      embedUrl: `https://www.youtube-nocookie.com/embed/${videoId}?${queryParams}`,
       thumbnailUrl: `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
     };
   }
@@ -156,11 +197,16 @@ export async function getEducationalVideos(
   // 2. High-availability local fallback
   if (allVideos.length === 0) {
     const cached = localStore.get<EducationalVideo[]>(STORAGE_KEY_VIDEOS, INITIAL_VIDEOS);
-    allVideos = cached && cached.length > 0 ? cached : INITIAL_VIDEOS;
-    // Ensure cache has initial seed if empty
-    if (!cached || cached.length === 0) {
-      localStore.set(STORAGE_KEY_VIDEOS, INITIAL_VIDEOS);
-    }
+    const initialMap = new Map(INITIAL_VIDEOS.map(v => [v.id, v]));
+    allVideos = (cached && cached.length > 0 ? cached : INITIAL_VIDEOS).map(item => {
+      const init = initialMap.get(item.id);
+      if (init && init.updatedAt && (!item.updatedAt || init.updatedAt > item.updatedAt)) {
+        return { ...item, ...init };
+      }
+      return item;
+    });
+    // Ensure cache has latest sync
+    localStore.set(STORAGE_KEY_VIDEOS, allVideos);
   }
 
   // 3. Filter for student view: ONLY show approved or published videos!
@@ -446,4 +492,133 @@ export async function saveStudentVideoProgress(progress: StudentVideoProgress): 
  */
 export function getStudentVideoProgressMap(): Record<string, StudentVideoProgress> {
   return localStore.get<Record<string, StudentVideoProgress>>(STORAGE_KEY_PROGRESS, {});
+}
+
+/**
+ * Persist YouTube embedding and clipping changes for a specific existing video.
+ * Ensures updates are saved locally, synced to disk via Vite dev server for persistence across devices,
+ * and synchronized to Supabase if connected.
+ */
+export async function persistTeacherVideoYouTube(
+  id: string,
+  params: {
+    videoUrl: string;
+    startSeconds: number;
+    endSeconds: number;
+    status?: 'draft' | 'approved' | 'published' | 'archived';
+    notes?: string;
+  }
+): Promise<{ success: boolean; video?: EducationalVideo; error?: string }> {
+  const startSec = Math.max(0, Math.floor(params.startSeconds));
+  const endSec = Math.max(0, Math.floor(params.endSeconds));
+  const duration = endSec - startSec;
+
+  if (startSec < 0) {
+    return { success: false, error: 'Thời gian bắt đầu không được nhỏ hơn 00:00.' };
+  }
+  if (endSec <= startSec) {
+    return { success: false, error: 'Thời gian kết thúc (End Time) phải lớn hơn thời gian bắt đầu (Start Time).' };
+  }
+  if (duration > 60) {
+    return {
+      success: false,
+      error: `Thời lượng clip là ${duration}s, vượt quá giới hạn tối đa 60 giây cho học sinh tiểu học.`
+    };
+  }
+
+  const parsed = parseVideoUrl(params.videoUrl, {
+    startSeconds: startSec,
+    endSeconds: endSec
+  });
+
+  if (!parsed.isValid) {
+    return { success: false, error: parsed.errorMessage || 'Link YouTube không hợp lệ hoặc không hỗ trợ nhúng.' };
+  }
+
+  // Fetch current list
+  const currentList = localStore.get<EducationalVideo[]>(STORAGE_KEY_VIDEOS, INITIAL_VIDEOS);
+  const targetIndex = currentList.findIndex(v => v.id === id);
+  const baseTarget = INITIAL_VIDEOS.find(v => v.id === id);
+
+  if (targetIndex === -1 && !baseTarget) {
+    return { success: false, error: `Không tìm thấy video có ID ${id} trong hệ thống.` };
+  }
+
+  const existing = targetIndex !== -1 ? currentList[targetIndex] : baseTarget!;
+  const updatedVideo: EducationalVideo = {
+    ...existing,
+    videoUrl: params.videoUrl.trim(),
+    embedUrl: parsed.embedUrl,
+    thumbnailUrl: parsed.thumbnailUrl || existing.thumbnailUrl,
+    startSeconds: startSec,
+    endSeconds: endSec,
+    durationMinutes: Math.max(1, Math.round(duration / 60)),
+    status: params.status || existing.status || 'approved',
+    isTeacherCreated: true,
+    sourceType: 'teacher_youtube',
+    notes: params.notes !== undefined ? params.notes : existing.notes,
+    updatedAt: new Date().toISOString()
+  };
+
+  // Update local storage cache
+  let updatedList: EducationalVideo[];
+  if (targetIndex !== -1) {
+    updatedList = [...currentList];
+    updatedList[targetIndex] = updatedVideo;
+  } else {
+    updatedList = [updatedVideo, ...currentList];
+  }
+  localStore.set(STORAGE_KEY_VIDEOS, updatedList);
+
+  // Sync to Disk via Vite dev server endpoint (makes it permanent across devices & builds)
+  try {
+    const res = await fetch('/api/save-teacher-video', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: updatedVideo.id,
+        videoUrl: updatedVideo.videoUrl,
+        embedUrl: updatedVideo.embedUrl,
+        thumbnailUrl: updatedVideo.thumbnailUrl,
+        startSeconds: updatedVideo.startSeconds,
+        endSeconds: updatedVideo.endSeconds,
+        durationMinutes: updatedVideo.durationMinutes,
+        status: updatedVideo.status,
+        sourceType: updatedVideo.sourceType,
+        isTeacherCreated: updatedVideo.isTeacherCreated,
+        notes: updatedVideo.notes
+      })
+    });
+    if (!res.ok) {
+      console.warn('[VideoAcademy] Vite dev server save returned status', res.status);
+    }
+  } catch (err) {
+    console.warn('[VideoAcademy] Dev server persist note:', err);
+  }
+
+  // Sync to Supabase if connected
+  if (isSupabaseConfigured() && supabase) {
+    try {
+      await supabase
+        .from('educational_videos')
+        .update({
+          video_url: updatedVideo.videoUrl,
+          embed_url: updatedVideo.embedUrl,
+          thumbnail_url: updatedVideo.thumbnailUrl,
+          start_seconds: updatedVideo.startSeconds,
+          end_seconds: updatedVideo.endSeconds,
+          duration_minutes: updatedVideo.durationMinutes,
+          status: updatedVideo.status,
+          source_type: updatedVideo.sourceType,
+          is_teacher_created: updatedVideo.isTeacherCreated,
+          notes: updatedVideo.notes,
+          updated_at: updatedVideo.updatedAt
+        })
+        .eq('id', updatedVideo.id);
+    } catch (err) {
+      console.warn('[VideoAcademy] Supabase update warning:', err);
+    }
+  }
+
+  return { success: true, video: updatedVideo };
 }

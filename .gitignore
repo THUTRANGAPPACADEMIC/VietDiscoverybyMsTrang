@@ -103,3 +103,10 @@ public/destinations/_backup/
 *.sql
 
 
+artifacts/
+scripts/teacher_*
+scripts/*.txt
+scripts/*.json
+scripts/complete_video_audit_results.json
+scripts/curriculum_audio_manifest.json
+scripts/embed_iframe_test_results.json

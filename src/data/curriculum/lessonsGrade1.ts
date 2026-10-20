@@ -30,16 +30,6 @@ export const GRADE_1_LESSONS: CurriculumLesson[] = [
     ],
     "coverImage": "/destinations/halong_bay.jpg",
     "coverImageAttribution": "Wikimedia Commons (CC BY-SA 4.0)",
-    "videoLesson": {
-      "videoId": "g1_halong_video",
-      "videoUrl": "https://www.youtube.com/watch?v=k1BneeJTDcU",
-      "embedUrl": "https://www.youtube-nocookie.com/embed/k1BneeJTDcU?rel=0&modestbranding=1&iv_load_policy=3&playsinline=1",
-      "titleEn": "Magic Colors of Ha Long Bay",
-      "titleVi": "Sắc màu kỳ diệu Vịnh Hạ Long",
-      "durationMinutes": 4,
-      "isTeacherCreated": true,
-      "status": "approved"
-    },
     "vocabulary": [
       {
         "id": "g1-adv1-v1",
@@ -307,16 +297,6 @@ export const GRADE_1_LESSONS: CurriculumLesson[] = [
     ],
     "coverImage": "/destinations/hanoi.jpg",
     "coverImageAttribution": "VietDiscovery Team",
-    "videoLesson": {
-      "videoId": "g1_lantern_video",
-      "videoUrl": "https://www.youtube.com/watch?v=FjU_xYlVD4g",
-      "embedUrl": "https://www.youtube-nocookie.com/embed/FjU_xYlVD4g?rel=0&modestbranding=1&iv_load_policy=3&playsinline=1",
-      "titleEn": "My Little Family & Mid-Autumn Lantern",
-      "titleVi": "Gia đình nhỏ và chiếc đèn ông sao",
-      "durationMinutes": 3,
-      "isTeacherCreated": false,
-      "status": "approved"
-    },
     "vocabulary": [
       {
         "id": "g1-adv2-v1",
@@ -584,16 +564,6 @@ export const GRADE_1_LESSONS: CurriculumLesson[] = [
     ],
     "coverImage": "/destinations/danang.jpg",
     "coverImageAttribution": "VietDiscovery Team",
-    "videoLesson": {
-      "videoId": "g1_fruits_video",
-      "videoUrl": "https://www.youtube.com/watch?v=FjU_xYlVD4g",
-      "embedUrl": "https://www.youtube-nocookie.com/embed/FjU_xYlVD4g?rel=0&modestbranding=1&iv_load_policy=3&playsinline=1",
-      "titleEn": "Delicious Tropical Fruits of Vietnam",
-      "titleVi": "Hoa quả nhiệt đới tươi ngon Việt Nam",
-      "durationMinutes": 3,
-      "isTeacherCreated": false,
-      "status": "approved"
-    },
     "vocabulary": [
       {
         "id": "g1-adv3-v1",
@@ -861,16 +831,6 @@ export const GRADE_1_LESSONS: CurriculumLesson[] = [
     ],
     "coverImage": "/destinations/phong_nha.jpg",
     "coverImageAttribution": "VietDiscovery Team",
-    "videoLesson": {
-      "videoId": "g1_animals_video",
-      "videoUrl": "https://www.youtube.com/watch?v=k1BneeJTDcU",
-      "embedUrl": "https://www.youtube-nocookie.com/embed/k1BneeJTDcU?rel=0&modestbranding=1&iv_load_policy=3&playsinline=1",
-      "titleEn": "Animals of Cuc Phuong National Park",
-      "titleVi": "Thế giới muông thú rừng Cúc Phương",
-      "durationMinutes": 4,
-      "isTeacherCreated": false,
-      "status": "approved"
-    },
     "vocabulary": [
       {
         "id": "g1-adv4-v1",
@@ -1138,16 +1098,6 @@ export const GRADE_1_LESSONS: CurriculumLesson[] = [
     ],
     "coverImage": "/destinations/hanoi.jpg",
     "coverImageAttribution": "VietDiscovery Team",
-    "videoLesson": {
-      "videoId": "g1_city_video",
-      "videoUrl": "https://www.youtube.com/watch?v=k1BneeJTDcU",
-      "embedUrl": "https://www.youtube-nocookie.com/embed/k1BneeJTDcU?rel=0&modestbranding=1&iv_load_policy=3&playsinline=1",
-      "titleEn": "My Little Family in a Clean Green City",
-      "titleVi": "Gia đình em trong thành phố xanh mát",
-      "durationMinutes": 3,
-      "isTeacherCreated": true,
-      "status": "approved"
-    },
     "vocabulary": [
       {
         "id": "g1-adv5-v1",

@@ -21,6 +21,8 @@ import {
 } from 'lucide-react';
 import { ClassRoom, Destination, AssignmentItem, GradeLevel, GradeBand, StudentRosterItem } from '../../types';
 import { hashAccessCode } from '../../lib/studentAuth';
+import { INITIAL_CLASSES } from '../../data/initialClasses';
+import { StudentAccessCardsModal } from './StudentAccessCardsModal';
 
 interface ClassManagementProps {
   classes: ClassRoom[];
@@ -156,18 +158,25 @@ export const ClassManagement: React.FC<ClassManagementProps> = ({
     const newRosterItems: StudentRosterItem[] = [];
 
     for (const item of parsedPreviewList) {
-      const targetClass = classes.find(c => c.code === item.classCode) || classes[0];
+      const targetClass = classes.find(c => c.code === item.classCode)
+        || INITIAL_CLASSES.find(c => c.code === item.classCode)
+        || classes[0];
+
+      const clsCode = item.classCode || targetClass?.code || '4.1';
+      const gradeLevel: GradeLevel = clsCode.startsWith('2') ? 'Grade 2' : (clsCode.startsWith('5') ? 'Grade 5' : 'Grade 4');
+      const gradeBand: GradeBand = clsCode.startsWith('2') ? 'grade_1_2' : (clsCode.startsWith('3') ? 'grade_3' : 'grade_4_5');
+      const clsName = targetClass?.name || `Lớp ${clsCode}`;
       const hash = await hashAccessCode(item.accessCode);
 
       newRosterItems.push({
         id: item.studentCode,
         studentCode: item.studentCode,
         name: item.name,
-        classId: targetClass.id,
-        classCode: targetClass.code,
-        className: targetClass.name,
-        gradeLevel: targetClass.gradeLevel,
-        gradeBand: targetClass.gradeBand,
+        classId: targetClass?.id || `cls-${clsCode.replace('.', '')}`,
+        classCode: clsCode,
+        className: clsName,
+        gradeLevel: targetClass?.gradeLevel || gradeLevel,
+        gradeBand: targetClass?.gradeBand || gradeBand,
         accessCode: item.accessCode, // for teacher distribution
         accessCodeHash: hash,
         failedPinAttempts: 0,
@@ -535,112 +544,17 @@ export const ClassManagement: React.FC<ClassManagementProps> = ({
       {/* ========================================================= */}
       {/* MODAL 2: STUDENT ACCESS CARDS (PRINT & DISTRIBUTION)       */}
       {/* ========================================================= */}
-      {isAccessCardsModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-          <div className="bg-white rounded-3xl max-w-3xl w-full p-6 sm:p-7 shadow-2xl border border-slate-100 space-y-5 max-h-[90vh] overflow-y-auto">
-            
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <div className="flex items-center gap-2.5 text-amber-600">
-                <KeyRound className="w-6 h-6" />
-                <h4 className="font-extrabold text-slate-900 text-lg font-heading">
-                  Thẻ Mã Truy Cập Học Sinh (Student Access Cards)
-                </h4>
-              </div>
-              <button
-                onClick={() => setIsAccessCardsModalOpen(false)}
-                className="p-1.5 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-              <p className="text-xs text-slate-500">
-                Giáo viên có thể in hoặc chụp màn hình để phát thẻ học tập cho từng học sinh và phụ huynh.
-              </p>
-
-              {/* Class Filter */}
-              <div className="flex items-center gap-2">
-                <label className="text-xs font-bold text-slate-600">Lọc theo Lớp:</label>
-                <select
-                  value={selectedClassForCards}
-                  onChange={(e) => setSelectedClassForCards(e.target.value)}
-                  className="px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-bold bg-white text-slate-800"
-                >
-                  <option value="All">Tất cả 5 lớp</option>
-                  {classes.map(c => (
-                    <option key={c.id} value={c.code}>Lớp {c.code}</option>
-                  ))}
-                </select>
-
-                <button
-                  type="button"
-                  onClick={() => window.print()}
-                  className="p-2 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 transition-colors"
-                  title="In toàn bộ thẻ"
-                >
-                  <Printer className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-
-            {/* Access Cards Grid */}
-            {displayedStudentsForCards.length === 0 ? (
-              <div className="p-8 text-center rounded-2xl bg-slate-50 border border-slate-200 text-slate-500 space-y-2">
-                <p className="font-bold text-sm">Chưa có học sinh nào được tải cho danh sách này.</p>
-                <p className="text-xs text-slate-400">Dữ liệu học sinh giả đã được loại bỏ hoàn toàn. Vui lòng kiểm tra kết nối API giáo viên từ Supabase Production.</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5 pt-1">
-                {displayedStudentsForCards.map((stu) => (
-                  <div
-                    key={stu.id}
-                    className="p-4 rounded-2xl border border-slate-200 bg-gradient-to-tr from-slate-50 to-white shadow-xs space-y-2 relative"
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-indigo-100 text-indigo-800">
-                        Lớp {stu.classCode}
-                      </span>
-                      <span className="text-[10px] font-mono text-slate-400">
-                        {stu.studentCode}
-                      </span>
-                    </div>
-
-                    <div>
-                      <h5 className="font-extrabold text-slate-900 text-sm font-heading">
-                        {stu.name}
-                      </h5>
-                      <div className="text-[10.5px] text-slate-500">
-                        {stu.className}
-                      </div>
-                    </div>
-
-                    <div className="p-2 rounded-xl bg-amber-50 border border-amber-200/80 text-center">
-                      <div className="text-[9.5px] font-bold text-amber-800 uppercase tracking-wider">
-                        Mã Truy Cập (Access Code):
-                      </div>
-                      <div className="font-mono font-extrabold text-base text-amber-950 tracking-wider">
-                        {stu.accessCode || stu.studentCode}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            <div className="flex justify-end pt-3 border-t border-slate-100">
-              <button
-                type="button"
-                onClick={() => setIsAccessCardsModalOpen(false)}
-                className="px-5 py-2.5 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800"
-              >
-                Đóng danh sách thẻ
-              </button>
-            </div>
-
-          </div>
-        </div>
-      )}
+      <StudentAccessCardsModal
+        isOpen={isAccessCardsModalOpen}
+        onClose={() => setIsAccessCardsModalOpen(false)}
+        classes={classes}
+        students={students}
+        initialSelectedClass={selectedClassForCards}
+        onOpenUploadRoster={() => {
+          setIsAccessCardsModalOpen(false);
+          setIsUploadModalOpen(true);
+        }}
+      />
 
       {/* ========================================================= */}
       {/* MODAL 3: ASSIGN TASK TO CLASS                             */}

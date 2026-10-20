@@ -23,7 +23,11 @@ import {
   Compass,
   Archive,
   Send,
-  Scissors
+  Scissors,
+  Zap,
+  Layers,
+  RotateCcw,
+  Youtube
 } from 'lucide-react';
 import { EducationalVideo, VideoQuestion, VideoSourceType, VideoStatus, VideoDifficulty, VideoLearningAdventure } from '../../types';
 import { 
@@ -32,12 +36,23 @@ import {
   updateEducationalVideo, 
   deleteEducationalVideo, 
   setVideoStatus, 
-  parseVideoUrl 
+  parseVideoUrl,
+  persistTeacherVideoYouTube
 } from '../../lib/videoAcademyService';
+import { 
+  getCurriculumLessonsByGrade, 
+  getCurriculumLessonSpec, 
+  getLessonVideoForTeacher, 
+  saveTeacherVideo, 
+  removeTeacherVideo, 
+  DEFAULT_CURRICULUM_LESSON_SPECS 
+} from '../../lib/teacherVideoManager';
 import { OFFICIAL_34_PROVINCES_DATA } from '../../data/administrativeData';
 import { VideoPlayerModal } from '../Student/VideoAcademy/VideoPlayerModal';
+import { SmartYouTubeClipPlayer } from '../Common/SmartYouTubeClipPlayer';
 import { SmartYouTubeClipSelector } from './SmartYouTubeClipSelector';
-import { parseTimeToSeconds, formatSecondsToTime } from '../../lib/youtubeClipHelper';
+import { EmbedYouTubeModal } from './EmbedYouTubeModal';
+import { parseTimeToSeconds, formatSecondsToTime, extractYouTubeId } from '../../lib/youtubeClipHelper';
 import { soundEffects } from '../../lib/soundEffects';
 
 export const TeacherVideoDashboard: React.FC = () => {
@@ -56,6 +71,7 @@ export const TeacherVideoDashboard: React.FC = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isClipSelectorOpen, setIsClipSelectorOpen] = useState(false);
   const [previewVideo, setPreviewVideo] = useState<EducationalVideo | null>(null);
+  const [embedModalVideo, setEmbedModalVideo] = useState<EducationalVideo | null>(null);
 
   // Form State
   const [formUrl, setFormUrl] = useState('');
@@ -87,13 +103,28 @@ export const TeacherVideoDashboard: React.FC = () => {
   const [formApplyMissionVi, setFormApplyMissionVi] = useState('');
   const [formSentenceFrames, setFormSentenceFrames] = useState('');
 
+  // Mode selection: 'quick_embed' | 'full_lesson'
+  const [addVideoMode, setAddVideoMode] = useState<'quick_embed' | 'full_lesson'>('quick_embed');
+
+  // Mode 1: Quick Video Embed State
+  const [quickGrade, setQuickGrade] = useState<1 | 2 | 3 | 4 | 5>(4);
+  const [quickLessonId, setQuickLessonId] = useState<string>('lesson-g4-adv1-places');
+  const [quickActivityId, setQuickActivityId] = useState<string>('watch');
+  const [quickUrl, setQuickUrl] = useState<string>('');
+  const [quickStartTime, setQuickStartTime] = useState<string>('00:00');
+  const [quickEndTime, setQuickEndTime] = useState<string>('01:00');
+  const [quickVideoTitle, setQuickVideoTitle] = useState<string>('');
+  const [quickError, setQuickError] = useState<string>('');
+  const [quickSuccess, setQuickSuccess] = useState<string>('');
+  const [quickPreviewKey, setQuickPreviewKey] = useState<number>(1);
+
   const [formQuestions, setFormQuestions] = useState<VideoQuestion[]>([
     {
       id: 'q-new-1',
       questionEn: '',
       questionVi: '',
-      options: ['', '', ''],
-      correctIndex: 0,
+      options: ['', '', '', ''],
+      correctIndex: 1, // Balanced default, not hardcoded to A
       explanationEn: '',
       explanationVi: '',
       difficulty: 'easy'
@@ -103,6 +134,113 @@ export const TeacherVideoDashboard: React.FC = () => {
   const [formError, setFormError] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [parsedPreview, setParsedPreview] = useState<{ isValid: boolean; embedUrl: string; thumbnailUrl: string } | null>(null);
+
+  const loadExistingQuickVideo = (lessonId: string, activityId: string = 'watch') => {
+    setQuickError('');
+    setQuickSuccess('');
+    const existing = getLessonVideoForTeacher(lessonId, activityId);
+    if (existing && existing.videoUrl) {
+      setQuickUrl(existing.videoUrl);
+      setQuickStartTime(formatSecondsToTime(existing.startSeconds || 0));
+      setQuickEndTime(formatSecondsToTime(existing.endSeconds || 60));
+      setQuickVideoTitle(existing.videoTitle || '');
+    } else {
+      const spec = getCurriculumLessonSpec(lessonId);
+      setQuickUrl('');
+      setQuickStartTime('00:00');
+      setQuickEndTime('01:00');
+      setQuickVideoTitle(spec ? `${spec.lessonTitleEn} (Video Bài Giảng)` : '');
+    }
+    setQuickPreviewKey(prev => prev + 1);
+  };
+
+  const handleQuickGradeChange = (grade: 1 | 2 | 3 | 4 | 5) => {
+    setQuickGrade(grade);
+    const lessons = getCurriculumLessonsByGrade(grade);
+    if (lessons.length > 0) {
+      const nextLessonId = lessons[0].lessonId;
+      setQuickLessonId(nextLessonId);
+      loadExistingQuickVideo(nextLessonId, quickActivityId);
+    }
+  };
+
+  const handleQuickLessonChange = (lessonId: string) => {
+    setQuickLessonId(lessonId);
+    loadExistingQuickVideo(lessonId, quickActivityId);
+  };
+
+  const handleQuickActivityChange = (activityId: string) => {
+    setQuickActivityId(activityId);
+    loadExistingQuickVideo(quickLessonId, activityId);
+  };
+
+  const handleQuickStartTimeChange = (val: string) => {
+    setQuickStartTime(val);
+    const sec = parseTimeToSeconds(val);
+    if (sec !== null) {
+      setQuickEndTime(formatSecondsToTime(sec + 60));
+    }
+  };
+
+  const handleQuickEndTimeChange = (val: string) => {
+    setQuickEndTime(val);
+    const startSec = parseTimeToSeconds(quickStartTime) ?? 0;
+    const endSec = parseTimeToSeconds(val);
+    if (endSec !== null && endSec > startSec + 60) {
+      setQuickEndTime(formatSecondsToTime(startSec + 60));
+    }
+  };
+
+  const handleQuickSave = (targetStatus: 'needs_review' | 'approved') => {
+    soundEffects.playClick();
+    setQuickError('');
+    setQuickSuccess('');
+
+    if (!quickUrl.trim()) {
+      setQuickError('Vui lòng nhập đường dẫn YouTube hợp lệ.');
+      return;
+    }
+
+    const startSec = parseTimeToSeconds(quickStartTime) ?? 0;
+    const endSecCandidate = parseTimeToSeconds(quickEndTime) ?? (startSec + 60);
+    const endSec = Math.min(endSecCandidate, startSec + 60);
+
+    const spec = getCurriculumLessonSpec(quickLessonId);
+    const title = quickVideoTitle.trim() || (spec ? `${spec.lessonTitleEn} (Video Bài Giảng)` : 'Video bài học');
+
+    const res = saveTeacherVideo({
+      lessonId: quickLessonId,
+      activityId: quickActivityId,
+      videoUrl: quickUrl,
+      startSeconds: startSec,
+      endSeconds: endSec,
+      videoTitle: title,
+      status: targetStatus
+    });
+
+    if (res.success) {
+      soundEffects.playSuccess();
+      const statusLabel = targetStatus === 'approved' 
+        ? 'ĐÃ PHÊ DUYỆT & XUẤT BẢN CHO HỌC SINH' 
+        : 'ĐÃ LƯU BẢN NHÁP (Chưa hiển thị cho học sinh)';
+      setQuickSuccess(`✓ ${statusLabel}! Video đã được gắn thành công vào mục "${quickActivityId === 'watch' ? 'Watch Video' : quickActivityId}" của bài "${spec?.lessonTitleEn || quickLessonId}".`);
+      loadExistingQuickVideo(quickLessonId, quickActivityId);
+    } else {
+      setQuickError(res.message);
+    }
+  };
+
+  const handleQuickRemove = () => {
+    soundEffects.playClick();
+    const removed = removeTeacherVideo(quickLessonId, quickActivityId);
+    if (removed) {
+      setQuickUrl('');
+      setQuickStartTime('00:00');
+      setQuickEndTime('01:00');
+      setQuickSuccess('Đã gỡ video khỏi bài học. Bài học đã quay về trạng thái "Video đang cập nhật • Coming Soon".');
+      setQuickPreviewKey(prev => prev + 1);
+    }
+  };
 
   // Load all videos (including drafts) for teacher view
   const loadTeacherVideos = async () => {
@@ -172,9 +310,11 @@ export const TeacherVideoDashboard: React.FC = () => {
   };
 
   // Handle Form Submit
-  const handleAddSubmit = async (e: React.FormEvent) => {
+  const handleAddSubmit = async (e: React.FormEvent, forcedStatus?: VideoStatus) => {
     e.preventDefault();
     setFormError('');
+
+    const targetStatus = forcedStatus || formStatus;
 
     if (!formUrl || !formTitleEn || !formTitleVi) {
       setFormError('Vui lòng nhập đầy đủ URL, Tiêu đề tiếng Anh và Tiêu đề tiếng Việt.');
@@ -229,7 +369,7 @@ export const TeacherVideoDashboard: React.FC = () => {
         learningObjectivesVi: objectivesViArr,
         durationMinutes: formDuration,
         thumbnailUrl: parsed.thumbnailUrl,
-        status: formStatus,
+        status: targetStatus,
         isTeacherCreated: formSourceType === 'teacher_youtube',
         questions: formQuestions.filter(q => q.questionEn.trim() && q.options.some(o => o.trim())),
         provinceCode: formProvinceCode,
@@ -306,8 +446,8 @@ export const TeacherVideoDashboard: React.FC = () => {
         id: 'q-new-1',
         questionEn: '',
         questionVi: '',
-        options: ['', '', ''],
-        correctIndex: 0,
+        options: ['', '', '', ''],
+        correctIndex: 1, // Balanced default, not hardcoded to A
         explanationEn: '',
         explanationVi: '',
         difficulty: 'easy'
@@ -341,8 +481,8 @@ export const TeacherVideoDashboard: React.FC = () => {
         id: 'q-new-' + (prev.length + 1),
         questionEn: '',
         questionVi: '',
-        options: ['', '', ''],
-        correctIndex: 0,
+        options: ['', '', '', ''],
+        correctIndex: prev.length % 4, // 0, 1, 2, 3 rotation
         explanationEn: '',
         explanationVi: '',
         difficulty: 'easy'
@@ -556,9 +696,15 @@ export const TeacherVideoDashboard: React.FC = () => {
                       <div className="flex items-center gap-3">
                         <div className="relative w-20 h-12 rounded-xl overflow-hidden bg-slate-900 shrink-0 border border-slate-200 shadow-2xs">
                           <img src={vid.thumbnailUrl} alt={vid.titleEn} className="w-full h-full object-cover" />
-                          <span className="absolute bottom-1 right-1 px-1 py-0.2 rounded bg-black/70 text-[9px] text-white font-mono">
-                            {vid.durationMinutes}m
-                          </span>
+                          {vid.startSeconds !== undefined && vid.endSeconds !== undefined ? (
+                            <span className="absolute bottom-1 right-1 px-1 py-0.2 rounded bg-red-600 text-[9px] text-white font-mono font-bold shadow-xs">
+                              {formatSecondsToTime(vid.startSeconds)}-{formatSecondsToTime(vid.endSeconds)}
+                            </span>
+                          ) : (
+                            <span className="absolute bottom-1 right-1 px-1 py-0.2 rounded bg-black/70 text-[9px] text-white font-mono">
+                              {vid.durationMinutes}m
+                            </span>
+                          )}
                         </div>
                         <div className="min-w-0">
                           <div className="font-extrabold text-slate-900 truncate max-w-xs sm:max-w-md">
@@ -567,8 +713,16 @@ export const TeacherVideoDashboard: React.FC = () => {
                           <div className="text-[11px] text-slate-500 truncate max-w-xs sm:max-w-md italic">
                             {vid.titleVi}
                           </div>
-                          <div className="text-[10px] text-indigo-600 font-bold mt-0.5">
-                            {vid.topic}
+                          <div className="flex items-center gap-2 mt-0.5">
+                            <span className="text-[10px] text-indigo-600 font-bold">
+                              {vid.topic}
+                            </span>
+                            {vid.startSeconds !== undefined && vid.endSeconds !== undefined && (
+                              <span className="inline-flex items-center gap-1 text-[9.5px] text-red-700 font-mono font-bold bg-red-50 border border-red-200 px-1.5 py-0.2 rounded">
+                                <Clock className="w-2.5 h-2.5 text-red-600" />
+                                Clip {formatSecondsToTime(vid.startSeconds)} - {formatSecondsToTime(vid.endSeconds)} ({vid.endSeconds - vid.startSeconds}s)
+                              </span>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -640,13 +794,26 @@ export const TeacherVideoDashboard: React.FC = () => {
                     {/* Actions */}
                     <td className="py-3 px-4 text-right">
                       <div className="flex items-center justify-end gap-1.5">
+                        {/* Nhúng / Thay Link YouTube */}
+                        <button
+                          onClick={() => {
+                            soundEffects.playClick();
+                            setEmbedModalVideo(vid);
+                          }}
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs shadow-2xs hover:shadow-xs transition-all shrink-0 cursor-pointer"
+                          title="Nhúng hoặc thay link YouTube cho bài học này"
+                        >
+                          <Youtube className="w-3.5 h-3.5" />
+                          <span>Nhúng / Thay Link YouTube</span>
+                        </button>
+
                         {/* Preview */}
                         <button
                           onClick={() => {
                             soundEffects.playClick();
                             setPreviewVideo(vid);
                           }}
-                          className="p-1.5 rounded-lg text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
+                          className="p-1.5 rounded-lg text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 transition-colors cursor-pointer"
                           title="Xem thử như học sinh"
                         >
                           <Eye className="w-4 h-4" />
@@ -666,7 +833,7 @@ export const TeacherVideoDashboard: React.FC = () => {
                         {/* Delete */}
                         <button
                           onClick={() => handleDelete(vid.id, vid.titleEn)}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
                           title="Xóa video"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -685,20 +852,20 @@ export const TeacherVideoDashboard: React.FC = () => {
       {/* 5. ADD VIDEO MODAL */}
       {isAddModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-slate-950/70 backdrop-blur-sm animate-fade-in overflow-y-auto">
-          <div className="relative w-full max-w-3xl max-h-[92vh] bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden my-auto flex flex-col">
+          <div className="relative w-full max-w-4xl max-h-[92vh] bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden my-auto flex flex-col">
             
             {/* Modal Header */}
-            <div className="p-5 bg-gradient-to-r from-rose-500 to-indigo-600 text-white flex items-center justify-between shrink-0">
-              <div className="flex items-center gap-2">
-                <span className="p-2 rounded-xl bg-white/20">
+            <div className="p-5 bg-gradient-to-r from-purple-700 via-indigo-700 to-rose-600 text-white flex items-center justify-between shrink-0 shadow-md">
+              <div className="flex items-center gap-3">
+                <span className="p-2.5 rounded-2xl bg-white/20 backdrop-blur-md">
                   <Tv className="w-5 h-5 text-white" />
                 </span>
                 <div>
                   <h3 className="text-base sm:text-lg font-black font-heading">
-                    Thêm Video Giáo Dục Mới (Add Video by URL)
+                    Quản Lý &amp; Gắn Video Bài Giảng (Video Management)
                   </h3>
                   <p className="text-[11px] text-white/80">
-                    Nhập đường dẫn YouTube hoặc video trực tuyến • Tự động chuyển đổi sang chế độ an toàn
+                    Chọn Gắn nhanh (Quick Embed) cho bài học có sẵn hoặc Biên soạn bài học 5 bước (Full Lesson)
                   </p>
                 </div>
               </div>
@@ -711,8 +878,345 @@ export const TeacherVideoDashboard: React.FC = () => {
               </button>
             </div>
 
-            {/* Modal Form - Scrollable */}
-            <form onSubmit={handleAddSubmit} className="p-5 sm:p-7 overflow-y-auto space-y-5 flex-1">
+            {/* Mode Switcher */}
+            <div className="px-5 pt-3 pb-3 bg-slate-100/90 border-b border-slate-200 shrink-0">
+              <div className="flex items-center gap-2 bg-slate-200/80 p-1.5 rounded-2xl">
+                <button
+                  type="button"
+                  onClick={() => {
+                    soundEffects.playClick();
+                    setAddVideoMode('quick_embed');
+                    loadExistingQuickVideo(quickLessonId, quickActivityId);
+                  }}
+                  className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                    addVideoMode === 'quick_embed'
+                      ? 'bg-purple-600 text-white shadow-md ring-2 ring-purple-300'
+                      : 'text-slate-700 hover:bg-white/60'
+                  }`}
+                >
+                  <Zap className="w-4 h-4 text-amber-300" />
+                  <span>1. QUICK VIDEO EMBED (Gắn Nhanh Vào Bài Học Có Sẵn)</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    soundEffects.playClick();
+                    setAddVideoMode('full_lesson');
+                  }}
+                  className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                    addVideoMode === 'full_lesson'
+                      ? 'bg-purple-600 text-white shadow-md ring-2 ring-purple-300'
+                      : 'text-slate-700 hover:bg-white/60'
+                  }`}
+                >
+                  <Layers className="w-4 h-4 text-emerald-300" />
+                  <span>2. FULL VIDEO LESSON (Biên Soạn 5 Bước Đầy Đủ)</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Mode 1: QUICK VIDEO EMBED */}
+            {addVideoMode === 'quick_embed' ? (
+              <div className="p-5 sm:p-7 overflow-y-auto space-y-5 flex-1 bg-slate-50/50">
+                {quickError && (
+                  <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                    <span>{quickError}</span>
+                  </div>
+                )}
+
+                {quickSuccess && (
+                  <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-bold flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>{quickSuccess}</span>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                  {/* Left Column: Selector & URL Inputs (7 cols) */}
+                  <div className="lg:col-span-7 space-y-4">
+                    {/* 1. Select Grade */}
+                    <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-2">
+                      <label className="block text-xs font-black text-slate-800 uppercase tracking-wider">
+                        1. Chọn Khối Lớp (Select Grade) *
+                      </label>
+                      <div className="grid grid-cols-5 gap-2">
+                        {([1, 2, 3, 4, 5] as const).map(g => (
+                          <button
+                            key={g}
+                            type="button"
+                            onClick={() => handleQuickGradeChange(g)}
+                            className={`py-2 px-1 rounded-xl text-xs font-black transition-all cursor-pointer text-center ${
+                              quickGrade === g
+                                ? 'bg-purple-600 text-white shadow-sm ring-2 ring-purple-300'
+                                : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                            }`}
+                          >
+                            Lớp {g}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* 2. Select Lesson of that Grade */}
+                    <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-2">
+                      <label className="block text-xs font-black text-slate-800 uppercase tracking-wider">
+                        2. Chọn Bài Học Giáo Trình (Select Lesson) *
+                      </label>
+                      <select
+                        value={quickLessonId}
+                        onChange={(e) => handleQuickLessonChange(e.target.value)}
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs font-bold text-slate-900 bg-white focus:ring-2 focus:ring-purple-500"
+                      >
+                        {getCurriculumLessonsByGrade(quickGrade).map(item => (
+                          <option key={item.lessonId} value={item.lessonId}>
+                            Bài {item.lessonNumber}: {item.lessonTitleEn} ({item.lessonTitleVi})
+                          </option>
+                        ))}
+                      </select>
+                      <p className="text-[11px] text-slate-500">
+                        * Video sẽ được gắn trực tiếp vào bài học này mà không làm thay đổi nội dung từ vựng hay tiến độ học sinh.
+                      </p>
+                    </div>
+
+                    {/* 3. Select Activity */}
+                    <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-2">
+                      <label className="block text-xs font-black text-slate-800 uppercase tracking-wider">
+                        3. Mục Hoạt Động (Select Activity) *
+                      </label>
+                      <select
+                        value={quickActivityId}
+                        onChange={(e) => handleQuickActivityChange(e.target.value)}
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs font-bold text-slate-900 bg-white focus:ring-2 focus:ring-purple-500"
+                      >
+                        <option value="watch">🎬 Bước 2: Watch Video (Xem video bài giảng Cô Trang)</option>
+                        <option value="explore">🧭 Bước 1: Explore Destination (Khám phá địa danh)</option>
+                        <option value="listen">🎧 Bước 4: Read &amp; Listen (Luyện đọc &amp; Lắng nghe)</option>
+                      </select>
+                    </div>
+
+                    {/* 4. Paste YouTube URL */}
+                    <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-2">
+                      <label className="block text-xs font-black text-slate-800 uppercase tracking-wider">
+                        4. Dán Liên Kết YouTube (Paste YouTube URL) *
+                      </label>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="url"
+                          value={quickUrl}
+                          onChange={(e) => {
+                            setQuickUrl(e.target.value);
+                            setQuickError('');
+                            setQuickPreviewKey(prev => prev + 1);
+                          }}
+                          placeholder="https://www.youtube.com/watch?v=..."
+                          className="flex-1 px-3.5 py-2.5 text-xs font-mono rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-purple-500 text-slate-900"
+                        />
+                        {navigator?.clipboard && (
+                          <button
+                            type="button"
+                            onClick={async () => {
+                              try {
+                                const text = await navigator.clipboard.readText();
+                                if (text) {
+                                  setQuickUrl(text);
+                                  setQuickError('');
+                                  setQuickPreviewKey(prev => prev + 1);
+                                }
+                              } catch (err) {}
+                            }}
+                            className="px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs cursor-pointer"
+                          >
+                            Dán
+                          </button>
+                        )}
+                      </div>
+                      {extractYouTubeId(quickUrl) ? (
+                        <div className="text-[11px] font-mono text-emerald-700 flex items-center gap-1 font-bold">
+                          <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
+                          <span>Video ID hợp lệ: {extractYouTubeId(quickUrl)}</span>
+                        </div>
+                      ) : quickUrl ? (
+                        <div className="text-[11px] text-rose-600 font-bold flex items-center gap-1">
+                          <AlertCircle className="w-3.5 h-3.5" />
+                          <span>URL chưa đúng định dạng YouTube (cần 11 ký tự Video ID).</span>
+                        </div>
+                      ) : null}
+                    </div>
+
+                    {/* 5. Start Time & End Time (Max 60s) */}
+                    <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-black text-slate-800 flex items-center gap-1.5">
+                          <Scissors className="w-4 h-4 text-purple-600" />
+                          <span>5. Thời gian phát đoạn ngắn (Tối đa 60 giây):</span>
+                        </span>
+                        <span className="text-[10px] font-mono text-slate-400">mm:ss</span>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-[11px] font-bold text-emerald-800 mb-1">
+                            Start Time (Bắt đầu):
+                          </label>
+                          <input
+                            type="text"
+                            value={quickStartTime}
+                            onChange={(e) => handleQuickStartTimeChange(e.target.value)}
+                            placeholder="00:00"
+                            className="w-full px-3 py-2 rounded-xl border border-emerald-300 bg-emerald-50/20 font-mono font-bold text-xs text-emerald-950 focus:ring-2 focus:ring-emerald-500"
+                          />
+                          <div className="flex items-center gap-1 pt-1">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const s = Math.max(0, (parseTimeToSeconds(quickStartTime) ?? 0) - 5);
+                                handleQuickStartTimeChange(formatSecondsToTime(s));
+                              }}
+                              className="px-2 py-0.5 rounded bg-slate-100 text-[10px] font-bold text-slate-600 hover:bg-slate-200 cursor-pointer"
+                            >
+                              -5s
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const s = (parseTimeToSeconds(quickStartTime) ?? 0) + 5;
+                                handleQuickStartTimeChange(formatSecondsToTime(s));
+                              }}
+                              className="px-2 py-0.5 rounded bg-slate-100 text-[10px] font-bold text-slate-600 hover:bg-slate-200 cursor-pointer"
+                            >
+                              +5s
+                            </button>
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-[11px] font-bold text-rose-800 mb-1">
+                            End Time (Tự tính, tối đa +60s):
+                          </label>
+                          <input
+                            type="text"
+                            value={quickEndTime}
+                            onChange={(e) => handleQuickEndTimeChange(e.target.value)}
+                            placeholder="01:00"
+                            className="w-full px-3 py-2 rounded-xl border border-rose-300 bg-rose-50/20 font-mono font-bold text-xs text-rose-950 focus:ring-2 focus:ring-rose-500"
+                          />
+                          <div className="flex items-center gap-1 pt-1">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const s = parseTimeToSeconds(quickStartTime) ?? 0;
+                                const e = Math.max(s + 5, (parseTimeToSeconds(quickEndTime) ?? 60) - 5);
+                                handleQuickEndTimeChange(formatSecondsToTime(e));
+                              }}
+                              className="px-2 py-0.5 rounded bg-slate-100 text-[10px] font-bold text-slate-600 hover:bg-slate-200 cursor-pointer"
+                            >
+                              -5s
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const s = parseTimeToSeconds(quickStartTime) ?? 0;
+                                const e = Math.min(s + 60, (parseTimeToSeconds(quickEndTime) ?? 60) + 5);
+                                handleQuickEndTimeChange(formatSecondsToTime(e));
+                              }}
+                              className="px-2 py-0.5 rounded bg-slate-100 text-[10px] font-bold text-slate-600 hover:bg-slate-200 cursor-pointer"
+                            >
+                              +5s
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="p-2.5 rounded-xl bg-purple-50 text-[11px] text-purple-900">
+                        ⏱️ Thời lượng phát: <strong>{Math.max(1, (parseTimeToSeconds(quickEndTime) ?? 60) - (parseTimeToSeconds(quickStartTime) ?? 0))} giây</strong> (Tối đa 60s chuẩn sư phạm).
+                      </div>
+                    </div>
+
+                    {/* Action Buttons: Remove, Save Draft, Approve & Publish */}
+                    <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+                      <div>
+                        {quickUrl && (
+                          <button
+                            type="button"
+                            onClick={handleQuickRemove}
+                            className="px-4 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs flex items-center gap-1.5 cursor-pointer"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                            <span>Gỡ Video (Remove)</span>
+                          </button>
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => handleQuickSave('needs_review')}
+                          className="px-4 py-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-900 font-extrabold text-xs shadow-xs cursor-pointer"
+                        >
+                          ⏳ Lưu Bản Nháp (Save Draft)
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleQuickSave('approved')}
+                          className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-extrabold text-xs shadow-md shadow-purple-200 cursor-pointer transition-all"
+                        >
+                          🚀 Phê Duyệt &amp; Xuất Bản (Approve &amp; Publish)
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right Column: Live 16:9 Preview (5 cols) */}
+                  <div className="lg:col-span-5 space-y-3">
+                    <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+                      <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                        <span className="text-xs font-black text-slate-900 flex items-center gap-1.5">
+                          <Play className="w-3.5 h-3.5 text-purple-600" />
+                          <span>Xem Trước Trực Quan (16:9 Preview)</span>
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setQuickPreviewKey(prev => prev + 1)}
+                          className="text-[10px] text-slate-500 hover:text-slate-800 flex items-center gap-1 cursor-pointer"
+                        >
+                          <RotateCcw className="w-3 h-3" />
+                          <span>Tải lại</span>
+                        </button>
+                      </div>
+
+                      {extractYouTubeId(quickUrl) ? (
+                        <SmartYouTubeClipPlayer
+                          key={quickPreviewKey}
+                          videoId={extractYouTubeId(quickUrl)!}
+                          title={quickVideoTitle || getCurriculumLessonSpec(quickLessonId)?.lessonTitleEn || 'Video Preview'}
+                          subtitle={`Phát từ ${quickStartTime} đến ${quickEndTime} (Tối đa 60s)`}
+                          startSeconds={parseTimeToSeconds(quickStartTime) ?? 0}
+                          endSeconds={parseTimeToSeconds(quickEndTime) ?? 60}
+                          showDetails={true}
+                        />
+                      ) : (
+                        <div className="aspect-video w-full rounded-2xl bg-slate-100 border-2 border-dashed border-slate-300 flex flex-col items-center justify-center p-6 text-center text-slate-400 space-y-2">
+                          <Tv className="w-10 h-10 text-slate-300" />
+                          <p className="text-xs font-bold text-slate-500">
+                            Dán đường dẫn YouTube hợp lệ để xem trước đoạn video 60 giây.
+                          </p>
+                        </div>
+                      )}
+
+                      <div className="p-3 rounded-xl bg-slate-50 text-[11px] text-slate-600 space-y-1">
+                        <p className="font-bold text-slate-800">📌 Cam kết an toàn &amp; phân quyền:</p>
+                        <p>• Video gắn đúng vào bài học đã chọn, không tạo bài học mới.</p>
+                        <p>• Chỉ khi chọn <strong>Phê Duyệt &amp; Xuất Bản</strong>, học sinh mới xem được video.</p>
+                        <p>• Nếu chọn <strong>Lưu Bản Nháp</strong>, học sinh vẫn thấy thẻ Coming Soon an toàn.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+            /* Modal Form - Scrollable */
+            <form onSubmit={(e) => handleAddSubmit(e, 'approved')} className="p-5 sm:p-7 overflow-y-auto space-y-5 flex-1">
               {formError && (
                 <div className="p-3 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold flex items-center gap-2">
                   <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
@@ -1218,25 +1722,41 @@ export const TeacherVideoDashboard: React.FC = () => {
                 </select>
               </div>
 
-              {/* Submit Buttons */}
-              <div className="flex items-center justify-end gap-3 pt-2">
+              {/* Submit Buttons: Explicit Save Draft vs Approve & Publish */}
+              <div className="flex flex-wrap items-center justify-end gap-3 pt-2">
                 <button
                   type="button"
                   onClick={() => setIsAddModalOpen(false)}
-                  className="px-5 py-2.5 rounded-xl text-slate-600 hover:bg-slate-100 font-bold text-xs cursor-pointer"
+                  className="px-4 py-2.5 rounded-xl text-slate-600 hover:bg-slate-100 font-bold text-xs cursor-pointer"
                 >
                   Hủy bỏ
                 </button>
                 <button
-                  type="submit"
+                  type="button"
+                  onClick={(e) => {
+                    setFormStatus('draft');
+                    handleAddSubmit(e, 'draft');
+                  }}
                   disabled={isSaving}
-                  className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-rose-500 to-indigo-600 hover:from-rose-600 hover:to-indigo-700 text-white font-extrabold text-xs sm:text-sm shadow-md transition-all cursor-pointer disabled:opacity-50"
+                  className="px-4 py-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-900 font-extrabold text-xs shadow-xs transition-all cursor-pointer disabled:opacity-50"
                 >
-                  {isSaving ? 'Đang lưu video...' : 'Lưu Video Vào Học Viện'}
+                  ⏳ Lưu Bản Nháp (Save Draft)
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    setFormStatus('approved');
+                    handleAddSubmit(e, 'approved');
+                  }}
+                  disabled={isSaving}
+                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-extrabold text-xs shadow-md shadow-purple-200 transition-all cursor-pointer disabled:opacity-50"
+                >
+                  {isSaving ? 'Đang lưu...' : '🚀 Phê Duyệt & Xuất Bản (Approve & Publish)'}
                 </button>
               </div>
 
             </form>
+            )}
           </div>
         </div>
       )}
@@ -1292,6 +1812,19 @@ export const TeacherVideoDashboard: React.FC = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* 7. Dedicated YouTube Embed / Clip Modal for Individual Lesson */}
+      {embedModalVideo && (
+        <EmbedYouTubeModal
+          video={embedModalVideo}
+          isOpen={Boolean(embedModalVideo)}
+          onClose={() => setEmbedModalVideo(null)}
+          onSaved={(updated) => {
+            setVideos(prev => prev.map(v => v.id === updated.id ? updated : v));
+            loadTeacherVideos();
+          }}
+        />
       )}
 
     </div>

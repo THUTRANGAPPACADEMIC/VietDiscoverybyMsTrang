@@ -21,6 +21,7 @@ import {
   formatSecondsToTime, 
   validateClipTiming 
 } from '../../lib/youtubeClipHelper';
+import { VideoComingSoonCard } from './VideoComingSoonCard';
 
 export interface YouTubeLessonEmbedProps {
   destinationId?: string;
@@ -34,19 +35,6 @@ export interface YouTubeLessonEmbedProps {
   onUrlChange?: (newUrl: string) => void;
   className?: string;
 }
-
-// Curated authentic educational YouTube video IDs by destination
-const DEFAULT_DESTINATION_VIDEOS: Record<string, string> = {
-  halong: 'https://www.youtube.com/watch?v=R2rX6w7i4J0',       // Ha Long Bay World Heritage
-  hanoi: 'https://www.youtube.com/watch?v=kYJzX2eQ9h4',        // Hanoi Capital & Culture
-  danang_hoian: 'https://www.youtube.com/watch?v=q6gJq3lVvB8', // Da Nang Dragon Bridge & Hoi An
-  danang: 'https://www.youtube.com/watch?v=q6gJq3lVvB8',
-  hue: 'https://www.youtube.com/watch?v=wX-y0W9u8iQ',          // Hue Imperial City
-  sapa: 'https://www.youtube.com/watch?v=3g1y7qNfP5I',         // Sa Pa Terraces & Fansipan
-  mekong: 'https://www.youtube.com/watch?v=LqN6K6lqDSo',       // Mekong River & Floating Market
-  trangan: 'https://www.youtube.com/watch?v=R2rX6w7i4J0',      // Ninh Binh & Trang An
-  phuquoc: 'https://www.youtube.com/watch?v=kYJzX2eQ9h4'       // Phu Quoc Island & Sea
-};
 
 /**
  * Universal YouTube Video ID Extractor
@@ -87,12 +75,12 @@ export const YouTubeLessonEmbed: React.FC<YouTubeLessonEmbedProps> = ({
   const storageKey = `lesson_youtube_${destinationId}_${gradeBand}`;
   const timingKey = `lesson_youtube_timing_${destinationId}_${gradeBand}`;
 
-  // Resolve active URL: local saved > defaultUrl > curated default
+  // Resolve active URL: local saved > defaultUrl > empty string (NEVER auto-assign unauthorized videos)
   const [videoUrl, setVideoUrl] = useState<string>(() => {
     const saved = localStore.get<string | null>(storageKey, null);
     if (saved && extractYouTubeId(saved)) return saved;
     if (defaultUrl && extractYouTubeId(defaultUrl)) return defaultUrl;
-    return DEFAULT_DESTINATION_VIDEOS[destinationId] || 'https://www.youtube.com/watch?v=R2rX6w7i4J0';
+    return '';
   });
 
   // Clip timing state (startSeconds & endSeconds)
@@ -124,7 +112,7 @@ export const YouTubeLessonEmbed: React.FC<YouTubeLessonEmbedProps> = ({
   // Sync state if destinationId changes
   useEffect(() => {
     const saved = localStore.get<string | null>(storageKey, null);
-    const resolved = saved || defaultUrl || DEFAULT_DESTINATION_VIDEOS[destinationId] || 'https://www.youtube.com/watch?v=R2rX6w7i4J0';
+    const resolved = (saved && extractYouTubeId(saved)) || (defaultUrl && extractYouTubeId(defaultUrl)) || '';
     setVideoUrl(resolved);
     setInputUrl(resolved);
 
@@ -209,11 +197,10 @@ export const YouTubeLessonEmbed: React.FC<YouTubeLessonEmbedProps> = ({
     soundEffects.playVictory();
   };
 
-  // Reset to original default
-  const handleResetDefault = () => {
-    const original = DEFAULT_DESTINATION_VIDEOS[destinationId] || 'https://www.youtube.com/watch?v=R2rX6w7i4J0';
-    setVideoUrl(original);
-    setInputUrl(original);
+  // Remove video / reset to Coming Soon
+  const handleRemoveVideo = () => {
+    setVideoUrl('');
+    setInputUrl('');
     setClipTiming({});
     setInputStartTime('00:00');
     setInputEndTime('');
@@ -221,7 +208,8 @@ export const YouTubeLessonEmbed: React.FC<YouTubeLessonEmbedProps> = ({
     localStore.remove(timingKey);
     setIsEditingUrl(false);
     setIsPlaying(false);
-    if (onUrlChange) onUrlChange(original);
+    if (onUrlChange) onUrlChange('');
+    soundEffects.playClick();
   };
 
   const thumbnailUrl = videoId 
@@ -280,10 +268,10 @@ export const YouTubeLessonEmbed: React.FC<YouTubeLessonEmbedProps> = ({
             </span>
             <button
               type="button"
-              onClick={handleResetDefault}
-              className="text-[11px] font-bold text-amber-800 hover:text-amber-950 underline cursor-pointer"
+              onClick={handleRemoveVideo}
+              className="text-[11px] font-bold text-rose-700 hover:text-rose-900 underline cursor-pointer"
             >
-              Khôi phục video mẫu
+              Gỡ video (Coming Soon)
             </button>
           </div>
 
@@ -345,8 +333,19 @@ export const YouTubeLessonEmbed: React.FC<YouTubeLessonEmbedProps> = ({
               className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-amber-950 font-extrabold text-xs shadow-xs transition-colors cursor-pointer flex items-center justify-center gap-1 shrink-0"
             >
               <Check className="w-3.5 h-3.5" />
-              <span>Lưu Cài Đặt</span>
+              <span>Lưu Video</span>
             </button>
+            {videoId && (
+              <button
+                type="button"
+                onClick={handleRemoveVideo}
+                className="px-3.5 py-2 rounded-xl bg-rose-100 hover:bg-rose-200 text-rose-800 font-bold text-xs transition-colors cursor-pointer flex items-center justify-center gap-1 shrink-0"
+                title="Gỡ video này khỏi bài học và hiển thị Coming Soon"
+              >
+                <X className="w-3.5 h-3.5" />
+                <span>Gỡ Video</span>
+              </button>
+            )}
           </div>
 
           {inputError && (
@@ -373,7 +372,7 @@ export const YouTubeLessonEmbed: React.FC<YouTubeLessonEmbedProps> = ({
           thumbnailUrl={thumbnailUrl}
           showDetails={false}
         />
-      ) : (
+      ) : videoId ? (
         /* 16:9 HIGH-PERFORMANCE VIDEO CONTAINER (LAZY-LOADED FACADE FOR FULL VIDEO) */
         <div className="relative aspect-video w-full rounded-3xl overflow-hidden bg-slate-950 shadow-lg border-2 border-slate-200/90 group">
           {isPlaying && embedUrl ? (
@@ -447,6 +446,13 @@ export const YouTubeLessonEmbed: React.FC<YouTubeLessonEmbedProps> = ({
             </div>
           )}
         </div>
+      ) : (
+        /* Video Coming Soon Card when teacher has not approved a video */
+        <VideoComingSoonCard
+          lessonTitle={title}
+          isTeacher={effectiveIsTeacher}
+          onTeacherConfigure={() => setIsEditingUrl(true)}
+        />
       )}
 
       {/* Safety & Performance Guarantee Strip */}

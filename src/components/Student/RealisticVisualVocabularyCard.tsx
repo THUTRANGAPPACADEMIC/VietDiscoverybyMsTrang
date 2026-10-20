@@ -69,8 +69,8 @@ export const RealisticVisualVocabularyCard: React.FC<VisualVocabularyItemProps> 
 
   const isPlaceholder = visualMeta.isPlaceholder || imgError || !imgSrc;
 
-  // Audio accent mode (British English default as required)
-  const [accent, setAccent] = useState<'UK' | 'US'>('UK');
+  // Audio accent mode (General American English default as required)
+  const [accent, setAccent] = useState<'UK' | 'US'>('US');
   const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
 
   // Speak and Repeat Recording State
@@ -207,7 +207,10 @@ export const RealisticVisualVocabularyCard: React.FC<VisualVocabularyItemProps> 
   };
 
   return (
-    <div className={`group rounded-3xl overflow-hidden border-2 shadow-md hover:shadow-xl transition-all duration-300 flex flex-col justify-between ${themeClasses.cardBg} ${themeClasses.border}`}>
+    <div
+      data-testid="realistic-vocab-card"
+      className={`group rounded-3xl overflow-hidden border-2 shadow-md hover:shadow-xl transition-all duration-300 flex flex-col justify-between ${themeClasses.cardBg} ${themeClasses.border}`}
+    >
       
       {/* 1. IMAGE-FIRST HERO SECTION (REALISTIC PHOTOGRAPH OR NEUTRAL EDUCATIONAL PLACEHOLDER) */}
       <div className="relative aspect-video sm:aspect-4/3 w-full overflow-hidden bg-slate-900">
@@ -235,20 +238,27 @@ export const RealisticVisualVocabularyCard: React.FC<VisualVocabularyItemProps> 
               onError={() => {
                 setImgError(true);
               }}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+              className={`w-full h-full ${visualMeta.fitMode === 'contain' ? 'object-contain bg-slate-950 p-2' : 'object-cover'} group-hover:scale-105 transition-transform duration-700 ease-out`}
             />
             {/* Subtle Dark Gradient Overlay for Contrast on Real Photo */}
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-black/20 pointer-events-none" />
           </>
         )}
 
-        {/* Category Pill Tag - ONLY when real photo is verified and active */}
+        {/* Category Pill Tag - ONLY when image is verified and active (Requirement 9: Only Real Photo if genuine photograph) */}
         {!isPlaceholder && (
           <div className="absolute top-3 left-3 flex items-center gap-1.5">
-            <span className="px-2.5 py-1 rounded-full bg-white/90 backdrop-blur-md text-slate-800 font-extrabold text-[11px] shadow-sm uppercase tracking-wider flex items-center gap-1">
-              <span>📷</span>
-              <span>Real Photo</span>
-            </span>
+            {visualMeta.isRealPhoto === true ? (
+              <span className="px-2.5 py-1 rounded-full bg-white/90 backdrop-blur-md text-slate-800 font-extrabold text-[11px] shadow-sm uppercase tracking-wider flex items-center gap-1 border border-slate-200">
+                <span>📷</span>
+                <span>Real Photo</span>
+              </span>
+            ) : (
+              <span className="px-2.5 py-1 rounded-full bg-indigo-900/85 backdrop-blur-md text-indigo-100 font-extrabold text-[11px] shadow-sm uppercase tracking-wider flex items-center gap-1 border border-indigo-400/30">
+                <span>🎨</span>
+                <span>Illustration</span>
+              </span>
+            )}
           </div>
         )}
 

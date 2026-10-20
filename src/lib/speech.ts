@@ -1,7 +1,12 @@
-// Web Speech API for English-First Educational Pronunciation
-// Audio Engine with Async Voice Loading, Safe English Voice Selection & Slow Mode
+// ==============================================================================
+// VIETDISCOVERY BY MS. TRANG — CENTRAL SPEECH & JENNY NEURAL AUDIO ENGINE
+// Dual-Engine: 1) Studio Pre-rendered Microsoft Jenny Neural MP3 Cache (0ms latency, 0 VNĐ)
+//              2) Intelligent General American SpeechSynthesis Fallback
+// Aligned with Vietnam Circular 27/2020/TT-BGDDT & CEFR Primary (Grades 1–5)
+// ==============================================================================
 
 import { backgroundMusic } from './backgroundMusic';
+import { getJennyAudioUrl, normalizeAudioKey } from '../data/jennyAudioRegistry';
 
 export interface SpeechPlayOptions {
   slow?: boolean;
@@ -14,11 +19,12 @@ export interface SpeechPlayOptions {
 }
 
 let cachedVoices: SpeechSynthesisVoice[] = [];
+let currentActiveAudio: HTMLAudioElement | null = null;
 
 // Ensure voices are loaded asynchronously across Chrome, Safari, Edge, Android
 export const getAvailableVoices = (): Promise<SpeechSynthesisVoice[]> => {
   return new Promise((resolve) => {
-    if (!('speechSynthesis' in window)) {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
       resolve([]);
       return;
     }
@@ -96,7 +102,9 @@ export const VIETNAMESE_TO_AMERICAN_PHONETICS: Record<string, string> = {
   'Phở': 'Fuh',
   'Pho': 'Fuh',
   'Áo dài': 'Ow zye',
-  'Ao dai': 'Ow zye'
+  'Ao dai': 'Ow zye',
+  'Cát Bà': 'Kaht Bah',
+  'Cat Ba': 'Kaht Bah'
 };
 
 /**
@@ -118,15 +126,15 @@ export const selectBestEnglishVoice = async (preferredLang: 'en-US' | 'en-GB' = 
   const voices = await getAvailableVoices();
   if (!voices.length) return null;
 
-  // 1. Primary priority: High-quality General American (US) Child-friendly / Natural voices
+  // 1. Primary priority: High-quality General American (US) Child-friendly / Natural voices (Jenny Neural prioritized)
   if (preferredLang === 'en-US') {
     const americanPreferred = voices.find(v => {
       const isUs = v.lang.toLowerCase() === 'en-us' || v.lang.toLowerCase() === 'en_us';
       const name = v.name.toLowerCase();
       return isUs && (
+        name.includes('jenny') || 
         name.includes('natural') || 
         name.includes('google us english') || 
-        name.includes('jenny') || 
         name.includes('samantha') || 
         name.includes('aria') || 
         name.includes('guy') || 
@@ -142,10 +150,10 @@ export const selectBestEnglishVoice = async (preferredLang: 'en-US' | 'en-GB' = 
     const isEn = v.lang.toLowerCase().startsWith('en');
     const name = v.name.toLowerCase();
     return isEn && (
+      name.includes('jenny') || 
       name.includes('natural') || 
       name.includes('google') || 
       name.includes('samantha') || 
-      name.includes('jenny') || 
       name.includes('aria') || 
       name.includes('guy') || 
       name.includes('karen') ||
@@ -166,39 +174,37 @@ export const selectBestEnglishVoice = async (preferredLang: 'en-US' | 'en-GB' = 
   return null;
 };
 
-// Play English speech with strict language enforcement
-export const playEnglishSpeech = async (
-  text: string,
-  options: SpeechPlayOptions = {}
+/**
+ * Fallback Web Speech API execution with strict General American voice selection
+ */
+const fallbackWebSpeech = async (
+  cleanText: string,
+  options: SpeechPlayOptions
 ): Promise<boolean> => {
-  if (!('speechSynthesis' in window)) {
+  if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
     console.warn('[VietDiscovery Audio] Web Speech API is not supported on this device/browser.');
     options.onError?.(new Error('Trình duyệt không hỗ trợ Web Speech API.'));
     return false;
   }
 
-  // Cancel any ongoing speech immediately
   window.speechSynthesis.cancel();
 
-  const cleanText = text.trim();
-  if (!cleanText) return false;
-
-  const targetLang = options.lang || 'en-US';
+  // Enforce General American (en-US)
+  const targetLang = 'en-US';
   const voice = await selectBestEnglishVoice(targetLang);
 
-  // Normalize Vietnamese place names and cultural nouns for smooth American pronunciation
-  const spokenText = targetLang === 'en-US' ? normalizeForAmericanSpeech(cleanText) : cleanText;
+  const spokenText = normalizeForAmericanSpeech(cleanText);
 
   const utterance = new SpeechSynthesisUtterance(spokenText);
   utterance.lang = targetLang;
   
-  // Rate: Slow mode for Grade 1-2 or learners (0.68), Normal elementary friendly rate (0.86)
+  // Rate: Slow mode for Grade 1-2 or learners (0.75), Normal elementary friendly rate (0.88)
   if (options.slow) {
-    utterance.rate = 0.68;
+    utterance.rate = 0.75;
   } else if (options.rate) {
     utterance.rate = options.rate;
   } else {
-    utterance.rate = 0.86;
+    utterance.rate = 0.88;
   }
 
   utterance.pitch = options.pitch ?? 1.05;
@@ -206,7 +212,7 @@ export const playEnglishSpeech = async (
   if (voice) {
     utterance.voice = voice;
   } else {
-    console.warn(`[VietDiscovery Audio] No dedicated English voice found. SpeechSynthesis will use default ${targetLang} language definition.`);
+    console.warn(`[VietDiscovery Audio] Notice: Using system speech fallback for: "${cleanText.substring(0, 30)}..."`);
   }
 
   // Automatically duck background music so English speech is crystal clear
@@ -224,7 +230,6 @@ export const playEnglishSpeech = async (
 
   utterance.onerror = (e) => {
     backgroundMusic.unduck('speech');
-    // Ignore user-initiated cancellation
     if (e.error === 'canceled' || e.error === 'interrupted') return;
     console.error('[VietDiscovery Audio] Speech synthesis error:', e);
     options.onError?.(e);
@@ -234,13 +239,90 @@ export const playEnglishSpeech = async (
   return true;
 };
 
-// Stop speech helper
+/**
+ * Play English speech with primary Microsoft Jenny Neural static audio lookup,
+ * falling back gracefully to American SpeechSynthesis if unmapped.
+ */
+export const playEnglishSpeech = async (
+  text: string,
+  options: SpeechPlayOptions = {}
+): Promise<boolean> => {
+  const cleanText = text.trim();
+  if (!cleanText) return false;
+
+  // Cancel any active static audio or browser speech immediately
+  stopSpeech();
+
+  // 1. Check Jenny Neural Audio Registry for authentic studio MP3
+  const jennyUrl = getJennyAudioUrl(cleanText);
+  if (jennyUrl) {
+    try {
+      backgroundMusic.duck('speech');
+      const audio = new Audio(jennyUrl);
+      currentActiveAudio = audio;
+
+      // Rate control: Grade 1-2 / Slow mode (0.85x), Normal (1.0x)
+      if (options.slow) {
+        audio.playbackRate = 0.85;
+      } else if (options.rate) {
+        audio.playbackRate = options.rate;
+      }
+
+      audio.onplay = () => {
+        backgroundMusic.duck('speech');
+        options.onStart?.();
+      };
+
+      audio.onended = () => {
+        backgroundMusic.unduck('speech');
+        currentActiveAudio = null;
+        options.onEnd?.();
+      };
+
+      audio.onerror = (err) => {
+        backgroundMusic.unduck('speech');
+        currentActiveAudio = null;
+        console.warn(`[Jenny Audio Engine] Static MP3 error on ${jennyUrl}, falling back to Web Speech:`, err);
+        fallbackWebSpeech(cleanText, options);
+      };
+
+      await audio.play();
+      return true;
+    } catch (err) {
+      console.warn('[Jenny Audio Engine] Audio playback failed, falling back to Web Speech:', err);
+      return fallbackWebSpeech(cleanText, options);
+    }
+  }
+
+  // 2. If not pre-rendered in registry, use Web Speech API with strict General American voice selection
+  return fallbackWebSpeech(cleanText, options);
+};
+
+/**
+ * Stop any active audio and speech immediately
+ */
 export const stopSpeech = () => {
   backgroundMusic.unduck('speech');
-  if ('speechSynthesis' in window) {
+  if (currentActiveAudio) {
+    try {
+      currentActiveAudio.pause();
+      currentActiveAudio.currentTime = 0;
+    } catch {}
+    currentActiveAudio = null;
+  }
+  if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
     window.speechSynthesis.cancel();
   }
 };
+
+/**
+ * Check if a given text or word has an authentic pre-rendered Jenny Neural MP3 audio
+ */
+export const isJennyAudioReady = (text: string): boolean => {
+  return Boolean(getJennyAudioUrl(text));
+};
+
+export { getJennyAudioUrl, normalizeAudioKey };
 
 // Backward-compatible playSpeech helper
 export const playSpeech = (
@@ -251,17 +333,17 @@ export const playSpeech = (
   const lang = typeof langOrOnEnd === 'string' ? langOrOnEnd : 'en-US';
   const onEnd = typeof langOrOnEnd === 'function' ? langOrOnEnd : callback;
 
-  // If language is English, route to playEnglishSpeech for guaranteed English voice
+  // If language is English, route to playEnglishSpeech for guaranteed Jenny Neural voice
   if (lang.startsWith('en')) {
     playEnglishSpeech(text, {
-      lang: lang as 'en-US' | 'en-GB',
+      lang: 'en-US',
       onEnd
     });
     return;
   }
 
   // Vietnamese route (only for Vietnamese words when explicitly asked)
-  if (!('speechSynthesis' in window)) return;
+  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
   window.speechSynthesis.cancel();
 
   const utterance = new SpeechSynthesisUtterance(text);

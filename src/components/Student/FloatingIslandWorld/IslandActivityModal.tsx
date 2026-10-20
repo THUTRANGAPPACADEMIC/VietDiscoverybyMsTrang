@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { FloatingIslandDef, IslandActivityStep } from './floatingIslandData';
 import { Island3DVisual } from './Island3DVisual';
 import { soundEffects } from '../../../lib/soundEffects';
@@ -10,22 +10,20 @@ import {
   Volume2, 
   Volume1, 
   Mic, 
-  MicOff,
   CheckCircle2, 
   XCircle, 
   Star, 
   Sparkles, 
-  Award, 
   RotateCcw, 
   ArrowRight,
   Trophy,
   HelpCircle,
   ThumbsUp,
-  Compass,
-  BookOpen,
   Target,
-  ShieldCheck,
-  Gift
+  Gift,
+  BookOpen,
+  Award,
+  PlayCircle
 } from 'lucide-react';
 
 interface IslandActivityModalProps {
@@ -215,6 +213,64 @@ const ISLAND_COLLECTIBLE_REWARDS: Record<string, { badgeEn: string; badgeVi: str
   }
 };
 
+/**
+ * Fisher-Yates Balanced Shuffling Algorithm for 4-Option Quizzes
+ * Distributes correct answer across positions [0, 1, 2, 3] (A, B, C, D) evenly in each mission.
+ * Guarantees no predictable sequence like A->B->C->D while randomizing distractor positions.
+ */
+function generateBalancedStepOptions(activitySteps: IslandActivityStep[]): Record<string, IslandActivityStep['options']> {
+  const targetPositions = [0, 1, 2, 3];
+  
+  // Fisher-Yates shuffle on target positions
+  for (let i = targetPositions.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [targetPositions[i], targetPositions[j]] = [targetPositions[j], targetPositions[i]];
+  }
+
+  // Prevent trivial sequential pattern [0, 1, 2, 3] or [3, 2, 1, 0]
+  if (targetPositions.every((val, idx) => val === idx) || targetPositions.every((val, idx) => val === 3 - idx)) {
+    [targetPositions[0], targetPositions[2]] = [targetPositions[2], targetPositions[0]];
+  }
+
+  const map: Record<string, IslandActivityStep['options']> = {};
+
+  activitySteps.forEach((step, stepIndex) => {
+    const correctOpt = step.options.find(o => o.isCorrect);
+    const distractors = step.options.filter(o => !o.isCorrect);
+
+    // Shuffle distractors with Fisher-Yates
+    const shuffledDistractors = [...distractors];
+    for (let i = shuffledDistractors.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffledDistractors[i], shuffledDistractors[j]] = [shuffledDistractors[j], shuffledDistractors[i]];
+    }
+
+    if (!correctOpt) {
+      map[step.id] = step.options;
+      return;
+    }
+
+    // Determine target position for this step
+    const correctTargetIdx = targetPositions[stepIndex % targetPositions.length];
+    const finalOptions: IslandActivityStep['options'] = [];
+    let distractorPointer = 0;
+
+    for (let pos = 0; pos < 4; pos++) {
+      if (pos === correctTargetIdx) {
+        finalOptions.push(correctOpt);
+      } else {
+        if (distractorPointer < shuffledDistractors.length) {
+          finalOptions.push(shuffledDistractors[distractorPointer++]);
+        }
+      }
+    }
+
+    map[step.id] = finalOptions;
+  });
+
+  return map;
+}
+
 export const IslandActivityModal: React.FC<IslandActivityModalProps> = ({
   island,
   selectedGrade,
@@ -223,9 +279,10 @@ export const IslandActivityModal: React.FC<IslandActivityModalProps> = ({
   onEarnStars
 }) => {
   const currentGradeData = island.gradeData[selectedGrade] || island.gradeData[1];
-  const steps = currentGradeData.steps;
+  const steps = currentGradeData?.steps || [];
 
-  // Pedagogical Journey: Discover -> Learn -> Practice -> Challenge -> Treasure
+  // Modal 3-phase journey: 'intro' -> 'activity' -> 'completed'
+  const [viewMode, setViewMode] = useState<'intro' | 'activity' | 'completed'>('intro');
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -233,6 +290,9 @@ export const IslandActivityModal: React.FC<IslandActivityModalProps> = ({
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
   const [isSlowMode, setIsSlowMode] = useState(false);
   
+  // Fisher-Yates balanced options map for current session (stable across re-renders)
+  const [stepOptionsMap, setStepOptionsMap] = useState<Record<string, IslandActivityStep['options']>>({});
+
   // Real Speaking Assessment (NO FAKE COUNTDOWN)
   const [isRecording, setIsRecording] = useState(false);
   const [speechRecognized, setSpeechRecognized] = useState(false);
@@ -256,7 +316,12 @@ export const IslandActivityModal: React.FC<IslandActivityModalProps> = ({
     return Boolean(localStorage.getItem(`vietdiscovery_chest_claimed_${island.id}_grade_${selectedGrade}`));
   });
 
-  const currentStep: IslandActivityStep = steps[currentStepIndex] || steps[0];
+  const currentStep: IslandActivityStep = steps[currentStepIndex] || steps[0] || {
+    id: 'placeholder',
+    questionEn: 'Ready to start your adventure?',
+    questionVi: 'Sẵn sàng bắt đầu chuyến phiêu lưu chưa nào?',
+    options: []
+  };
 
   // Resolve reward metadata
   const rewardKey = `${island.id}_${selectedGrade}`;
@@ -268,7 +333,40 @@ export const IslandActivityModal: React.FC<IslandActivityModalProps> = ({
     factVi: 'Khám phá văn hóa Việt Nam bằng tiếng Anh bồi đắp niềm tự hào dân tộc và năng lực hội nhập toàn cầu!'
   };
 
-  // Sync state on step change
+  // Full reset effect whenever modal opens, island changes, or grade changes
+  useEffect(() => {
+    if (isOpen) {
+      setViewMode('intro');
+      setCurrentStepIndex(0);
+      setSelectedOptionId(null);
+      setIsSubmitted(false);
+      setIsCorrect(false);
+      setIsCompleted(false);
+      setIsChestOpened(false);
+      setIsAudioPlaying(false);
+      setIsSlowMode(false);
+      setIsRecording(false);
+      setSpeechRecognized(false);
+      setSpeechScore(null);
+      setSpeechResult(null);
+      setSpeechTranscript('');
+      setSelectedLetters([]);
+      stopSpeech();
+      backgroundMusic.unduck('mic_recording');
+      backgroundMusic.unduck('listening');
+
+      // Generate fresh balanced Fisher-Yates shuffled options
+      const newShuffledMap = generateBalancedStepOptions(steps);
+      setStepOptionsMap(newShuffledMap);
+
+      if (typeof window !== 'undefined') {
+        const claimed = Boolean(localStorage.getItem(`vietdiscovery_chest_claimed_${island.id}_grade_${selectedGrade}`));
+        setIsAlreadyClaimed(claimed);
+      }
+    }
+  }, [isOpen, island.id, selectedGrade]);
+
+  // Sync state on step change within activity runner
   useEffect(() => {
     setSelectedOptionId(null);
     setIsSubmitted(false);
@@ -302,6 +400,17 @@ export const IslandActivityModal: React.FC<IslandActivityModalProps> = ({
 
   if (!isOpen) return null;
 
+  // Current step 4 options (from stable shuffled session map or raw)
+  const currentOptions = stepOptionsMap[currentStep.id] || currentStep.options;
+  const OPTION_LETTERS = ['A', 'B', 'C', 'D'];
+
+  // Check if current step has 4-picture multiple choice options
+  const hasImageOptions = Boolean(
+    currentOptions &&
+    currentOptions.length === 4 &&
+    currentOptions.every(o => Boolean(o.image))
+  );
+
   // General American voice audio player with slow toggle
   const handlePlayAudio = (text?: string, slow = isSlowMode) => {
     const prompt = text || currentStep.audioPrompt || currentStep.questionEn;
@@ -333,7 +442,7 @@ export const IslandActivityModal: React.FC<IslandActivityModalProps> = ({
   };
 
   // Puzzle Island letter tap
-  const handleTapScrambleLetter = (letter: string, index: number) => {
+  const handleTapScrambleLetter = (letter: string) => {
     soundEffects.playClick();
     const newSelected = [...selectedLetters, letter];
     setSelectedLetters(newSelected);
@@ -358,7 +467,7 @@ export const IslandActivityModal: React.FC<IslandActivityModalProps> = ({
     setSelectedLetters([]);
   };
 
-  // GENUINE Speaking Assessment (Strict Requirement 5: NO FAKE COUNTDOWN STARS)
+  // GENUINE Speaking Assessment (Strict Requirement: NO FAKE COUNTDOWN STARS)
   const handleStartSpeaking = async () => {
     soundEffects.playClick();
     setIsRecording(true);
@@ -389,7 +498,6 @@ export const IslandActivityModal: React.FC<IslandActivityModalProps> = ({
         setIsCorrect(true);
       } else {
         soundEffects.playWrong();
-        // Allow student to retry without penalizing unfairly
         setIsSubmitted(false);
         setIsCorrect(false);
       }
@@ -407,6 +515,7 @@ export const IslandActivityModal: React.FC<IslandActivityModalProps> = ({
     } else {
       soundEffects.playStarFanfare();
       setIsCompleted(true);
+      setViewMode('completed');
     }
   };
 
@@ -427,6 +536,25 @@ export const IslandActivityModal: React.FC<IslandActivityModalProps> = ({
   const handleFinishQuest = () => {
     soundEffects.playClick();
     onClose();
+  };
+
+  const handleStartQuestFromIntro = () => {
+    soundEffects.playClick();
+    setViewMode('activity');
+  };
+
+  const handlePlayAgain = () => {
+    soundEffects.playClick();
+    setCurrentStepIndex(0);
+    setSelectedOptionId(null);
+    setIsSubmitted(false);
+    setIsCorrect(false);
+    setIsCompleted(false);
+    setIsChestOpened(false);
+    // Generate fresh balanced Fisher-Yates permutation for replay
+    const newShuffledMap = generateBalancedStepOptions(steps);
+    setStepOptionsMap(newShuffledMap);
+    setViewMode('activity');
   };
 
   return (
@@ -484,8 +612,8 @@ export const IslandActivityModal: React.FC<IslandActivityModalProps> = ({
           </div>
         </div>
 
-        {/* Daylight Progress Indicator */}
-        {!isCompleted && (
+        {/* Progress Indicator (Only visible during active activity runner) */}
+        {viewMode === 'activity' && (
           <div className="w-full bg-sky-100 h-2">
             <div 
               className="h-full transition-all duration-500 rounded-r-full"
@@ -501,9 +629,95 @@ export const IslandActivityModal: React.FC<IslandActivityModalProps> = ({
         <div className="p-5 sm:p-7 space-y-5 max-h-[75vh] overflow-y-auto bg-gradient-to-b from-white to-sky-50/40">
           
           {/* ========================================================== */}
-          {/* STATE A: ACTIVE ACTIVITY RUNNER                            */}
+          {/* PHASE 1: INTRODUCTION SCREEN (MÀN HÌNH GIỚI THIỆU NỘI DUNG) */}
           {/* ========================================================== */}
-          {!isCompleted && (
+          {viewMode === 'intro' && (
+            <div className="space-y-5 text-center animate-fade-in py-2">
+              
+              {/* Island Visual Showcase */}
+              <div className="flex justify-center">
+                <Island3DVisual
+                  islandId={island.id}
+                  size={160}
+                  isSelected={true}
+                />
+              </div>
+
+              {/* Mission Header */}
+              <div className="space-y-1">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-100 border border-sky-300 text-sky-900 text-xs font-black shadow-2xs">
+                  <span className="w-2.5 h-2.5 rounded-full animate-ping" style={{ backgroundColor: island.crystalHex }} />
+                  <span>{currentGradeData.gradeBadge}</span>
+                  <span>•</span>
+                  <span>{island.crystalName}</span>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-black text-slate-900 font-heading">
+                  {currentGradeData.missionTitleVi}
+                </h3>
+                <p className="text-xs sm:text-sm text-sky-800 font-bold">
+                  {currentGradeData.missionTitleEn}
+                </p>
+              </div>
+
+              {/* Mission Intro Story */}
+              <div className="p-4 rounded-2xl bg-sky-50/90 border border-sky-200 text-slate-700 text-xs sm:text-sm font-medium leading-relaxed">
+                <p>{currentGradeData.missionIntroVi}</p>
+                <p className="text-[11px] text-slate-500 italic mt-1 font-normal">"{currentGradeData.missionIntroEn}"</p>
+              </div>
+
+              {/* Pedagogical Target Objective Card */}
+              <div className="p-4 rounded-2xl bg-amber-50/80 border-2 border-amber-200 text-left space-y-1.5 shadow-2xs">
+                <div className="flex items-center gap-2 text-xs font-black text-amber-900">
+                  <Target className="w-4 h-4 text-amber-600" />
+                  <span>MỤC TIÊU HỌC TẬP (LEARNING OBJECTIVE):</span>
+                </div>
+                <p className="text-xs font-bold text-slate-800">
+                  {currentGradeData.targetObjective}
+                </p>
+              </div>
+
+              {/* Challenge Structure & Reward Pills */}
+              <div className="grid grid-cols-2 gap-3 text-left">
+                <div className="p-3 rounded-xl bg-white border border-sky-200 shadow-2xs flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-lg bg-sky-100 flex items-center justify-center text-sky-700 font-black shrink-0">
+                    <BookOpen className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-slate-500 font-bold uppercase">Nội dung:</span>
+                    <p className="text-xs font-black text-slate-900">{steps.length} Câu trắc nghiệm (A, B, C, D)</p>
+                  </div>
+                </div>
+
+                <div className="p-3 rounded-xl bg-white border border-amber-200 shadow-2xs flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-lg bg-amber-100 flex items-center justify-center text-amber-700 font-black shrink-0">
+                    <Award className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-slate-500 font-bold uppercase">Phần thưởng:</span>
+                    <p className="text-xs font-black text-amber-900">+{currentGradeData.starsReward} Sao & Huy hiệu</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Start Mission Action Button */}
+              <div className="pt-2">
+                <button
+                  onClick={handleStartQuestFromIntro}
+                  className="w-full py-4 px-6 rounded-2xl font-black text-sm uppercase tracking-wider text-white shadow-lg transition-all duration-300 flex items-center justify-center gap-2 hover:scale-102 active:scale-98 cursor-pointer bg-gradient-to-b from-[#4ade80] via-[#22c55e] to-[#16a34a] hover:from-[#22c55e] hover:to-[#15803d] border-b-4 border-[#15803d]"
+                >
+                  <PlayCircle className="w-5 h-5" />
+                  <span>BẮT ĐẦU NHIỆM VỤ • START MISSION</span>
+                  <ArrowRight className="w-4 h-4 ml-1" />
+                </button>
+              </div>
+
+            </div>
+          )}
+
+          {/* ========================================================== */}
+          {/* PHASE 2: ACTIVE ACTIVITY RUNNER (HOẠT ĐỘNG TƯƠNG TÁC THỰC) */}
+          {/* ========================================================== */}
+          {viewMode === 'activity' && (
             <div className="space-y-4">
               
               {/* Question Header & Circular 27 Badge if Champion Island */}
@@ -528,28 +742,45 @@ export const IslandActivityModal: React.FC<IslandActivityModalProps> = ({
                 </p>
               </div>
 
-              {/* 1. Wonder Island Visual Showcase */}
-              {island.id === 'wonder' && currentStep.image && (
+              {/* American English Audio Introduction Button (Microsoft Jenny Neural) */}
+              {(currentStep.audioPrompt || currentStep.questionEn) && (
+                <div className="flex items-center justify-between gap-2 flex-wrap px-1">
+                  <button
+                    type="button"
+                    onClick={() => handlePlayAudio(currentStep.audioPrompt || currentStep.questionEn)}
+                    disabled={isAudioPlaying}
+                    className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold text-xs transition-all shadow-2xs hover:shadow-xs active:scale-95 cursor-pointer"
+                    title="Nghe phát âm chuẩn Mỹ (Microsoft Jenny Neural)"
+                  >
+                    <Volume2 className={`w-4 h-4 text-emerald-600 ${isAudioPlaying ? 'animate-bounce' : ''}`} />
+                    <span>Nghe giới thiệu bằng tiếng Anh (Giọng Mỹ)</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handlePlayAudio(currentStep.audioPrompt || currentStep.questionEn, true)}
+                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors cursor-pointer border border-slate-200"
+                    title="Nghe tốc độ chậm"
+                  >
+                    <Volume1 className="w-3.5 h-3.5 text-sky-600" />
+                    <span>Nghe Chậm (0.7x)</span>
+                  </button>
+                </div>
+              )}
+
+              {/* 1. Wonder Island Single Image (Fallback only if no 4-picture options) */}
+              {island.id === 'wonder' && currentStep.image && !hasImageOptions && (
                 <div className="relative rounded-2xl overflow-hidden border-2 border-sky-200 shadow-md max-h-48 sm:max-h-56 bg-slate-100">
                   <img
                     src={currentStep.image}
                     alt={currentStep.questionEn}
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/70 via-transparent to-transparent flex items-end p-3">
-                    <button
-                      onClick={() => handlePlayAudio(currentStep.audioPrompt)}
-                      className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md transition-transform active:scale-95 cursor-pointer"
-                    >
-                      <Volume2 className="w-4 h-4" />
-                      <span>Nghe giới thiệu bằng tiếng Anh (Giọng Mỹ)</span>
-                    </button>
-                  </div>
                 </div>
               )}
 
-              {/* 2. Listening Island Interactive Audio Player */}
-              {island.id === 'listening' && (
+              {/* 2. Listening Island Interactive Audio Player (Fallback only if no 4-picture options) */}
+              {island.id === 'listening' && !hasImageOptions && (
                 <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-sky-50 via-white to-blue-50 border-2 border-sky-200 flex flex-col items-center text-center space-y-3 shadow-xs">
                   <div className="flex items-center gap-2.5 flex-wrap justify-center">
                     <button
@@ -701,7 +932,7 @@ export const IslandActivityModal: React.FC<IslandActivityModalProps> = ({
                     {scrambleLetters.map((char, idx) => (
                       <button
                         key={idx}
-                        onClick={() => handleTapScrambleLetter(char, idx)}
+                        onClick={() => handleTapScrambleLetter(char)}
                         disabled={isSubmitted}
                         className="w-10 h-12 sm:w-12 sm:h-14 rounded-xl bg-gradient-to-b from-amber-300 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-600 text-amber-950 font-black text-lg sm:text-xl font-heading shadow-md active:scale-95 transition-transform cursor-pointer border-b-2 border-amber-600"
                       >
@@ -712,54 +943,161 @@ export const IslandActivityModal: React.FC<IslandActivityModalProps> = ({
                 </div>
               )}
 
-              {/* Multiple Choice Options List */}
-              <div className="space-y-2">
-                <span className="text-xs font-black text-slate-700 uppercase tracking-wider">
-                  Chọn câu trả lời đúng:
-                </span>
-                <div className="grid grid-cols-1 gap-2.5">
-                  {currentStep.options.map(option => {
-                    const isSelected = selectedOptionId === option.id;
-                    let optionStyle = 'bg-white hover:bg-sky-50 border-2 border-slate-200 text-slate-800 shadow-2xs hover:border-sky-400';
+              {/* Multiple Choice Options: 2x2 Picture Grid vs. Text-based List */}
+              {hasImageOptions ? (
+                <div className="space-y-2.5">
+                  <div className="flex items-center justify-between text-xs font-black text-slate-700 uppercase tracking-wider">
+                    <span>Chọn 1 trong 4 hình ảnh (A, B, C, D):</span>
+                    <span className="text-[10px] text-sky-700 font-bold lowercase">Thứ tự xáo trộn ngẫu nhiên</span>
+                  </div>
 
-                    if (isSubmitted) {
-                      if (option.isCorrect) {
-                        optionStyle = 'bg-emerald-50 border-emerald-400 text-emerald-950 ring-2 ring-emerald-300 font-black';
-                      } else if (isSelected && !option.isCorrect) {
-                        optionStyle = 'bg-rose-50 border-rose-400 text-rose-950 ring-2 ring-rose-300 font-black';
-                      } else {
-                        optionStyle = 'bg-slate-50 border-slate-200 text-slate-400 opacity-60';
+                  {/* 2x2 Picture Grid (Desktop 2x2, Tablet 2x2, Mobile 2x2) */}
+                  <div className="grid grid-cols-2 gap-2.5 sm:gap-4">
+                    {currentOptions.map((option, optIdx) => {
+                      const letter = OPTION_LETTERS[optIdx] || `${optIdx + 1}`;
+                      const isSelected = selectedOptionId === option.id;
+
+                      let cardStyle = 'bg-white border-2 border-slate-200 hover:border-sky-400 hover:shadow-md text-slate-800';
+                      if (isSubmitted) {
+                        if (option.isCorrect) {
+                          cardStyle = 'bg-emerald-50/80 border-2 border-emerald-500 text-emerald-950 ring-2 ring-emerald-300 font-black shadow-md';
+                        } else if (isSelected && !option.isCorrect) {
+                          cardStyle = 'bg-rose-50/80 border-2 border-rose-500 text-rose-950 ring-2 ring-rose-300 font-black shadow-md';
+                        } else {
+                          cardStyle = 'bg-slate-50/80 border-2 border-slate-200 text-slate-400 opacity-50';
+                        }
                       }
-                    }
 
-                    return (
-                      <button
-                        key={option.id}
-                        onClick={() => handleSelectOption(option.id, option.isCorrect)}
-                        disabled={isSubmitted}
-                        className={`w-full p-3.5 sm:p-4 rounded-2xl text-left transition-all duration-200 flex items-center justify-between gap-3 cursor-pointer ${optionStyle}`}
-                      >
-                        <div className="flex items-center gap-3">
-                          {option.icon && (
-                            <span className="text-2xl shrink-0">{option.icon}</span>
-                          )}
-                          <div>
-                            <p className="text-sm font-bold">{option.textEn}</p>
-                            <p className="text-xs text-slate-600 font-medium">{option.textVi}</p>
+                      return (
+                        <button
+                          key={option.id}
+                          type="button"
+                          onClick={() => handleSelectOption(option.id, option.isCorrect)}
+                          disabled={isSubmitted}
+                          className={`group relative flex flex-col rounded-2xl sm:rounded-3xl overflow-hidden transition-all duration-200 cursor-pointer text-left active:scale-[0.98] ${cardStyle}`}
+                        >
+                          {/* Image Container with 4:3 Aspect Ratio */}
+                          <div className="relative w-full aspect-[4/3] bg-slate-100 overflow-hidden">
+                            <img
+                              src={option.image}
+                              alt={option.textEn}
+                              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                              loading="lazy"
+                            />
+
+                            {/* Option Letter Badge (A, B, C, D) in Top-Left */}
+                            <span className={`absolute top-2 left-2 w-7 h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl font-black text-xs sm:text-sm flex items-center justify-center shadow-md border transition-colors ${
+                              isSubmitted && option.isCorrect
+                                ? 'bg-emerald-500 text-white border-emerald-600'
+                                : isSubmitted && isSelected && !option.isCorrect
+                                  ? 'bg-rose-500 text-white border-rose-600'
+                                  : isSelected
+                                    ? 'bg-sky-500 text-white border-sky-600'
+                                    : 'bg-white/95 text-slate-800 border-slate-200 backdrop-blur-xs'
+                            }`}>
+                              {letter}
+                            </span>
+
+                            {/* Correct / Wrong Stamp Badge in Top-Right when Submitted */}
+                            {isSubmitted && option.isCorrect && (
+                              <span className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-emerald-500 text-white text-[10px] sm:text-xs font-black flex items-center gap-1 shadow-md animate-scale-up">
+                                <CheckCircle2 className="w-3.5 h-3.5 text-white" />
+                                <span>ĐÚNG</span>
+                              </span>
+                            )}
+                            {isSubmitted && isSelected && !option.isCorrect && (
+                              <span className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-rose-500 text-white text-[10px] sm:text-xs font-black flex items-center gap-1 shadow-md animate-scale-up">
+                                <XCircle className="w-3.5 h-3.5 text-white" />
+                                <span>SAI</span>
+                              </span>
+                            )}
                           </div>
-                        </div>
 
-                        {isSubmitted && option.isCorrect && (
-                          <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-                        )}
-                        {isSubmitted && isSelected && !option.isCorrect && (
-                          <XCircle className="w-5 h-5 text-rose-600 shrink-0" />
-                        )}
-                      </button>
-                    );
-                  })}
+                          {/* Caption Label Area */}
+                          <div className="p-2 sm:p-3 flex flex-col justify-center">
+                            <div className="flex items-center gap-1.5">
+                              {option.icon && (
+                                <span className="text-sm shrink-0">{option.icon}</span>
+                              )}
+                              <p className="text-xs sm:text-sm font-black text-slate-900 leading-tight line-clamp-1">
+                                {option.textEn}
+                              </p>
+                            </div>
+                            <p className="text-[10px] sm:text-xs text-slate-600 font-medium leading-tight line-clamp-1 mt-0.5">
+                              {option.textVi}
+                            </p>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
+              ) : (
+                /* Pedagogical Modality Rule (Rule 13): Text-Based Options for Scenarios/Dialogues */
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-xs font-black text-slate-700 uppercase tracking-wider">
+                    <span>Chọn 1 trong 4 phương án (A, B, C, D):</span>
+                    <span className="text-[10px] text-sky-700 font-bold lowercase">Thứ tự xáo trộn ngẫu nhiên</span>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 gap-2.5">
+                    {currentOptions.map((option, optIdx) => {
+                      const letter = OPTION_LETTERS[optIdx] || `${optIdx + 1}`;
+                      const isSelected = selectedOptionId === option.id;
+                      let optionStyle = 'bg-white hover:bg-sky-50 border-2 border-slate-200 text-slate-800 shadow-2xs hover:border-sky-400';
+
+                      if (isSubmitted) {
+                        if (option.isCorrect) {
+                          optionStyle = 'bg-emerald-50 border-emerald-400 text-emerald-950 ring-2 ring-emerald-300 font-black';
+                        } else if (isSelected && !option.isCorrect) {
+                          optionStyle = 'bg-rose-50 border-rose-400 text-rose-950 ring-2 ring-rose-300 font-black';
+                        } else {
+                          optionStyle = 'bg-slate-50 border-slate-200 text-slate-400 opacity-60';
+                        }
+                      }
+
+                      return (
+                        <button
+                          key={option.id}
+                          onClick={() => handleSelectOption(option.id, option.isCorrect)}
+                          disabled={isSubmitted}
+                          className={`w-full p-3 sm:p-3.5 rounded-2xl text-left transition-all duration-200 flex items-center justify-between gap-3 cursor-pointer ${optionStyle}`}
+                        >
+                          <div className="flex items-center gap-3">
+                            {/* Option Letter Badge (A, B, C, D) */}
+                            <span className={`w-8 h-8 rounded-xl font-black text-xs sm:text-sm flex items-center justify-center shrink-0 border shadow-xs transition-colors ${
+                              isSubmitted && option.isCorrect
+                                ? 'bg-emerald-500 text-white border-emerald-600'
+                                : isSubmitted && isSelected && !option.isCorrect
+                                  ? 'bg-rose-500 text-white border-rose-600'
+                                  : isSelected
+                                    ? 'bg-sky-500 text-white border-sky-600'
+                                    : 'bg-sky-100 text-sky-800 border-sky-300'
+                            }`}>
+                              {letter}
+                            </span>
+
+                            {option.icon && (
+                              <span className="text-xl sm:text-2xl shrink-0">{option.icon}</span>
+                            )}
+                            <div>
+                              <p className="text-xs sm:text-sm font-bold leading-snug">{option.textEn}</p>
+                              <p className="text-[11px] sm:text-xs text-slate-600 font-medium leading-snug">{option.textVi}</p>
+                            </div>
+                          </div>
+
+                          {isSubmitted && option.isCorrect && (
+                            <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+                          )}
+                          {isSubmitted && isSelected && !option.isCorrect && (
+                            <XCircle className="w-5 h-5 text-rose-600 shrink-0" />
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
 
               {/* Pedagogical Explanation Box */}
               {isSubmitted && (
@@ -808,9 +1146,9 @@ export const IslandActivityModal: React.FC<IslandActivityModalProps> = ({
           )}
 
           {/* ========================================================== */}
-          {/* STATE B: VICTORY & TREASURE CHEST (GENUINE COLLECTIBLES)  */}
+          {/* PHASE 3: VICTORY & TREASURE CHEST (KẾT QUẢ HOÀN THÀNH)    */}
           {/* ========================================================== */}
-          {isCompleted && (
+          {viewMode === 'completed' && (
             <div className="text-center py-3 space-y-5 animate-scale-up">
               
               {/* Grand Island Visual */}
@@ -832,7 +1170,7 @@ export const IslandActivityModal: React.FC<IslandActivityModalProps> = ({
                   Chúc Mừng Nhà Thám Hiểm Nhí!
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-600 max-w-md mx-auto">
-                  Bé đã vượt qua các thử thách tại <strong className="text-sky-700">{island.nameVi} ({island.nameEn})</strong>!
+                  Bé đã vượt qua {steps.length} thử thách tại <strong className="text-sky-700">{island.nameVi} ({island.nameEn})</strong>!
                 </p>
               </div>
 
@@ -842,7 +1180,7 @@ export const IslandActivityModal: React.FC<IslandActivityModalProps> = ({
                   <div className="text-5xl animate-bounce">🎁</div>
                   <div>
                     <h4 className="text-base sm:text-lg font-black text-amber-900 font-heading">
-                      RƯƠNG BÁU KHO BÁU ĐANG CHỜ MỞ!
+                      RƯƠNG KHO BÁU ĐANG CHỜ MỞ!
                     </h4>
                     <p className="text-xs text-slate-600 max-w-md mx-auto mt-1">
                       Nhấn vào nút bên dưới để mở rương, sưu tập <strong>{rewardMeta.badgeVi}</strong> và ghi danh thành tích!
@@ -891,24 +1229,34 @@ export const IslandActivityModal: React.FC<IslandActivityModalProps> = ({
                     </p>
                   </div>
 
-                  {/* Star Status & Anti-Duplicate Warning */}
+                  {/* Star Status & Anti-Duplicate Display */}
                   <div className="p-2.5 rounded-xl bg-sky-50 border border-sky-200 flex items-center justify-between text-xs font-bold text-sky-900">
                     <span className="flex items-center gap-1.5">
                       <Star className="w-4 h-4 fill-amber-400 text-amber-500" />
                       <span>+{currentGradeData.starsReward} Ngôi Sao Học Tập</span>
                     </span>
-                    <span className="text-[10px] text-slate-500">
-                      {isAlreadyClaimed ? '✓ Đã lưu vào Nhật ký' : '✓ Ghi nhận thành công'}
+                    <span className="text-[10px] text-slate-500 font-medium">
+                      {isAlreadyClaimed ? '✓ Đã lưu vào Sổ Thành tích' : '✓ Ghi nhận thành công'}
                     </span>
                   </div>
 
-                  <button
-                    onClick={handleFinishQuest}
-                    className="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-black text-sm shadow-md flex items-center justify-center gap-2 cursor-pointer transition-transform active:scale-95"
-                  >
-                    <ThumbsUp className="w-4 h-4" />
-                    <span>Tiếp Tục Khám Phá Các Đảo Khác</span>
-                  </button>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                    <button
+                      onClick={handlePlayAgain}
+                      className="py-3 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer border border-slate-300"
+                    >
+                      <RotateCcw className="w-3.5 h-3.5" />
+                      <span>Luyện tập lại</span>
+                    </button>
+
+                    <button
+                      onClick={handleFinishQuest}
+                      className="py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-black text-xs shadow-md flex items-center justify-center gap-1.5 cursor-pointer transition-transform active:scale-95"
+                    >
+                      <ThumbsUp className="w-3.5 h-3.5" />
+                      <span>Tiếp tục khám phá đảo khác</span>
+                    </button>
+                  </div>
                 </div>
               )}
 

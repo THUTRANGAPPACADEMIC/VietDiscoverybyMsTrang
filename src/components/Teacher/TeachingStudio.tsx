@@ -13,7 +13,8 @@ import {
   Database,
   CheckCircle2,
   AlertTriangle,
-  Scissors
+  Scissors,
+  Tv
 } from 'lucide-react';
 import { 
   ClassRoom, 
@@ -32,13 +33,15 @@ import { TeacherContentStudio } from './TeacherContentStudio';
 import { TeacherVideoDashboard } from './TeacherVideoDashboard';
 import { ContentApprovalCenter } from './ContentApprovalCenter';
 import { SmartYouTubeClipSelector } from './SmartYouTubeClipSelector';
+import { TeacherCentralizedVideoManager } from './TeacherCentralizedVideoManager';
+import { TeacherVocabularyManager } from './TeacherVocabularyManager';
 import { 
   fetchTeacherRealRosterAndClasses, 
   purgeLegacyMockRoster, 
   TeacherDataLoadResult 
 } from '../../lib/teacherDataService';
 
-export type TeacherStudioTab = 'approval' | 'curriculum' | 'materials' | 'classes' | 'progress' | 'assessment' | 'ai' | 'videos' | 'clip_selector';
+export type TeacherStudioTab = 'approval' | 'curriculum' | 'materials' | 'classes' | 'progress' | 'assessment' | 'ai' | 'videos' | 'clip_selector' | 'vocab_images';
 
 interface TeachingStudioProps {
   activeTab: TeacherStudioTab;
@@ -76,6 +79,7 @@ export const TeachingStudio: React.FC<TeachingStudioProps> = ({
   // Live authentic data state from Supabase
   const [liveData, setLiveData] = useState<TeacherDataLoadResult | null>(null);
   const [isLoadingLive, setIsLoadingLive] = useState(false);
+  const [videoSectionView, setVideoSectionView] = useState<'curriculum_table' | 'academy_library'>('curriculum_table');
 
   // Load authentic roster & class summaries directly from Supabase via Secure RPC
   const refreshLiveTeacherData = async () => {
@@ -99,8 +103,21 @@ export const TeachingStudio: React.FC<TeachingStudioProps> = ({
   // Authentic Supabase connection state
   const isConnected = Boolean(liveData && liveData.success && liveData.students.length > 0);
 
-  // Compute effective classes & students (STRICTLY authentic Supabase records, NEVER fallback to mock data)
-  const effectiveStudents = isConnected ? liveData!.students : [];
+  // Compute effective classes & students (STRICTLY authentic Supabase records, merged with teacher-uploaded rosters)
+  const effectiveStudents = (() => {
+    const serverList = isConnected ? (liveData?.students || []) : [];
+    if (!propStudents || propStudents.length === 0) return serverList;
+    const merged = [...serverList];
+    propStudents.forEach(stu => {
+      const idx = merged.findIndex(s => s.id === stu.id || s.studentCode === stu.studentCode);
+      if (idx >= 0) {
+        merged[idx] = { ...merged[idx], ...stu };
+      } else {
+        merged.push(stu);
+      }
+    });
+    return merged;
+  })();
   const effectiveClasses = (liveData && liveData.success && liveData.classes.length > 0)
     ? liveData.classes
     : propClasses.map(c => ({ ...c, studentCount: 0 }));
@@ -364,6 +381,88 @@ export const TeachingStudio: React.FC<TeachingStudioProps> = ({
         </div>
       )}
 
+      {/* QUICK ACCESS BANNER: Centralized Teacher Video Manager */}
+      {onSelectTab && activeTab !== 'videos' && (
+        <div className="bg-gradient-to-r from-purple-700 via-indigo-700 to-rose-600 text-white p-4 rounded-3xl shadow-sm border border-purple-300/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <span className="text-2xl p-2 rounded-2xl bg-white/20">🎬</span>
+            <div>
+              <div className="text-xs font-black uppercase tracking-wider text-purple-200 flex items-center gap-1.5">
+                <span>Trung Tâm Video Giáo Viên</span>
+                <span className="px-2 py-0.2 bg-emerald-400 text-emerald-950 rounded-full text-[10px] font-extrabold">TEACHER CONTROLLED</span>
+              </div>
+              <div className="text-sm font-black text-white">
+                Bảng Quản Lý Video YouTube 25 Bài Học (Grade 1–5)
+              </div>
+              <div className="text-[11px] text-purple-100">
+                Toàn quyền nhúng link YouTube, kiểm tra Start Time &amp; End Time (tối đa 60s), phê duyệt Approved • Đã loại bỏ hoàn toàn Bo Burnham
+              </div>
+            </div>
+          </div>
+          <button
+            onClick={() => onSelectTab('videos')}
+            className="px-4 py-2 rounded-2xl bg-white text-purple-950 hover:bg-purple-50 text-xs font-black shadow-md cursor-pointer transition-all shrink-0 hover:scale-102"
+          >
+            Mở Bảng Quản Lý Video →
+          </button>
+        </div>
+      )}
+
+      {/* QUICK ACCESS BANNER: Teacher Vocabulary Image Studio */}
+      {onSelectTab && activeTab !== 'vocab_images' && (
+        <div className="bg-gradient-to-r from-teal-700 via-indigo-700 to-purple-700 text-white p-4 rounded-3xl shadow-sm border border-teal-300/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <span className="text-2xl p-2 rounded-2xl bg-white/20">📸</span>
+            <div>
+              <div className="text-xs font-black uppercase tracking-wider text-teal-200 flex items-center gap-1.5">
+                <span>Quản Lý Hình Ảnh Sư Phạm</span>
+                <span className="px-2 py-0.2 bg-emerald-400 text-emerald-950 rounded-full text-[10px] font-extrabold">VOCABULARY STUDIO</span>
+              </div>
+              <div className="text-sm font-black text-white">
+                Studio Quản Lý Ảnh Từ Vựng &amp; Căn Chỉnh Khung Hình (Grade 1–5)
+              </div>
+              <div className="text-[11px] text-teal-100">
+                Rà soát 100 từ vựng cốt lõi • Tải ảnh thật chuẩn WebP • Căn chỉnh khung hình 4:3 / 16:9 • Phân biệt Real Photo vs Illustration
+              </div>
+            </div>
+          </div>
+          <button
+            onClick={() => onSelectTab('vocab_images')}
+            className="px-4 py-2 rounded-2xl bg-white text-teal-950 hover:bg-teal-50 text-xs font-black shadow-md cursor-pointer transition-all shrink-0 hover:scale-102"
+          >
+            Mở Studio Ảnh Từ Vựng →
+          </button>
+        </div>
+      )}
+
+      {/* QUICK ACCESS BANNER: AI Voice Upgrade Preview Room */}
+      <div className="bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-800 text-white p-4 rounded-3xl shadow-sm border border-cyan-400/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <span className="text-2xl p-2 rounded-2xl bg-white/20">🎙️</span>
+          <div>
+            <div className="text-xs font-black uppercase tracking-wider text-cyan-200 flex items-center gap-1.5">
+              <span>Nâng Cấp Giọng Đọc Sư Phạm</span>
+              <span className="px-2 py-0.2 bg-cyan-400 text-cyan-950 rounded-full text-[10px] font-extrabold">PHASE 1 PREVIEW</span>
+            </div>
+            <div className="text-sm font-black text-white">
+              Phòng Nghe Thử &amp; Đánh Giá Giọng Tiếng Anh Mỹ Tự Nhiên (Natural American Voice)
+            </div>
+            <div className="text-[11px] text-blue-100">
+              Kiểm định 6 hoạt động học tập (Vocabulary, Reading, Listening, Speaking, Storytelling, Quiz) • So sánh trực tiếp giọng AI Jenny/Ava/Guy với giọng robot cũ
+            </div>
+          </div>
+        </div>
+        <button
+          onClick={() => {
+            window.history.pushState({}, '', '/preview-voice');
+            window.dispatchEvent(new PopStateEvent('popstate'));
+          }}
+          className="px-4 py-2 rounded-2xl bg-white text-indigo-950 hover:bg-cyan-50 text-xs font-black shadow-md cursor-pointer transition-all shrink-0 hover:scale-102 flex items-center gap-1.5"
+        >
+          <span>Mở Phòng Nghe Thử →</span>
+        </button>
+      </div>
+
       {/* Grade-differentiated Student Experience Preview Switcher */}
       {onPreviewGradeBand && (
         <div className="bg-white p-4 rounded-3xl border border-amber-200 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
@@ -476,14 +575,61 @@ export const TeachingStudio: React.FC<TeachingStudioProps> = ({
         />
       )}
 
-      {/* Tab 6: Video Learning Academy Management */}
+      {/* Tab 6: Centralized Teacher Video Management & Video Academy */}
       {activeTab === 'videos' && (
-        <TeacherVideoDashboard />
+        <div className="space-y-6">
+          {/* Sub-navigation Switcher between Centralized Table and Academy Library */}
+          <div className="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between gap-3 flex-wrap">
+            <div className="flex items-center gap-2">
+              <span className="p-1.5 rounded-xl bg-purple-100 text-purple-700 font-bold">
+                <Tv className="w-4 h-4" />
+              </span>
+              <span className="text-xs font-black text-slate-800">
+                Chế độ quản lý video:
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setVideoSectionView('curriculum_table')}
+                className={`px-4 py-2 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 ${
+                  videoSectionView === 'curriculum_table'
+                    ? 'bg-purple-600 text-white shadow-md'
+                    : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                }`}
+              >
+                <span>🎬 Bảng Quản Lý 25 Bài Học (Tập Trung)</span>
+              </button>
+
+              <button
+                onClick={() => setVideoSectionView('academy_library')}
+                className={`px-4 py-2 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 ${
+                  videoSectionView === 'academy_library'
+                    ? 'bg-purple-600 text-white shadow-md'
+                    : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                }`}
+              >
+                <span>📚 Thư Viện Video Học Viện (Academy)</span>
+              </button>
+            </div>
+          </div>
+
+          {videoSectionView === 'curriculum_table' ? (
+            <TeacherCentralizedVideoManager />
+          ) : (
+            <TeacherVideoDashboard />
+          )}
+        </div>
       )}
 
       {/* Tab 7: Smart YouTube Video Clip Selector */}
       {activeTab === 'clip_selector' && (
         <SmartYouTubeClipSelector />
+      )}
+
+      {/* Tab 8: Teacher Vocabulary Image Studio */}
+      {activeTab === 'vocab_images' && (
+        <TeacherVocabularyManager />
       )}
 
     </div>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Destination, DestinationProgress, GradeBand } from '../../types';
 import { soundEffects } from '../../lib/soundEffects';
+import { playEnglishSpeech } from '../../lib/speech';
 import { getVocabularyVisual } from '../../data/vocabularyVisualsRegistry';
 import { Volume2, Sparkles, BookOpen, ChevronRight, CheckCircle2, Eye, Compass, Map, X } from 'lucide-react';
 
@@ -57,22 +58,14 @@ export const UnitAdventureHub: React.FC<UnitAdventureHubProps> = ({
   const [speakingWord, setSpeakingWord] = useState<string | null>(null);
   const [viewingVocabUnit, setViewingVocabUnit] = useState<UnitData | null>(null);
 
-  // Play word audio via SpeechSynthesis
+  // Play word audio via Jenny Neural / Audio Engine
   const speakWord = (word: string) => {
     soundEffects.playClick();
     setSpeakingWord(word);
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(word);
-      utterance.lang = 'en-US';
-      utterance.rate = 0.85;
-      utterance.pitch = 1.1;
-      utterance.onend = () => setSpeakingWord(null);
-      utterance.onerror = () => setSpeakingWord(null);
-      window.speechSynthesis.speak(utterance);
-    } else {
-      setTimeout(() => setSpeakingWord(null), 1000);
-    }
+    playEnglishSpeech(word, {
+      onEnd: () => setSpeakingWord(null),
+      onError: () => setSpeakingWord(null)
+    });
   };
 
   // Find destinations matching units

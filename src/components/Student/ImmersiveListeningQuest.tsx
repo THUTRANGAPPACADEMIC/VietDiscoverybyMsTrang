@@ -108,7 +108,7 @@ export const ImmersiveListeningQuest: React.FC<ImmersiveListeningQuestProps> = (
     playEnglishSpeech(audioScriptEn, {
       slow: useSlow,
       pitch: 1.05, // Child-friendly warm pitch
-      lang: 'en-GB', // Default British English standard
+      lang: 'en-US', // General American Jenny Neural standard
       onStart: () => setIsPlaying(true),
       onEnd: () => setIsPlaying(false),
       onError: () => setIsPlaying(false)

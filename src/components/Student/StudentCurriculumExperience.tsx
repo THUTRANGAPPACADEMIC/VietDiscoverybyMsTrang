@@ -22,7 +22,8 @@ import {
   RefreshCw,
   Award,
   Layers,
-  BookOpen
+  BookOpen,
+  Clock
 } from 'lucide-react';
 import { 
   CurriculumLesson, 
@@ -40,6 +41,10 @@ import { soundEffects } from '../../lib/soundEffects';
 import { RealisticVisualVocabularyCard } from './RealisticVisualVocabularyCard';
 import { getVocabularyVisual } from '../../data/vocabularyVisualsRegistry';
 import { ImmersiveListeningQuest } from './ImmersiveListeningQuest';
+import { SmartYouTubeClipPlayer } from '../Common/SmartYouTubeClipPlayer';
+import { VideoComingSoonCard } from '../Common/VideoComingSoonCard';
+import { getLessonVideoForStudent, subscribeToVideoUpdates } from '../../lib/teacherVideoManager';
+import { formatSecondsToTime } from '../../lib/youtubeClipHelper';
 
 interface StudentCurriculumExperienceProps {
   user: UserProfile | null;
@@ -87,6 +92,14 @@ export const StudentCurriculumExperience: React.FC<StudentCurriculumExperiencePr
     setSelectedGrade(target);
     setActiveLesson(null); // Clear stale open lesson
   }, [activeGradeBand]);
+
+  // Video registry subscription for real-time reactivity when teacher saves/updates videos
+  const [, setVideoUpdateTrigger] = useState(0);
+  useEffect(() => {
+    return subscribeToVideoUpdates(() => {
+      setVideoUpdateTrigger(prev => prev + 1);
+    });
+  }, []);
 
   // Lesson Player State
   const [activeLesson, setActiveLesson] = useState<CurriculumLesson | null>(null);
@@ -541,16 +554,30 @@ export const StudentCurriculumExperience: React.FC<StudentCurriculumExperiencePr
                         </div>
                       </div>
 
-                      {/* Video badge if attached */}
-                      {lesson.videoLesson && (
-                        <div className="text-[11px] font-bold text-pink-700 bg-pink-50/80 px-2.5 py-1 rounded-xl border border-pink-100 flex items-center justify-between">
-                          <span className="flex items-center gap-1">
-                            <Tv className="w-3.5 h-3.5 text-pink-600" />
-                            <span>{lesson.videoLesson.isTeacherCreated ? '⭐ Bài giảng Cô Trang' : '🎬 Video bài giảng'}</span>
-                          </span>
-                          <span className="text-[10px] text-pink-900 font-mono">{lesson.videoLesson.durationMinutes} mins</span>
-                        </div>
-                      )}
+                      {/* Video badge: Reflect authentic teacher-approved status */}
+                      {(() => {
+                        const approved = getLessonVideoForStudent(lesson.id, 'watch');
+                        if (approved && approved.videoId) {
+                          return (
+                            <div className="text-[11px] font-bold text-emerald-800 bg-emerald-50/90 px-2.5 py-1 rounded-xl border border-emerald-200 flex items-center justify-between">
+                              <span className="flex items-center gap-1">
+                                <Tv className="w-3.5 h-3.5 text-emerald-600" />
+                                <span>⭐ Video bài giảng Cô Trang</span>
+                              </span>
+                              <span className="text-[10px] text-emerald-900 font-mono font-bold">{approved.durationSeconds}s</span>
+                            </div>
+                          );
+                        }
+                        return (
+                          <div className="text-[10.5px] font-bold text-slate-500 bg-slate-50 px-2.5 py-1 rounded-xl border border-slate-200 flex items-center justify-between">
+                            <span className="flex items-center gap-1">
+                              <Clock className="w-3 h-3 text-amber-500" />
+                              <span>Video đang cập nhật</span>
+                            </span>
+                            <span className="text-[9.5px] text-amber-700 font-extrabold uppercase">Coming Soon</span>
+                          </div>
+                        );
+                      })()}
                     </div>
                   </div>
 
@@ -634,6 +661,7 @@ export const StudentCurriculumExperience: React.FC<StudentCurriculumExperiencePr
                 ].map((s) => (
                   <button
                     key={s.key}
+                    data-stage={s.key}
                     onClick={() => {
                       soundEffects.playClick();
                       setCurrentStage(s.key as LessonPlayerStage);
@@ -703,6 +731,24 @@ export const StudentCurriculumExperience: React.FC<StudentCurriculumExperiencePr
                     </div>
                   </div>
 
+                  {/* Speaking Challenge Target Sentence */}
+                  <div className="bg-emerald-50 p-4 rounded-3xl border border-emerald-200 space-y-1 text-xs">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-black uppercase text-emerald-800">🎙️ Speaking Quest Target Sentence</span>
+                      <button
+                        onClick={() => handlePlayAudio(activeLesson.speaking.targetSentenceEn, 0.9)}
+                        className="text-[10px] font-bold text-emerald-700 hover:text-emerald-900 flex items-center gap-1 cursor-pointer"
+                      >
+                        <Volume2 className="w-3.5 h-3.5" />
+                        <span>Listen</span>
+                      </button>
+                    </div>
+                    <p className="font-black text-emerald-950 text-sm">"{activeLesson.speaking.targetSentenceEn}"</p>
+                    {showVietnameseTranslation && (
+                      <p className="text-xs text-emerald-800 font-medium italic mt-0.5">{activeLesson.speaking.targetSentenceVi}</p>
+                    )}
+                  </div>
+
                   <button
                     onClick={() => {
                       soundEffects.playClick();
@@ -728,87 +774,40 @@ export const StudentCurriculumExperience: React.FC<StudentCurriculumExperiencePr
                     </h4>
                   </div>
 
-                  {activeLesson.videoLesson ? (
-                    <div className="bg-white rounded-3xl p-5 border-2 border-slate-200 shadow-md space-y-4">
-                      {/* Video Title Header */}
-                      <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs font-black text-slate-800">
-                              {activeLesson.videoLesson.titleEn}
-                            </span>
-                            {activeLesson.videoLesson.isTeacherCreated && (
-                              <span className="px-2 py-0.5 rounded-full bg-amber-400 text-amber-950 text-[10px] font-black">
-                                ⭐ Bài giảng Cô Trang
-                              </span>
-                            )}
-                          </div>
-                          <div className="text-[11px] text-slate-500 mt-0.5">
-                            {activeLesson.videoLesson.titleVi}
+                  {(() => {
+                    const approvedVideo = getLessonVideoForStudent(activeLesson.id, 'watch');
+                    if (approvedVideo && approvedVideo.videoId) {
+                      return (
+                        <div className="bg-white rounded-3xl p-5 border-2 border-slate-200 shadow-md space-y-4">
+                          <SmartYouTubeClipPlayer
+                            videoId={approvedVideo.videoId}
+                            title={approvedVideo.videoTitle || activeLesson.titleEn}
+                            subtitle={`Xem đoạn video bài giảng chuẩn mực từ ${formatSecondsToTime(approvedVideo.startSeconds)} đến ${formatSecondsToTime(approvedVideo.endSeconds)}`}
+                            startSeconds={approvedVideo.startSeconds}
+                            endSeconds={approvedVideo.endSeconds}
+                            thumbnailUrl={activeLesson.coverImage}
+                            showDetails={true}
+                          />
+                          <div className="text-[11px] text-slate-500 italic text-center">
+                            🔒 Chế độ phát video an toàn cho học sinh (Tối đa 60 giây • Không quảng cáo • Tự động dừng)
                           </div>
                         </div>
-                        <span className="text-xs text-slate-500 font-mono font-bold">
-                          ⏱️ {activeLesson.videoLesson.durationMinutes} mins
-                        </span>
-                      </div>
-
-                      {/* Video Player or Facade (Never Autoplay) */}
-                      <div className="relative aspect-video rounded-2xl overflow-hidden bg-slate-950 shadow-inner">
-                        {isVideoMounted ? (
-                          <iframe
-                            src={activeLesson.videoLesson.embedUrl}
-                            title={activeLesson.videoLesson.titleEn}
-                            allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen
-                            className="w-full h-full border-0"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center text-white relative">
-                            <img
-                              src={activeLesson.coverImage || '/destinations/halong_bay.jpg'}
-                              alt="Video Preview"
-                              className="absolute inset-0 w-full h-full object-cover opacity-40"
-                              loading="lazy"
-                              onError={(e) => {
-                                const target = e.currentTarget;
-                                if (!target.src.includes('halong_bay.jpg')) {
-                                  target.src = '/destinations/halong_bay.jpg';
-                                }
-                              }}
-                            />
-                            <div className="relative z-10 space-y-3">
-                              <button
-                                onClick={() => {
-                                  soundEffects.playClick();
-                                  setIsVideoMounted(true);
-                                }}
-                                className="w-16 h-16 rounded-full bg-rose-600 hover:bg-rose-500 text-white flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all mx-auto cursor-pointer"
-                              >
-                                <Play className="w-8 h-8 fill-white ml-1" />
-                              </button>
-                              <div className="text-xs font-bold text-white/90">
-                                Click to load and watch educational video
-                              </div>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="text-[11px] text-slate-500 italic text-center">
-                        🔒 Child-safe video stream via youtube-nocookie.com (No autoplay & no ads)
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="bg-sky-50 rounded-3xl p-6 border-2 border-sky-200 text-center space-y-2">
-                      <div className="text-3xl">🎥</div>
-                      <h4 className="text-sm font-black text-sky-950">
-                        Ready to Learn Vocabulary!
-                      </h4>
-                      <p className="text-xs text-sky-800">
-                        Continue directly to the interactive vocabulary and phonics stage!
-                      </p>
-                    </div>
-                  )}
+                      );
+                    }
+                    return (
+                      <VideoComingSoonCard
+                        lessonTitle={activeLesson.titleEn}
+                        lessonViTitle={activeLesson.titleVi}
+                        gradeLevel={activeLesson.gradeLevel}
+                        onContinue={() => {
+                          soundEffects.playClick();
+                          setCurrentStage('vocabulary');
+                        }}
+                        onTeacherConfigure={onOpenTeacherStudio}
+                        isTeacher={user?.role === 'teacher' || user?.role === 'admin' || user?.role === 'super_admin'}
+                      />
+                    );
+                  })()}
 
                   <div className="flex items-center justify-between gap-3 pt-2">
                     <button

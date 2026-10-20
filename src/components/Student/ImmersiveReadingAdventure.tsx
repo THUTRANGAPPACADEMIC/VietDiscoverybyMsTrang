@@ -78,7 +78,7 @@ export const ImmersiveReadingAdventure: React.FC<ImmersiveReadingAdventureProps>
 
     playEnglishSpeech(textEn, {
       pitch: 1.05,
-      lang: 'en-GB',
+      lang: 'en-US',
       onStart: () => setIsPlayingAudio(true),
       onEnd: () => setIsPlayingAudio(false),
       onError: () => setIsPlayingAudio(false)

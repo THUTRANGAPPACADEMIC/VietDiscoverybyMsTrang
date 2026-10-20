@@ -19,39 +19,29 @@ export const GRADE_5_LESSONS: CurriculumLesson[] = [
     "targetCefr": "A1-A2 Extension",
     "durationMinutes": 45,
     "learningObjectivesEn": [
-      "Master 4 expedition vocabulary terms: expedition, cavern, sinkhole, colossal.",
-      "Deliver an informational presentation: 'Son Doong is so colossal that it contains [features].'",
+      "Master 4 cave adventure vocabulary terms: adventure, cavern, sinkhole, giant.",
+      "Deliver an informational presentation: 'Son Doong is such a giant cave that it contains [features].'",
       "Explain how geological forces created the world's largest natural cave in Vietnam."
     ],
     "learningObjectivesVi": [
-      "Nắm vững 4 thuật ngữ thám hiểm: expedition, cavern, sinkhole, colossal.",
-      "Thực hành thuyết trình: 'Son Doong is so colossal that it has its own weather system.'",
+      "Nắm vững 4 từ vựng thám hiểm: adventure, cavern, sinkhole, giant.",
+      "Thực hành thuyết trình: 'Son Doong is such a giant cave that it has its own weather system.'",
       "Giải thích quá trình kiến tạo địa chất kỳ vĩ của hang động lớn nhất thế giới."
     ],
     "coverImage": "/destinations/phong_nha.jpg",
     "coverImageAttribution": "VietDiscovery Team",
-    "videoLesson": {
-      "videoId": "g5_sondoong_video",
-      "videoUrl": "https://www.youtube.com/watch?v=k1BneeJTDcU",
-      "embedUrl": "https://www.youtube-nocookie.com/embed/k1BneeJTDcU?rel=0&modestbranding=1&iv_load_policy=3&playsinline=1",
-      "titleEn": "The Wonders of Son Doong: World's Largest Cave",
-      "titleVi": "Kỳ quan Sơn Đoòng: Hang động lớn nhất thế giới",
-      "durationMinutes": 5,
-      "isTeacherCreated": true,
-      "status": "approved"
-    },
     "vocabulary": [
       {
         "id": "g5-adv1-v1",
-        "word": "expedition",
-        "ipa": "/ˌek.spəˈdɪʃ.ən/",
+        "word": "adventure",
+        "ipa": "/ədˈven.tʃɚ/",
         "partOfSpeech": "noun",
-        "meaningEn": "An organized journey with a specific scientific or exploratory purpose.",
-        "meaningVi": "Chuyến thám hiểm khoa học kỳ thú.",
-        "exampleSentenceEn": "The international expedition explored deep inside Son Doong Cave.",
-        "exampleSentenceVi": "Đoàn thám hiểm quốc tế đã tiến sâu vào khám phá hang Sơn Đoòng.",
+        "meaningEn": "An exciting and daring journey or experience.",
+        "meaningVi": "Chuyến phiêu lưu khám phá kỳ thú.",
+        "exampleSentenceEn": "Exploring Son Doong Cave is an exciting adventure.",
+        "exampleSentenceVi": "Khám phá hang Sơn Đoòng là một chuyến phiêu lưu kỳ thú.",
         "emoji": "🧗",
-        "audioPromptEn": "Expedition. A scientific cave expedition."
+        "audioPromptEn": "Adventure. An exciting cave adventure."
       },
       {
         "id": "g5-adv1-v2",
@@ -79,21 +69,21 @@ export const GRADE_5_LESSONS: CurriculumLesson[] = [
       },
       {
         "id": "g5-adv1-v4",
-        "word": "colossal",
-        "ipa": "/kəˈlɒs.əl/",
+        "word": "giant",
+        "ipa": "/ˈdʒaɪ.ənt/",
         "partOfSpeech": "adjective",
-        "meaningEn": "Extremely huge, gigantic, beyond normal imagination.",
-        "meaningVi": "Khổng lồ, đồ sộ phi thường.",
-        "exampleSentenceEn": "The stalagmites inside Son Doong reach colossal heights of seventy meters.",
-        "exampleSentenceVi": "Những măng đá trong Sơn Đoòng cao sừng sững tới bảy mươi mét.",
+        "meaningEn": "Extremely large, huge, and impressive.",
+        "meaningVi": "Khổng lồ, to lớn đồ sộ.",
+        "exampleSentenceEn": "Son Doong is a giant cave in Vietnam.",
+        "exampleSentenceVi": "Sơn Đoòng là hang động khổng lồ có cả khu rừng bên trong.",
         "emoji": "🏔️",
-        "audioPromptEn": "Colossal. Colossal natural wonder."
+        "audioPromptEn": "Giant. A giant natural cave."
       }
     ],
     "sentencePatterns": [
       {
         "id": "g5-adv1-sp",
-        "pattern": "Son Doong is so colossal that it [remarkable capability/feature].",
+        "pattern": "Son Doong is such a giant cave that it [remarkable capability/feature].",
         "patternMeaningVi": "Hang Sơn Đoòng đồ sộ đến mức nó [đặc điểm phi thường].",
         "dialogueEn": [
           {
@@ -102,7 +92,7 @@ export const GRADE_5_LESSONS: CurriculumLesson[] = [
           },
           {
             "speaker": "Explorer",
-            "text": "It is so colossal that it forms its own localized clouds and pristine underground rainforest!"
+            "text": "It is such a giant cave that it forms its own clouds and a pristine underground rainforest!"
           }
         ],
         "dialogueVi": [
@@ -136,7 +126,7 @@ export const GRADE_5_LESSONS: CurriculumLesson[] = [
       "readingImage": "/destinations/phong_nha.jpg"
     },
     "listening": {
-      "audioTitleEn": "Scientific Expedition Briefing",
+      "audioTitleEn": "Cave Adventure Briefing",
       "audioScriptEn": "Team, adjust your headlamps! We are descending eighty meters into the dark entrance of Son Doong! Listen to the roar of the subterranean river below! Ahead of us, the Great Wall of Vietnam rises ninety meters high inside the cavern! Welcome to Earth's greatest natural masterpiece!",
       "audioScriptVi": "Cả đội hãy kiểm tra đèn pin đội đầu! Chúng ta đang đu dây tụt xuống 80 mét vào cửa hang Sơn Đoòng! Hãy lắng nghe tiếng gầm vang của dòng sông ngầm bên dưới! Phía trước là Bức tường Việt Nam cao 90 mét sừng sững trong lòng hang! Chào mừng các em đến kiệt tác thiên nhiên vĩ đại nhất của Trái Đất!",
       "speakerRole": "Captain Trang",
@@ -156,21 +146,21 @@ export const GRADE_5_LESSONS: CurriculumLesson[] = [
       "promptVi": "Em hãy nói: 'Son Doong is the largest cave in the world!'",
       "targetSentenceEn": "Son Doong is the largest cave in the world!",
       "targetSentenceVi": "Sơn Đoòng là hang động tự nhiên lớn nhất trên thế giới!",
-      "phoneticFocus": "/kəˈlɒs/ in colossal and /ek.spəˈdɪʃ/ in expedition",
+      "phoneticFocus": "/dʒaɪ/ in giant and /ədˈven/ in adventure",
       "pronunciationTipsEn": "Place stress on the second syllable of co-LOS-sal.",
       "pronunciationTipsVi": "Nhấn trọng âm rõ ràng vào âm tiết thứ hai trong từ co-LOS-sal.",
       "shadowAudioText": "Son Doong is the largest cave in the world!"
     },
     "interactiveGame": {
       "gameType": "word_picture_match",
-      "gameTitleEn": "Son Doong Expedition Quest",
+      "gameTitleEn": "Son Doong Adventure Quest",
       "gameTitleVi": "Thám hiểm vương quốc Sơn Đoòng",
       "instructionsEn": "Match each scientific term to its geological discovery!",
       "instructionsVi": "Nối thuật ngữ khoa học với kỳ quan địa chất tương ứng nhé!",
       "items": [
         {
           "id": "m1",
-          "promptEn": "expedition",
+          "promptEn": "adventure",
           "promptVi": "đoàn thám hiểm khoa học",
           "targetMatch": "🧗",
           "emojiOrIcon": "🧗"
@@ -191,8 +181,8 @@ export const GRADE_5_LESSONS: CurriculumLesson[] = [
         },
         {
           "id": "m4",
-          "promptEn": "colossal",
-          "promptVi": "đồ sộ vĩ đại",
+          "promptEn": "giant",
+          "promptVi": "khổng lồ, to lớn",
           "targetMatch": "🏔️",
           "emojiOrIcon": "🏔️"
         }
@@ -243,7 +233,7 @@ export const GRADE_5_LESSONS: CurriculumLesson[] = [
         "questionEn": "Deliver an impressive opening line for an international presentation on Son Doong:",
         "questionVi": "Chọn câu mở đầu ấn tượng cho bài thuyết trình quốc tế về Sơn Đoòng:",
         "options": [
-          "'Welcome everyone! Today I am thrilled to introduce Son Doong, Vietnam’s colossal subterranean kingdom that rewrites our understanding of Earth’s natural wonders.'",
+          "'Welcome everyone! Today I am thrilled to introduce Son Doong, Vietnam’s giant subterranean kingdom that rewrites our understanding of Earth’s natural wonders.'",
           "'Hello, I have a cat.'",
           "'I do not like speaking English today.'",
           "'Goodbye, thank you.'"
@@ -260,7 +250,7 @@ export const GRADE_5_LESSONS: CurriculumLesson[] = [
       "criteria": [
         {
           "skill": "Scientific Exploration Terms",
-          "standardEn": "Mastery of expedition, cavern, sinkhole, colossal.",
+          "standardEn": "Mastery of adventure, cavern, sinkhole, giant.",
           "standardVi": "Nắm vững thuật ngữ thám hiểm địa chất."
         },
         {
@@ -297,51 +287,41 @@ export const GRADE_5_LESSONS: CurriculumLesson[] = [
     "targetCefr": "A1-A2 Extension",
     "durationMinutes": 45,
     "learningObjectivesEn": [
-      "Learn 4 cultural heritage terms: intangible, symphony, woodblock, folklore.",
-      "Use the sentence pattern: 'Nha Nhac was recognized by UNESCO as an Intangible Cultural Heritage because [reason].'",
+      "Learn 4 cultural heritage terms: tradition, instrument, woodblock, folk art.",
+      "Use the sentence pattern: 'Nha Nhac is a treasured Vietnamese musical tradition because [reason].'",
       "Analyze how traditional folk art and music preserve Vietnamese national identity."
     ],
     "learningObjectivesVi": [
-      "Học 4 thuật ngữ di sản: intangible, symphony, woodblock, folklore.",
-      "Nói câu phân tích: 'Nha Nhac was recognized by UNESCO as a Masterpiece of Intangible Heritage.'",
+      "Học 4 từ di sản văn hóa: tradition, instrument, woodblock, folk art.",
+      "Nói câu phân tích: 'Nha Nhac is a proud traditional court music of Vietnam.'",
       "Phân tích nét đặc sắc của tranh khắc gỗ Đông Hồ và nhã nhạc cung đình Huế."
     ],
     "coverImage": "/destinations/hue.jpg",
     "coverImageAttribution": "VietDiscovery Team",
-    "videoLesson": {
-      "videoId": "g5_nhanhac_video",
-      "videoUrl": "https://www.youtube.com/watch?v=k1BneeJTDcU",
-      "embedUrl": "https://www.youtube-nocookie.com/embed/k1BneeJTDcU?rel=0&modestbranding=1&iv_load_policy=3&playsinline=1",
-      "titleEn": "Preserving Vietnamese Cultural Heritage & Royal Music",
-      "titleVi": "Bảo tồn di sản văn hóa Việt Nam & Nhã nhạc cung đình",
-      "durationMinutes": 5,
-      "isTeacherCreated": true,
-      "status": "approved"
-    },
     "vocabulary": [
       {
         "id": "g5-adv2-v1",
-        "word": "intangible",
-        "ipa": "/ɪnˈtæn.dʒə.bəl/",
-        "partOfSpeech": "adjective",
-        "meaningEn": "Living heritage consisting of music, dances, and customs rather than stone buildings.",
-        "meaningVi": "Phi vật thể, di sản văn hóa tinh thần sống mãi.",
-        "exampleSentenceEn": "UNESCO honors Nha Nhac as intangible cultural heritage of humanity.",
-        "exampleSentenceVi": "UNESCO vinh danh Nhã nhạc là di sản văn hóa phi vật thể của nhân loại.",
+        "word": "tradition",
+        "ipa": "/trəˈdɪʃ.ən/",
+        "partOfSpeech": "noun",
+        "meaningEn": "A custom or belief passed down through generations.",
+        "meaningVi": "Truyền thống văn hóa tốt đẹp của dân tộc.",
+        "exampleSentenceEn": "Nha Nhac royal music is an ancient Vietnamese tradition.",
+        "exampleSentenceVi": "Nhã nhạc cung đình là truyền thống văn hóa lâu đời của Việt Nam.",
         "emoji": "🎶",
-        "audioPromptEn": "Intangible. Intangible cultural heritage."
+        "audioPromptEn": "Tradition. A proud musical tradition."
       },
       {
         "id": "g5-adv2-v2",
-        "word": "symphony",
-        "ipa": "/ˈsɪm.fə.ni/",
+        "word": "instrument",
+        "ipa": "/ˈɪn.strə.mənt/",
         "partOfSpeech": "noun",
-        "meaningEn": "An elaborate musical composition performed by a traditional orchestra.",
-        "meaningVi": "Bản hòa tấu cung đình tinh tế và trang trọng.",
-        "exampleSentenceEn": "The royal symphony features drums, bronze bells, and two-string moon lutes.",
-        "exampleSentenceVi": "Dàn nhạc cung đình hòa tấu trống, chuông đồng và đàn nguyệt réo rắt.",
-        "emoji": "🎻",
-        "audioPromptEn": "Symphony. Traditional royal symphony."
+        "meaningEn": "An object or device used for producing musical sounds.",
+        "meaningVi": "Nhạc cụ cổ truyền dân tộc.",
+        "exampleSentenceEn": "Musicians play traditional instruments like drums and lutes.",
+        "exampleSentenceVi": "Các nghệ nhân hòa tấu các nhạc cụ truyền thống như trống và đàn nguyệt.",
+        "emoji": "🪕",
+        "audioPromptEn": "Instrument. Traditional musical instruments."
       },
       {
         "id": "g5-adv2-v3",
@@ -357,15 +337,15 @@ export const GRADE_5_LESSONS: CurriculumLesson[] = [
       },
       {
         "id": "g5-adv2-v4",
-        "word": "folklore",
-        "ipa": "/ˈfəʊk.lɔːr/",
+        "word": "folk art",
+        "ipa": "/foʊk ɑːrt/",
         "partOfSpeech": "noun",
-        "meaningEn": "The traditional beliefs, legends, and customs of a people.",
-        "meaningVi": "Văn hóa dân gian, truyện tích cổ truyền.",
-        "exampleSentenceEn": "Dong Ho paintings depict joyful folklore such as the Mouse Wedding.",
-        "exampleSentenceVi": "Tranh Đông Hồ khắc họa các tích dân gian vui tươi như Đám cưới Chuột.",
-        "emoji": "📜",
-        "audioPromptEn": "Folklore. Rich Vietnamese folklore."
+        "meaningEn": "Traditional art created by common people expressing cultural life.",
+        "meaningVi": "Nghệ thuật tranh dân gian truyền thống.",
+        "exampleSentenceEn": "Dong Ho folk art shows happy village life.",
+        "exampleSentenceVi": "Tranh dân gian Đông Hồ khắc họa những cảnh sinh hoạt làng quê vui tươi.",
+        "emoji": "🖼️",
+        "audioPromptEn": "Folk art. Dong Ho folk art."
       }
     ],
     "sentencePatterns": [
@@ -380,7 +360,7 @@ export const GRADE_5_LESSONS: CurriculumLesson[] = [
           },
           {
             "speaker": "Explorer",
-            "text": "Because it embodies centuries of refined courtly philosophy, harmony, and Vietnamese musical artistry!"
+            "text": "Because it embodies centuries of refined courtly philosophy, musical artistry, and Vietnamese tradition!"
           }
         ],
         "dialogueVi": [
@@ -430,14 +410,14 @@ export const GRADE_5_LESSONS: CurriculumLesson[] = [
       "audioSlowAvailable": true
     },
     "speaking": {
-      "promptEn": "Say: 'Nha Nhac Hue is an intangible cultural masterpiece!'",
-      "promptVi": "Em hãy nói: 'Nha Nhac Hue is an intangible cultural masterpiece!'",
-      "targetSentenceEn": "Nha Nhac Hue is an intangible cultural masterpiece!",
+      "promptEn": "Say: 'Nha Nhac Hue is a treasured cultural tradition!'",
+      "promptVi": "Em hãy nói: 'Nha Nhac Hue is a treasured cultural tradition!'",
+      "targetSentenceEn": "Nha Nhac Hue is a treasured cultural tradition!",
       "targetSentenceVi": "Nhã nhạc cung đình Huế là kiệt tác di sản văn hóa phi vật thể của nhân loại!",
-      "phoneticFocus": "/ɪnˈtæn.dʒə.bəl/ in intangible and /ˈmɑː.stə.piːs/ in masterpiece",
+      "phoneticFocus": "/trəˈdɪʃ/ in tradition and /ˈɪn.strə/ in instrument",
       "pronunciationTipsEn": "Emphasize the second syllable in in-TAN-gi-ble.",
       "pronunciationTipsVi": "Nhấn trọng âm vào âm tiết thứ hai trong in-TAN-gi-ble.",
-      "shadowAudioText": "Nha Nhac Hue is an intangible cultural masterpiece!"
+      "shadowAudioText": "Nha Nhac Hue is a treasured cultural tradition!"
     },
     "interactiveGame": {
       "gameType": "word_picture_match",
@@ -448,15 +428,15 @@ export const GRADE_5_LESSONS: CurriculumLesson[] = [
       "items": [
         {
           "id": "m1",
-          "promptEn": "intangible",
-          "promptVi": "di sản phi vật thể",
+          "promptEn": "tradition",
+          "promptVi": "truyền thống văn hóa",
           "targetMatch": "🎶",
           "emojiOrIcon": "🎶"
         },
         {
           "id": "m2",
-          "promptEn": "symphony",
-          "promptVi": "hòa tấu cung đình",
+          "promptEn": "instrument",
+          "promptVi": "nhạc cụ cổ truyền",
           "targetMatch": "🎻",
           "emojiOrIcon": "🎻"
         },
@@ -469,8 +449,8 @@ export const GRADE_5_LESSONS: CurriculumLesson[] = [
         },
         {
           "id": "m4",
-          "promptEn": "folklore",
-          "promptVi": "văn hóa dân gian",
+          "promptEn": "folk art",
+          "promptVi": "nghệ thuật dân gian",
           "targetMatch": "📜",
           "emojiOrIcon": "📜"
         }
@@ -482,8 +462,8 @@ export const GRADE_5_LESSONS: CurriculumLesson[] = [
         "challengeLevel": 1,
         "levelNameEn": "Recognize",
         "levelNameVi": "Nhận biết",
-        "questionEn": "What does 'intangible cultural heritage' mean?",
-        "questionVi": "Thuật ngữ 'di sản văn hóa phi vật thể' có nghĩa là gì?",
+        "questionEn": "What does 'cultural tradition' mean in Vietnamese heritage?",
+        "questionVi": "'Truyền thống văn hóa' trong di sản Việt Nam có ý nghĩa là gì?",
         "options": [
           "Traditions, music, and performing arts passed on by living humans",
           "Stone bricks and physical castle walls only",
@@ -537,8 +517,8 @@ export const GRADE_5_LESSONS: CurriculumLesson[] = [
       "minimumPassScorePercent": 60,
       "criteria": [
         {
-          "skill": "Intangible Heritage Terms",
-          "standardEn": "Understands intangible, symphony, woodblock, folklore.",
+          "skill": "Cultural Heritage Terms",
+          "standardEn": "Understands tradition, instrument, woodblock, folk art.",
           "standardVi": "Nắm vững thuật ngữ di sản văn hóa phi vật thể."
         },
         {
@@ -575,39 +555,29 @@ export const GRADE_5_LESSONS: CurriculumLesson[] = [
     "targetCefr": "A1-A2 Extension",
     "durationMinutes": 45,
     "learningObjectivesEn": [
-      "Learn 4 culinary philosophy terms: harmony, balance, star anise, nutritional.",
+      "Learn 4 culinary terms: flavor, balance, star anise, healthy.",
       "Use the sentence pattern: 'Vietnamese cuisine balances Yin and Yang by pairing [ingredient] with [counterpart].'",
       "Explain how the five basic tastes (sweet, sour, salty, bitter, spicy) correlate with Vietnamese natural health."
     ],
     "learningObjectivesVi": [
-      "Học 4 từ triết lý ẩm thực: harmony, balance, star anise, nutritional.",
+      "Học 4 từ ẩm thực truyền thống: flavor, balance, star anise, healthy.",
       "Nói câu phân tích: 'Vietnamese cooking balances cooling Yin and warming Yang ingredients.'",
       "Giải thích sự kết hợp hài hòa ngũ vị (chua, cay, mặn, ngọt, đắng) tốt cho sức khỏe."
     ],
     "coverImage": "/destinations/danang.jpg",
     "coverImageAttribution": "VietDiscovery Team",
-    "videoLesson": {
-      "videoId": "g5_culinary_video",
-      "videoUrl": "https://www.youtube.com/watch?v=FjU_xYlVD4g",
-      "embedUrl": "https://www.youtube-nocookie.com/embed/FjU_xYlVD4g?rel=0&modestbranding=1&iv_load_policy=3&playsinline=1",
-      "titleEn": "Masterchef Secrets: The Five Taste Harmony of Pho",
-      "titleVi": "Bí mật Masterchef: Ngũ vị ngũ hành trong tô phở Việt",
-      "durationMinutes": 5,
-      "isTeacherCreated": false,
-      "status": "approved"
-    },
     "vocabulary": [
       {
         "id": "g5-adv3-v1",
-        "word": "harmony",
-        "ipa": "/ˈhɑː.mə.ni/",
+        "word": "flavor",
+        "ipa": "/ˈfleɪ.vɚ/",
         "partOfSpeech": "noun",
-        "meaningEn": "A pleasing combination of contrasting flavors and textures.",
-        "meaningVi": "Sự hài hòa tinh tế trong hương vị và kết cấu món ăn.",
-        "exampleSentenceEn": "A bowl of Pho achieves culinary harmony between herbs and rich broth.",
-        "exampleSentenceVi": "Tô phở đạt đến sự hòa quyện tuyệt hảo giữa rau thơm và nước dùng.",
-        "emoji": "☯️",
-        "audioPromptEn": "Harmony. Culinary harmony of flavors."
+        "meaningEn": "The distinctive taste of food or drink.",
+        "meaningVi": "Hương vị thơm ngon đậm đà của món ăn.",
+        "exampleSentenceEn": "Traditional spices give Vietnamese pho a rich flavor.",
+        "exampleSentenceVi": "Các loại gia vị truyền thống mang lại hương vị đậm đà cho phở Việt.",
+        "emoji": "🍜",
+        "audioPromptEn": "Flavor. Rich culinary flavor."
       },
       {
         "id": "g5-adv3-v2",
@@ -635,15 +605,15 @@ export const GRADE_5_LESSONS: CurriculumLesson[] = [
       },
       {
         "id": "g5-adv3-v4",
-        "word": "nutritional",
-        "ipa": "/njuːˈtrɪʃ.ən.əl/",
+        "word": "healthy",
+        "ipa": "/ˈhel.θi/",
         "partOfSpeech": "adjective",
-        "meaningEn": "Providing nourishing vitamins and minerals for optimal health.",
-        "meaningVi": "Giàu giá trị dinh dưỡng, bồi bổ sức khỏe.",
-        "exampleSentenceEn": "Vietnamese food is light, fresh, and exceptionally nutritional.",
-        "exampleSentenceVi": "Món ăn Việt Nam nhẹ nhàng, tươi mát và cực kỳ giàu dinh dưỡng.",
+        "meaningEn": "Good for your body, helping you stay well and strong.",
+        "meaningVi": "Lành mạnh, bổ dưỡng, tốt cho sức khỏe.",
+        "exampleSentenceEn": "Fresh herbs and greens make pho soup very healthy.",
+        "exampleSentenceVi": "Rau thơm tươi giúp món phở rất tốt cho sức khỏe.",
         "emoji": "🥗",
-        "audioPromptEn": "Nutritional. Fresh nutritional ingredients."
+        "audioPromptEn": "Healthy. Fresh healthy food."
       }
     ],
     "sentencePatterns": [
@@ -693,7 +663,7 @@ export const GRADE_5_LESSONS: CurriculumLesson[] = [
     },
     "listening": {
       "audioTitleEn": "Masterchef Secret Kitchen Briefing",
-      "audioScriptEn": "Welcome to the Masterchef kitchen! Take a deep breath! That sweet, licorice-like aroma is roasted star anise and cinnamon simmering with beef bones for twelve straight hours! Notice how we balance spicy chili with cooling lime juice! That is pure culinary harmony!",
+      "audioScriptEn": "Welcome to the Masterchef kitchen! Take a deep breath! That sweet, licorice-like aroma is roasted star anise and cinnamon simmering with beef bones for twelve straight hours! Notice how we balance spicy chili with cooling lime juice! That is pure culinary flavor!",
       "audioScriptVi": "Chào mừng các em vào gian bếp Masterchef! Hãy hít một hơi thật sâu! Hương thơm ngọt ngào như cam thảo kia chính là hoa hồi và quế nướng đang được ninh cùng xương bò suốt 12 tiếng liên tục! Hãy chú ý cách chúng ta cân bằng vị ớt cay nồng bằng nước cốt chanh thanh mát! Đó chính là sự hòa hợp đỉnh cao!",
       "speakerRole": "Captain Trang",
       "questionEn": "How long do master chefs gently simmer the authentic Pho broth?",
@@ -712,7 +682,7 @@ export const GRADE_5_LESSONS: CurriculumLesson[] = [
       "promptVi": "Em hãy nói: 'Vietnamese cuisine balances Yin and Yang perfectly!'",
       "targetSentenceEn": "Vietnamese cuisine balances Yin and Yang perfectly!",
       "targetSentenceVi": "Ẩm thực Việt Nam đạt đến sự cân bằng Âm Dương hoàn hảo!",
-      "phoneticFocus": "/ˈhɑː.mə.ni/ in harmony and /ˌæn.ɪs/ in anise",
+      "phoneticFocus": "/ˈfleɪ.vɚ/ in flavor and /ˌæn.ɪs/ in anise",
       "pronunciationTipsEn": "Enunciate har-mo-ny smoothly with a relaxed throat.",
       "pronunciationTipsVi": "Phát âm từ har-mo-ny mềm mại với trọng âm rơi vào âm tiết đầu tiên.",
       "shadowAudioText": "Vietnamese cuisine balances Yin and Yang perfectly!"
@@ -726,8 +696,8 @@ export const GRADE_5_LESSONS: CurriculumLesson[] = [
       "items": [
         {
           "id": "m1",
-          "promptEn": "harmony",
-          "promptVi": "hài hòa ngũ vị",
+          "promptEn": "flavor",
+          "promptVi": "hương vị thơm ngon",
           "targetMatch": "☯️",
           "emojiOrIcon": "☯️"
         },
@@ -747,8 +717,8 @@ export const GRADE_5_LESSONS: CurriculumLesson[] = [
         },
         {
           "id": "m4",
-          "promptEn": "nutritional",
-          "promptVi": "giàu dinh dưỡng",
+          "promptEn": "healthy",
+          "promptVi": "tốt cho sức khỏe",
           "targetMatch": "🥗",
           "emojiOrIcon": "🥗"
         }
@@ -816,12 +786,12 @@ export const GRADE_5_LESSONS: CurriculumLesson[] = [
       "criteria": [
         {
           "skill": "Culinary Philosophy Terms",
-          "standardEn": "Mastery of harmony, balance, star anise, nutritional.",
+          "standardEn": "Mastery of flavor, balance, star anise, healthy.",
           "standardVi": "Nắm vững thuật ngữ triết lý ẩm thực."
         },
         {
           "skill": "Health Communication",
-          "standardEn": "Explains nutritional virtues of Vietnamese cooking.",
+          "standardEn": "Explains healthy virtues of Vietnamese cooking.",
           "standardVi": "Giải thích được giá trị dinh dưỡng của món ăn Việt Nam."
         }
       ]
@@ -844,84 +814,74 @@ export const GRADE_5_LESSONS: CurriculumLesson[] = [
     "id": "lesson-g5-adv4-nature",
     "adventureId": "adventure_4_nature",
     "lessonNumber": 1,
-    "titleEn": "Eco Heroes: Saving the Cat Ba Langur & Sea Turtles",
-    "titleVi": "Anh hùng bảo vệ hệ sinh thái: Cứu hộ Voọc Cát Bà & Rùa biển",
-    "topicEn": "Critically Endangered Primates, Marine Sanctuaries, and Coastal Biodiversity",
-    "topicVi": "Linh trưởng cực kỳ nguy cấp, khu bảo tồn biển và đa dạng sinh học đại dương",
+    "titleEn": "Eco Heroes: Saving the Cat Ba Langur",
+    "titleVi": "Anh hùng bảo vệ hệ sinh thái: Cứu hộ Voọc Cát Bà",
+    "topicEn": "Critically Endangered Primates, National Parks, and Island Conservation",
+    "topicVi": "Linh trưởng cực kỳ nguy cấp, vườn quốc gia và bảo tồn đảo Cát Bà",
     "gradeLevel": "Grade 5",
     "gradeBand": "grade_5",
     "targetCefr": "A1-A2 Extension",
     "durationMinutes": 45,
     "learningObjectivesEn": [
-      "Acquire 4 biodiversity conservation terms: biodiversity, sanctuary, marine reserve, ecosystem.",
-      "Use the sentence pattern: 'Unless we take action to [verb], the [species] will [consequence].'",
-      "Formulate an action plan for youth ocean stewardship and biodiversity protection in Vietnam."
+      "Acquire 4 wildlife conservation terms: wildlife, animal rescue, national park, island.",
+      "Use the sentence pattern: 'Unless we protect the forest, rare langurs will face extinction.'",
+      "Formulate an action plan for youth wildlife stewardship in Cat Ba National Park."
     ],
     "learningObjectivesVi": [
-      "Học 4 thuật ngữ bảo tồn: biodiversity, sanctuary, marine reserve, ecosystem.",
-      "Nói câu điều kiện: 'Unless we protect their nesting beaches, sea turtles will disappear.'",
-      "Xây dựng kế hoạch hành động nhí bảo vệ đại dương và hệ sinh thái Việt Nam."
+      "Học 4 từ vựng bảo tồn thiên nhiên: wildlife, animal rescue, national park, island.",
+      "Nói câu điều kiện: 'Unless we protect the forest, rare langurs will face extinction.'",
+      "Xây dựng kế hoạch hành động nhí bảo vệ loài voọc tại Vườn quốc gia Cát Bà."
     ],
-    "coverImage": "/destinations/phong_nha.jpg",
-    "coverImageAttribution": "VietDiscovery Team",
-    "videoLesson": {
-      "videoId": "g5_ecoheroes_video",
-      "videoUrl": "https://www.youtube.com/watch?v=k1BneeJTDcU",
-      "embedUrl": "https://www.youtube-nocookie.com/embed/k1BneeJTDcU?rel=0&modestbranding=1&iv_load_policy=3&playsinline=1",
-      "titleEn": "Eco Heroes: Protecting Sea Turtles & Langurs",
-      "titleVi": "Anh hùng sinh thái: Cứu hộ rùa biển và voọc Cát Bà",
-      "durationMinutes": 5,
-      "isTeacherCreated": false,
-      "status": "approved"
-    },
+    "coverImage": "/assets/vocab/national_park.webp",
+    "coverImageAttribution": "Cat Ba National Park / VietDiscovery Archive",
     "vocabulary": [
       {
         "id": "g5-adv4-v1",
-        "word": "biodiversity",
-        "ipa": "/ˌbaɪ.əʊ.daɪˈvɜː.sə.ti/",
+        "word": "wildlife",
+        "ipa": "/ˈwaɪld.laɪf/",
         "partOfSpeech": "noun",
-        "meaningEn": "The variety of all plant and animal life in a specific natural habitat.",
-        "meaningVi": "Đa dạng sinh học, sự phong phú muôn loài.",
-        "exampleSentenceEn": "Vietnam is recognized as one of the world's most biodiverse nations.",
-        "exampleSentenceVi": "Việt Nam được vinh danh là một trong những quốc gia đa dạng sinh học hàng đầu thế giới.",
-        "emoji": "🌍",
-        "audioPromptEn": "Biodiversity. Rich global biodiversity."
+        "meaningEn": "Wild animals, birds, and plants living in their natural environment.",
+        "meaningVi": "Động thực vật hoang dã.",
+        "exampleSentenceEn": "Cat Ba Island is home to rare forest wildlife.",
+        "exampleSentenceVi": "Đảo Cát Bà là ngôi nhà của nhiều loài động vật hoang dã quý hiếm.",
+        "emoji": "🐒",
+        "audioPromptEn": "Wildlife. Rare forest wildlife."
       },
       {
         "id": "g5-adv4-v2",
-        "word": "sanctuary",
-        "ipa": "/ˈsæŋk.tʃʊə.ri/",
+        "word": "animal rescue",
+        "ipa": "/ˈæn.ə.məl ˈres.kjuː/",
         "partOfSpeech": "noun",
-        "meaningEn": "A safe protected reserve where animals are guarded from hunting.",
-        "meaningVi": "Khu bảo tồn an toàn cho muông thú.",
-        "exampleSentenceEn": "Cat Ba National Park serves as a peaceful sanctuary for the last langurs.",
-        "exampleSentenceVi": "Vườn quốc gia Cát Bà là mái nhà bảo tồn bình yên của những cá thể voọc cuối cùng.",
+        "meaningEn": "The caring act of saving injured or endangered animals.",
+        "meaningVi": "Hoạt động cứu hộ động vật hoang dã.",
+        "exampleSentenceEn": "Rangers run an animal rescue center to protect langurs.",
+        "exampleSentenceVi": "Các kiểm lâm viên điều hành trung tâm cứu hộ động vật để bảo vệ loài voọc.",
         "emoji": "🛡️",
-        "audioPromptEn": "Sanctuary. A safe wildlife sanctuary."
+        "audioPromptEn": "Animal rescue. Forest animal rescue."
       },
       {
         "id": "g5-adv4-v3",
-        "word": "marine reserve",
-        "ipa": "/məˈriːn rɪˈzɜːv/",
+        "word": "national park",
+        "ipa": "/ˌnæʃ.ən.əl ˈpɑːrk/",
         "partOfSpeech": "noun",
-        "meaningEn": "An ocean protected area where coral reefs and sea life flourish safely.",
-        "meaningVi": "Khu bảo tồn biển bảo vệ rạn san hô và sinh vật đại dương.",
-        "exampleSentenceEn": "Volunteers patrol the Con Dao marine reserve to guard turtle nests.",
-        "exampleSentenceVi": "Các tình nguyện viên tuần tra khu bảo tồn biển Côn Đảo để bảo vệ tổ rùa.",
-        "emoji": "🐢",
-        "audioPromptEn": "Marine reserve. Con Dao marine reserve."
+        "meaningEn": "A protected natural area where rare wildlife is conserved.",
+        "meaningVi": "Vườn quốc gia bảo tồn thiên nhiên hoang dã.",
+        "exampleSentenceEn": "Cat Ba National Park protects rare langurs on cliffs.",
+        "exampleSentenceVi": "Vườn quốc gia Cát Bà bảo vệ loài voọc quý trên vách đá.",
+        "emoji": "🏞️",
+        "audioPromptEn": "National park. Cat Ba National Park."
       },
       {
         "id": "g5-adv4-v4",
-        "word": "ecosystem",
-        "ipa": "/ˈiː.kəʊˌsɪs.təm/",
+        "word": "island",
+        "ipa": "/ˈaɪ.lənd/",
         "partOfSpeech": "noun",
-        "meaningEn": "A biological community of interacting organisms and their physical environment.",
-        "meaningVi": "Hệ sinh thái tự nhiên hài hòa và gắn kết.",
-        "exampleSentenceEn": "Coral reefs provide a vital ecosystem for countless colorful marine species.",
-        "exampleSentenceVi": "Rạn san hô tạo nên hệ sinh thái sống còn cho muôn loài sinh vật biển.",
-        "emoji": "🪸",
-        "audioPromptEn": "Ecosystem. Fragile marine ecosystem."
+        "meaningEn": "A piece of land surrounded by water, like Cat Ba.",
+        "meaningVi": "Hòn đảo xanh giữa biển khơi.",
+        "exampleSentenceEn": "Cat Ba is a green island with rare langurs.",
+        "exampleSentenceVi": "Cát Bà là hòn đảo xanh với loài voọc quý hiếm.",
+        "emoji": "🏝️",
+        "audioPromptEn": "Island. Cat Ba green island."
       }
     ],
     "sentencePatterns": [
@@ -936,7 +896,7 @@ export const GRADE_5_LESSONS: CurriculumLesson[] = [
           },
           {
             "speaker": "Explorer",
-            "text": "Unless we eliminate plastic pollution and protect breeding beaches, rare sea turtles will face extinction!"
+            "text": "Unless we protect the forest and stop hunting, rare Cat Ba langurs will face extinction!"
           }
         ],
         "dialogueVi": [
@@ -946,89 +906,89 @@ export const GRADE_5_LESSONS: CurriculumLesson[] = [
           },
           {
             "speaker": "Học sinh",
-            "text": "Dạ nếu chúng ta không chấm dứt rác thải nhựa và bảo vệ bãi đẻ, loài rùa biển quý sẽ đối mặt với nguy cơ tuyệt chủng ạ!"
+            "text": "Dạ nếu chúng ta không bảo vệ rừng và ngăn chặn săn bắt, loài voọc Cát Bà quý sẽ đối mặt với nguy cơ tuyệt chủng ạ!"
           }
         ],
-        "practicePromptEn": "By protecting pristine coral reefs, we safeguard marine biodiversity for generations to come.",
-        "practicePromptVi": "Bằng cách bảo vệ các rạn san hô nguyên vẹn, chúng ta gìn giữ đa dạng sinh học đại dương cho muôn đời sau."
+        "practicePromptEn": "By protecting Cat Ba Island, we safeguard rare wildlife for generations to come.",
+        "practicePromptVi": "Bằng cách bảo vệ đảo Cát Bà, chúng ta gìn giữ động thực vật hoang dã quý hiếm cho muôn đời sau."
       }
     ],
     "reading": {
-      "titleEn": "Guardians of Archipelago Biodiversity",
-      "titleVi": "Những người canh giữ đa dạng sinh học biển đảo",
-      "wordCount": 61,
+      "titleEn": "Guardians of Cat Ba Langurs",
+      "titleVi": "Những người canh giữ loài voọc Cát Bà",
+      "wordCount": 58,
       "passagesEn": [
-        "With over three thousand kilometers of coastline and thousands of limestone islands, Vietnam is home to remarkable endemic wildlife.",
-        "On Cat Ba Island, only about seventy Cat Ba langurs—the world’s rarest primate—cling to sheer seaside cliffs. Further south in the turquoise waters of Con Dao, dedicated volunteers patrol moonlit beaches to safely rescue fragile green sea turtle hatchlings and guide them into the safety of the open ocean."
+        "With thousands of green limestone islands, Cat Ba is home to remarkable endemic wildlife.",
+        "In Cat Ba National Park, only about seventy golden-headed langurs—the world's rarest primate—live along sheer seaside cliffs. Dedicated rangers and volunteers run an animal rescue mission to protect their forest habitat, ensuring these precious primates thrive safely on the island."
       ],
       "passagesVi": [
-        "Với hơn ba ngàn cây số bờ biển cùng hàng ngàn hòn đảo đá vôi, Việt Nam là ngôi nhà của nhiều loài động vật đặc hữu kỳ diệu.",
-        "Tại đảo Cát Bà, chỉ còn khoảng bảy mươi cá thể voọc Cát Bà - loài linh trưởng quý hiếm nhất hành tinh - sinh sống bám vào vách đá cheo leo. Xuôi về phía nam giữa làn nước xanh ngọc Côn Đảo, các tình nguyện viên tuần tra bãi biển đêm trăng để ấp nở an toàn những chú rùa con và đưa chúng về với đại dương bao la."
+        "Với hàng ngàn hòn đảo đá vôi xanh ngát, Cát Bà là ngôi nhà của nhiều loài động vật đặc hữu kỳ diệu.",
+        "Tại Vườn quốc gia Cát Bà, chỉ còn khoảng bảy mươi cá thể voọc đầu vàng - loài linh trưởng quý hiếm nhất hành tinh - sinh sống dọc vách đá cheo leo. Các kiểm lâm viên và tình nguyện viên tận tụy điều hành sứ mệnh cứu hộ động vật để bảo vệ môi trường rừng, giúp loài linh trưởng quý giá phát triển an toàn trên đảo."
       ],
       "comprehensionTipsEn": "Approximately how many Cat Ba langurs survive in the wild today?",
       "comprehensionTipsVi": "Hiện nay còn khoảng bao nhiêu cá thể voọc Cát Bà sinh sống trong tự nhiên?",
-      "readingImage": "/destinations/phong_nha.jpg"
+      "readingImage": "/assets/vocab/national_park.webp"
     },
     "listening": {
-      "audioTitleEn": "Con Dao Turtle Hatching Mission",
-      "audioScriptEn": "Midnight patrol on Bay Canh Island! Look down at the sand! Tiny baby sea turtles are pushing through the surface! One, two, three... dozens of hatchlings scuttling toward the foaming waves! Good luck, little voyagers! Grow strong in our protected marine reserve!",
-      "audioScriptVi": "Ca tuần tra nửa đêm trên đảo Hòn Bảy Cạnh! Hãy nhìn xuống bờ cát! Những chú rùa biển con bé xíu đang đội cát chui lên! Một, hai, ba... hàng chục chú rùa tí hon bò thoăn thoắt về phía sóng biển! Chúc các em may mắn, những nhà hải hành nhí! Hãy lớn nhanh và an toàn trong khu bảo tồn biển nhé!",
+      "audioTitleEn": "Cat Ba Langur Forest Patrol",
+      "audioScriptEn": "Morning patrol in Cat Ba National Park! Look up at the high limestone cliffs! A family of rare golden-headed langurs is leaping through the green trees! One, two, three... young langurs staying close to their mother! Rangers guard their forest day and night so this endangered wildlife stays safe on Cat Ba Island!",
+      "audioScriptVi": "Ca tuần tra buổi sớm tại Vườn quốc gia Cát Bà! Hãy nhìn lên những vách đá vôi cao vút! Một gia đình voọc đầu vàng quý hiếm đang chuyền cành qua những tán cây xanh! Một, hai, ba... những chú voọc con quấn quýt bên mẹ! Các kiểm lâm viên ngày đêm canh gác rừng xanh để loài động vật hoang dã nguy cấp được an toàn trên đảo Cát Bà!",
       "speakerRole": "Captain Trang",
-      "questionEn": "Where do newly hatched green sea turtles instinctively crawl immediately after birth?",
-      "questionVi": "Những chú rùa biển mới nở bò theo bản năng về hướng nào ngay sau khi chào đời?",
+      "questionEn": "Where do rare Cat Ba langurs live safely inside Cat Ba National Park?",
+      "questionVi": "Loài voọc Cát Bà quý hiếm sinh sống an toàn ở đâu trong Vườn quốc gia Cát Bà?",
       "options": [
-        "Toward the ocean waves and open water",
-        "Toward bright city streetlamps",
-        "Deep into a dark cave",
-        "Into a cardboard box"
+        "High on limestone cliffs and green forest canopies",
+        "Deep beneath the ocean floor",
+        "Inside crowded city streets",
+        "In underground coal mines"
       ],
       "correctIndex": 0,
       "audioSlowAvailable": true
     },
     "speaking": {
-      "promptEn": "Say: 'We are proud eco heroes protecting Vietnam's wildlife!'",
-      "promptVi": "Em hãy nói: 'We are proud eco heroes protecting Vietnam's wildlife!'",
-      "targetSentenceEn": "We are proud eco heroes protecting Vietnam's wildlife!",
-      "targetSentenceVi": "Chúng em là những anh hùng sinh thái tự hào bảo vệ động vật hoang dã Việt Nam!",
-      "phoneticFocus": "/ˌbaɪ.əʊ/ in biodiversity and /ˈiː.kəʊ/ in ecosystem",
-      "pronunciationTipsEn": "Say bio-di-ver-si-ty clearly as six rhythmic syllables.",
-      "pronunciationTipsVi": "Phát âm chuẩn xác 6 âm tiết của từ bio-di-ver-si-ty: /ˌbaɪ.əʊ.daɪˈvɜː.sə.ti/.",
-      "shadowAudioText": "We are proud eco heroes protecting Vietnam's wildlife!"
+      "promptEn": "Say: 'We must protect Cat Ba langurs and their forest.'",
+      "promptVi": "Em hãy nói: 'We must protect Cat Ba langurs and their forest.'",
+      "targetSentenceEn": "We must protect Cat Ba langurs and their forest.",
+      "targetSentenceVi": "Chúng ta phải bảo vệ loài voọc Cát Bà và khu rừng của chúng.",
+      "phoneticFocus": "/prəˈtekt/ in protect and /ˈfɔːr.ɪst/ in forest",
+      "pronunciationTipsEn": "Say pro-tect clearly, then emphasize forest.",
+      "pronunciationTipsVi": "Phát âm rõ ràng từ pro-tect (/prəˈtekt/) và nhấn trọng âm từ forest (/ˈfɔːr.ɪst/).",
+      "shadowAudioText": "We must protect Cat Ba langurs and their forest."
     },
     "interactiveGame": {
       "gameType": "word_picture_match",
-      "gameTitleEn": "Eco Hero Marine Mission",
-      "gameTitleVi": "Nhiệm vụ anh hùng sinh thái đại dương",
+      "gameTitleEn": "Cat Ba Langur Eco Mission",
+      "gameTitleVi": "Nhiệm vụ sinh thái Cát Bà",
       "instructionsEn": "Match each eco term to its conservation mission icon!",
       "instructionsVi": "Nối thuật ngữ môi trường với biểu tượng sứ mệnh tương ứng nhé!",
       "items": [
         {
           "id": "m1",
-          "promptEn": "biodiversity",
-          "promptVi": "đa dạng sinh học",
+          "promptEn": "wildlife",
+          "promptVi": "động vật hoang dã",
           "targetMatch": "🌍",
           "emojiOrIcon": "🌍"
         },
         {
           "id": "m2",
-          "promptEn": "sanctuary",
-          "promptVi": "khu bảo tồn an toàn",
+          "promptEn": "animal rescue",
+          "promptVi": "cứu hộ động vật",
           "targetMatch": "🛡️",
           "emojiOrIcon": "🛡️"
         },
         {
           "id": "m3",
-          "promptEn": "marine reserve",
-          "promptVi": "khu bảo tồn biển",
-          "targetMatch": "🐢",
-          "emojiOrIcon": "🐢"
+          "promptEn": "national park",
+          "promptVi": "vườn quốc gia",
+          "targetMatch": "🏞️",
+          "emojiOrIcon": "🏞️"
         },
         {
           "id": "m4",
-          "promptEn": "ecosystem",
-          "promptVi": "hệ sinh thái biển",
-          "targetMatch": "🪸",
-          "emojiOrIcon": "🪸"
+          "promptEn": "island",
+          "promptVi": "hòn đảo xanh",
+          "targetMatch": "🏝️",
+          "emojiOrIcon": "🏝️"
         }
       ]
     },
@@ -1056,17 +1016,17 @@ export const GRADE_5_LESSONS: CurriculumLesson[] = [
         "challengeLevel": 2,
         "levelNameEn": "Connect",
         "levelNameVi": "Kết nối",
-        "questionEn": "Why is plastic pollution particularly lethal to marine sea turtles?",
-        "questionVi": "Vì sao rác thải nhựa đại dương lại đặc biệt nguy hiểm chết người đối với rùa biển?",
+        "questionEn": "Why is Cat Ba National Park vital for the survival of the Cat Ba langur?",
+        "questionVi": "Vì sao Vườn quốc gia Cát Bà lại có vai trò sống còn đối với sự sinh tồn của loài voọc Cát Bà?",
         "options": [
-          "Turtles mistake floating plastic bags for jellyfish and choke when swallowing them",
-          "Turtles use plastic to build houses",
-          "Turtles eat plastic for vitamins",
-          "Plastic makes turtles fly"
+          "It protects their natural forest habitat and prevents illegal hunting",
+          "It teaches langurs how to drive electric cars",
+          "It provides air conditioning for the limestone caves",
+          "It moves all the animals into shopping malls"
         ],
         "correctIndex": 0,
-        "explanationEn": "Sea turtles mistake floating plastic bags for their natural food (jellyfish), causing fatal blockages.",
-        "explanationVi": "Rùa biển thường nhầm túi nylon trôi nổi là con sứa (thức ăn ưa thích) dẫn đến tắc nghẽn dạ dày và tử vong.",
+        "explanationEn": "Cat Ba National Park protects the limestone forest ecosystem and strictly prevents poaching of rare langurs.",
+        "explanationVi": "Vườn quốc gia Cát Bà bảo vệ hệ sinh thái rừng vách đá tự nhiên và ngăn chặn triệt để nạn săn bắt voọc quý.",
         "learningSkill": "Cultural Connection"
       },
       {
@@ -1074,17 +1034,17 @@ export const GRADE_5_LESSONS: CurriculumLesson[] = [
         "challengeLevel": 3,
         "levelNameEn": "Apply",
         "levelNameVi": "Vận dụng",
-        "questionEn": "Propose an effective school campaign action to protect Vietnam's coastal biodiversity:",
-        "questionVi": "Đề xuất một hành động thiết thực trong trường học để bảo vệ đa dạng sinh học biển Việt Nam:",
+        "questionEn": "What should students do to help protect Cat Ba langurs and wildlife?",
+        "questionVi": "Học sinh nên làm gì để góp phần bảo vệ loài voọc Cát Bà và động vật hoang dã?",
         "options": [
-          "'Say No to Single-Use Plastics and organize weekly recycling & coastal awareness drives.'",
-          "'Throw more plastic into the ocean.'",
-          "'Ignore all environmental news.'",
-          "'Capture wild turtles for pets.'"
+          "Protect forests, say no to wild animal products, and raise eco awareness",
+          "Feed wild langurs candy and plastic bottles",
+          "Cut down forest trees on the limestone hills",
+          "Ignore all nature conservation activities"
         ],
         "correctIndex": 0,
-        "explanationEn": "Refusing single-use plastics directly addresses the root cause of marine debris.",
-        "explanationVi": "Chiến dịch nói không với rác thải nhựa dùng một lần là hành động bảo vệ đại dương thiết thực và hiệu quả nhất.",
+        "explanationEn": "Refusing wildlife trade and supporting forest protection safeguards endangered species.",
+        "explanationVi": "Không tiêu thụ sản phẩm từ động vật hoang dã và tuyên truyền bảo vệ rừng là hành động thiết thực của học sinh.",
         "learningSkill": "Communicative Application"
       }
     ],
@@ -1094,8 +1054,8 @@ export const GRADE_5_LESSONS: CurriculumLesson[] = [
       "criteria": [
         {
           "skill": "Ecology Terms",
-          "standardEn": "Mastery of biodiversity, sanctuary, marine reserve, ecosystem.",
-          "standardVi": "Nắm vững thuật ngữ sinh thái học đại dương."
+          "standardEn": "Mastery of wildlife, animal rescue, national park, island.",
+          "standardVi": "Nắm vững thuật ngữ bảo tồn loài voọc và vườn quốc gia Cát Bà."
         },
         {
           "skill": "Youth Leadership Advocacy",
@@ -1131,75 +1091,65 @@ export const GRADE_5_LESSONS: CurriculumLesson[] = [
     "targetCefr": "A1-A2 Extension",
     "durationMinutes": 45,
     "learningObjectivesEn": [
-      "Acquire 4 visionary STEM English terms: maglev, artificial intelligence, aerospace, carbon-neutral.",
+      "Acquire 4 future city English terms: high-speed train, smart city, rocket, plant trees.",
       "Construct complex future conditional statements: 'By 2050, Vietnam will achieve [goal] through [innovation].'",
       "Articulate a bold 21st-century vision for Vietnam's youth leadership on the world stage."
     ],
     "learningObjectivesVi": [
-      "Học 4 thuật ngữ STEM tương lai: maglev, artificial intelligence, aerospace, carbon-neutral.",
+      "Học 4 từ vựng thành phố tương lai: high-speed train, smart city, rocket, plant trees.",
       "Nói câu tầm nhìn tương lai: 'By 2050, Vietnam will achieve net-zero carbon through clean technology.'",
       "Khẳng định khát vọng và vai trò tiên phong của thế hệ trẻ Việt Nam năm 2050."
     ],
     "coverImage": "/destinations/halong_bay.jpg",
     "coverImageAttribution": "VietDiscovery Team",
-    "videoLesson": {
-      "videoId": "g5_future_video",
-      "videoUrl": "https://www.youtube.com/watch?v=k1BneeJTDcU",
-      "embedUrl": "https://www.youtube-nocookie.com/embed/k1BneeJTDcU?rel=0&modestbranding=1&iv_load_policy=3&playsinline=1",
-      "titleEn": "Vietnam 2050: High-Tech Smart Nation & Net Zero",
-      "titleVi": "Việt Nam 2050: Quốc gia công nghệ cao & Net Zero",
-      "durationMinutes": 5,
-      "isTeacherCreated": true,
-      "status": "approved"
-    },
     "vocabulary": [
       {
         "id": "g5-adv5-v1",
-        "word": "maglev",
-        "ipa": "/ˈmæɡ.lev/",
+        "word": "high-speed train",
+        "ipa": "/ˌhaɪˈspiːd ˈtreɪn/",
         "partOfSpeech": "noun",
-        "meaningEn": "Magnetic levitation train that floats friction-free at speeds over 600 km/h.",
-        "meaningVi": "Tàu đệm từ trường siêu tốc không ma sát.",
-        "exampleSentenceEn": "The North-South Maglev will connect Hanoi and Ho Chi Minh City in under three hours.",
-        "exampleSentenceVi": "Tuyến tàu đệm từ Bắc Nam sẽ kết nối Hà Nội và TP.HCM dưới 3 giờ đồng hồ.",
+        "meaningEn": "A very fast passenger train operating at high speeds.",
+        "meaningVi": "Đoàn tàu cao tốc hiện đại chạy êm ru.",
+        "exampleSentenceEn": "A modern high-speed train connects big cities quickly.",
+        "exampleSentenceVi": "Đoàn tàu cao tốc hiện đại kết nối các thành phố lớn thật nhanh chóng.",
         "emoji": "🚅",
-        "audioPromptEn": "Maglev. Ultra-fast maglev train."
+        "audioPromptEn": "High-speed train. Modern high-speed train."
       },
       {
         "id": "g5-adv5-v2",
-        "word": "artificial intelligence",
-        "ipa": "/ˌɑː.tɪˈfɪʃ.əl ɪnˈtel.ɪ.dʒəns/",
+        "word": "smart city",
+        "ipa": "/ˈsmɑːrt ˌsɪt.i/",
         "partOfSpeech": "noun",
-        "meaningEn": "Computer systems capable of performing complex human-like problem solving.",
-        "meaningVi": "Trí tuệ nhân tạo (AI) điều hành đô thị thông minh.",
-        "exampleSentenceEn": "Artificial intelligence balances green renewable energy across national power grids.",
-        "exampleSentenceVi": "Trí tuệ nhân tạo điều tiết năng lượng tái tạo trên mạng lưới điện quốc gia.",
-        "emoji": "🧠",
-        "audioPromptEn": "Artificial intelligence. Smart AI technology."
+        "meaningEn": "An urban area that uses modern technology and green energy.",
+        "meaningVi": "Đô thị thông minh hiện đại và bền vững.",
+        "exampleSentenceEn": "Clean technology powers our green smart city.",
+        "exampleSentenceVi": "Công nghệ sạch cung cấp năng lượng cho đô thị thông minh của chúng ta.",
+        "emoji": "🏙️",
+        "audioPromptEn": "Smart city. A green smart city."
       },
       {
         "id": "g5-adv5-v3",
-        "word": "aerospace",
-        "ipa": "/ˈeə.rəʊ.speɪs/",
+        "word": "rocket",
+        "ipa": "/ˈrɑː.kɪt/",
         "partOfSpeech": "noun",
-        "meaningEn": "The branch of technology concerned with aviation and space exploration.",
-        "meaningVi": "Ngành công nghệ hàng không và khám phá vũ trụ.",
-        "exampleSentenceEn": "Vietnamese aerospace engineers design Earth-observation satellites.",
-        "exampleSentenceVi": "Các kỹ sư hàng không vũ trụ Việt Nam thiết kế vệ tinh quan sát Trái Đất.",
+        "meaningEn": "A powerful vehicle that travels into outer space.",
+        "meaningVi": "Tên lửa vũ trụ vút bay vào không gian.",
+        "exampleSentenceEn": "A powerful rocket carries satellites into space.",
+        "exampleSentenceVi": "Tên lửa mạnh mẽ mang theo các vệ tinh bay vào vũ trụ.",
         "emoji": "🚀",
-        "audioPromptEn": "Aerospace. Visionary aerospace exploration."
+        "audioPromptEn": "Rocket. A modern space rocket."
       },
       {
         "id": "g5-adv5-v4",
-        "word": "carbon-neutral",
-        "ipa": "/ˌkɑː.bən ˈnjuː.trəl/",
-        "partOfSpeech": "adjective",
-        "meaningEn": "Releasing no net greenhouse gases into the atmosphere.",
-        "meaningVi": "Trung hòa carbon, không phát thải ròng gây hiệu ứng nhà kính.",
-        "exampleSentenceEn": "Vietnam has committed to becoming fully carbon-neutral by mid-century.",
-        "exampleSentenceVi": "Việt Nam cam kết trở thành quốc gia hoàn toàn trung hòa carbon vào giữa thế kỷ.",
+        "word": "plant trees",
+        "ipa": "/plænt triːz/",
+        "partOfSpeech": "verb",
+        "meaningEn": "To put young trees into the ground so they will grow.",
+        "meaningVi": "Trồng cây xanh bảo vệ môi trường.",
+        "exampleSentenceEn": "Students plant trees to make our city green.",
+        "exampleSentenceVi": "Các bạn học sinh trồng cây xanh để giữ cho thành phố luôn trong lành tươi đẹp.",
         "emoji": "🌱",
-        "audioPromptEn": "Carbon-neutral. A carbon-neutral nation."
+        "audioPromptEn": "Plant trees. Plant trees for the future."
       }
     ],
     "sentencePatterns": [
@@ -1227,7 +1177,7 @@ export const GRADE_5_LESSONS: CurriculumLesson[] = [
             "text": "Dạ đến năm 2050, Việt Nam sẽ đạt phát thải ròng bằng không và vận hành mạng lưới tàu đệm từ siêu tốc xuyên suốt đất nước ạ!"
           }
         ],
-        "practicePromptEn": "Vietnamese young scientists will pioneer green AI aerospace solutions for our planet.",
+        "practicePromptEn": "Vietnamese young scientists will pioneer green smart city and rocket solutions for our planet.",
         "practicePromptVi": "Các nhà khoa học trẻ Việt Nam sẽ tiên phong đưa ra giải pháp hàng không vũ trụ AI xanh cho hành tinh."
       }
     ],
@@ -1237,14 +1187,14 @@ export const GRADE_5_LESSONS: CurriculumLesson[] = [
       "wordCount": 63,
       "passagesEn": [
         "In the year 2050, Vietnam stands as a beacon of sustainable innovation, green prosperity, and advanced science.",
-        "Sleek silver maglev trains whisper along elevated vacuum corridors at six hundred kilometers per hour, linking Hanoi, Da Nang, and Ho Chi Minh City seamlessly. Powered by deep offshore floating wind turbines and orbital solar stations, our carbon-neutral cities celebrate harmonious coexistence between nature, heritage, and human genius."
+        "Sleek silver high-speed trains whisper along elevated modern corridors at six hundred kilometers per hour, linking Hanoi, Da Nang, and Ho Chi Minh City seamlessly. Powered by deep offshore floating wind turbines and orbital solar stations, our green smart cities celebrate harmonious coexistence between nature, heritage, and human genius."
       ],
       "passagesVi": [
         "Vào năm 2050, Việt Nam vươn lên thành biểu tượng của sự đổi mới bền vững, thịnh vượng xanh và khoa học công nghệ tiên tiến.",
         "Những đoàn tàu đệm từ bạc bóng loáng lướt êm ru trong đường ống chân không trên cao với vận tốc sáu trăm cây số một giờ, kết nối liền mạch Hà Nội, Đà Nẵng và TP. Hồ Chí Minh. Được tiếp sức bởi các trang trại điện gió ngoài khơi xa và trạm năng lượng mặt trời trên quỹ đạo, những thành phố trung hòa carbon tôn vinh sự hài hòa giữa thiên nhiên, di sản và trí tuệ con người."
       ],
-      "comprehensionTipsEn": "What speed do maglev trains achieve in the 2050 vision?",
-      "comprehensionTipsVi": "Tàu đệm từ maglev đạt vận tốc bao nhiêu trong tầm nhìn năm 2050?",
+      "comprehensionTipsEn": "What speed do high-speed trains achieve in the 2050 vision?",
+      "comprehensionTipsVi": "Đoàn tàu cao tốc đạt vận tốc bao nhiêu trong tầm nhìn năm 2050?",
       "readingImage": "/destinations/halong_bay.jpg"
     },
     "listening": {
@@ -1268,7 +1218,7 @@ export const GRADE_5_LESSONS: CurriculumLesson[] = [
       "promptVi": "Em hãy nói: 'We will build a smart, green Vietnam in 2050!'",
       "targetSentenceEn": "We will build a smart, green Vietnam in 2050!",
       "targetSentenceVi": "Chúng em sẽ chung tay kiến tạo một Việt Nam thông minh và xanh tươi năm 2050!",
-      "phoneticFocus": "/ˈmæɡ.lev/ in maglev and /ˈeə.rəʊ.speɪs/ in aerospace",
+      "phoneticFocus": "/ˌhaɪˈspiːd/ in high-speed train and /ˈrɑː.kɪt/ in rocket",
       "pronunciationTipsEn": "Speak with inspiring rhythm, clarity, and bold forward-looking conviction.",
       "pronunciationTipsVi": "Phát âm với ngữ điệu tự hào, mạch lạc và tràn đầy nhiệt huyết khát vọng tương lai.",
       "shadowAudioText": "We will build a smart, green Vietnam in 2050!"
@@ -1282,29 +1232,29 @@ export const GRADE_5_LESSONS: CurriculumLesson[] = [
       "items": [
         {
           "id": "m1",
-          "promptEn": "maglev",
-          "promptVi": "tàu đệm từ siêu tốc",
+          "promptEn": "high-speed train",
+          "promptVi": "tàu cao tốc",
           "targetMatch": "🚅",
           "emojiOrIcon": "🚅"
         },
         {
           "id": "m2",
-          "promptEn": "artificial intelligence",
-          "promptVi": "trí tuệ nhân tạo AI",
+          "promptEn": "smart city",
+          "promptVi": "đô thị thông minh",
           "targetMatch": "🧠",
           "emojiOrIcon": "🧠"
         },
         {
           "id": "m3",
-          "promptEn": "aerospace",
-          "promptVi": "công nghệ vũ trụ",
+          "promptEn": "rocket",
+          "promptVi": "tên lửa vũ trụ",
           "targetMatch": "🚀",
           "emojiOrIcon": "🚀"
         },
         {
           "id": "m4",
-          "promptEn": "carbon-neutral",
-          "promptVi": "trung hòa carbon",
+          "promptEn": "plant trees",
+          "promptVi": "trồng cây xanh",
           "targetMatch": "🌱",
           "emojiOrIcon": "🌱"
         }
@@ -1355,7 +1305,7 @@ export const GRADE_5_LESSONS: CurriculumLesson[] = [
         "questionEn": "Deliver a powerful closing pledge for a student conference on Vietnam 2050:",
         "questionVi": "Chọn lời cam kết bế mạc mạnh mẽ cho hội nghị học sinh về Việt Nam năm 2050:",
         "options": [
-          "'Equipped with knowledge, innovation, and pride in our heritage, we pledge to lead Vietnam into a prosperous, sustainable, and carbon-neutral 2050!'",
+          "'Equipped with knowledge, innovation, and pride in our heritage, we pledge to lead Vietnam into a prosperous, sustainable, and green 2050!'",
           "'I just want to go home and sleep.'",
           "'Nothing will ever change.'",
           "'Technology is too difficult for us.'"
@@ -1372,7 +1322,7 @@ export const GRADE_5_LESSONS: CurriculumLesson[] = [
       "criteria": [
         {
           "skill": "2050 STEM Terms",
-          "standardEn": "Mastery of maglev, artificial intelligence, aerospace, carbon-neutral.",
+          "standardEn": "Mastery of high-speed train, smart city, rocket, plant trees.",
           "standardVi": "Nắm vững thuật ngữ STEM và công nghệ tương lai."
         },
         {
